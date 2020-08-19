@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hongchengfhc.github.io/</id>
     <title>Gridea</title>
-    <updated>2020-08-19T07:40:09.575Z</updated>
+    <updated>2020-08-19T07:55:10.691Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hongchengfhc.github.io/"/>
     <link rel="self" href="https://hongchengfhc.github.io/atom.xml"/>
@@ -10,6 +10,198 @@
     <logo>https://hongchengfhc.github.io/images/avatar.png</logo>
     <icon>https://hongchengfhc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Gridea</rights>
+    <entry>
+        <title type="html"><![CDATA[安装 iTerm2 && Oh My Zsh]]></title>
+        <id>https://hongchengfhc.github.io/post/an-zhuang-iterm2-and-oh-my-zsh/</id>
+        <link href="https://hongchengfhc.github.io/post/an-zhuang-iterm2-and-oh-my-zsh/">
+        </link>
+        <updated>2020-08-19T07:47:36.000Z</updated>
+        <summary type="html"><![CDATA[<p>安装 iTerm2 &amp;&amp; Oh My Zsh</p>
+<ol>
+<li>
+<p>下载iTerm2<br>
+https://iterm2.com/</p>
+</li>
+<li>
+<p>下载  oh-my-zsh<br>
+curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh</p>
+</li>
+<li>
+<p>安装Powerline<br>
+如果你的终端能够正常执行pip指令，那么直接执行下面的指令可以完成安装<br>
+pip install powerline-status --user<br>
+如果没有，则先执行安装pip指令<br>
+sudo easy_install pip</p>
+</li>
+<li>
+<p>安装字体库<br>
+将字体库下载下来 	https://github.com/powerline/fonts<br>
+1）将工程下载下来后cd到install.sh文件所在目录<br>
+2）执行指令安装字体库<br>
+执行./install.sh指令安装所有Powerline字体<br>
+安装完成后提示所有字体均已下载到/Users/superdanny/Library/Fonts路径下<br>
+All Powerline fonts installed to /Users/superdanny/Library/Fonts</p>
+</li>
+<li>
+<p>设置iTerm2 的 Regular Font 和 Non-ASCII Font<br>
+Profiles -&gt; Default -&gt; Text -&gt; Regular Font<br>
+我这里设置的是12pt Meslo LG S DZ Regular for Powerline</p>
+</li>
+<li>
+<p>配色<br>
+1）安装配色方案<br>
+将配色方案下载下来		https://github.com/altercation/solarized</p>
+<pre><code> 进入刚刚下载的工程的solarized/iterm2-colors-solarized 下双击 Solarized Dark.itermcolors 和 Solarized Light.itermcolors 两个文件就可以把配置文件导入到 iTerm2 里
+</code></pre>
+<p>2）配置配色方案<br>
+通过load presets选择刚刚安装的配色主题即可<br>
+Profiles -&gt; Colors -&gt; Load Presets...</p>
+</li>
+<li>
+<p>使用agnoster主题<br>
+1）下载agnoster主题<br>
+下载主题  https://github.com/fcamblor/oh-my-zsh-agnoster-fcamblor<br>
+到下载的工程里面运行install文件,主题将安装到~/.oh-my-zsh/themes目录下<br>
+2）设置该主题<br>
+进入~/.zshrc打开.zshrc文件，然后将ZSH_THEME后面的字段改为agnoster。ZSH_THEME=&quot;agnoster&quot;（agnoster即为要设置的主题）</p>
+</li>
+<li>
+<p>增加指令高亮效果 zsh-syntax-highlighting<br>
+指令高亮效果作用是当用户输入正确命令时指令会绿色高亮，错误时命令红色高亮</p>
+<p>cd ~/.oh-my-zsh/custom/plugins/</p>
+<p>git clone https://github.com/zsh-users/zsh-syntax-highlighting.git</p>
+<p>vi ~/.zshrc</p>
+<p>打开.zshrc文件，找到plugins=(git)<br>
+plugins=(git zsh-syntax-highlighting)<br>
+然后在文件的最后一行添加：source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh</p>
+<p>执行命令使刚才的修改生效：<br>
+source ~/.zshrc</p>
+</li>
+<li>
+<p>可选择、命令补全<br>
+跟代码高亮的安装方式一样，这也是一个zsh的插件，叫做zsh-autosuggestion，用于命令建议和补全。<br>
+cd ~/.oh-my-zsh/custom/plugins/<br>
+git clone https://github.com/zsh-users/zsh-autosuggestions<br>
+vi ~/.zshrc</p>
+</li>
+</ol>
+<p>添加 plugins=(<br>
+git<br>
+zsh-autosuggestions<br>
+zsh-syntax-highlighting<br>
+)</p>
+<h2 id="获取zshrc所在目录">获取.zshrc所在目录</h2>
+<p>我这里是 /Users/macbook/.zshrc</p>
+<p>Mac OS X中默认不存在~/.zshrc，因此您需要创建它。 ~/转换为用户的主目录，.zshrc是ZSH配置文件本身。</p>
+<p>所以只需打开一个“终端”或“iTerm”窗口并像这样创建该文件;我正在使用nano作为文本编辑器，但随意使用您认为合适的文本编辑器：</p>
+<p>nano ~/.zshrc<br>
+然后将ZSH_THEME值设置为您想要使用的任何值，如下所示：</p>
+<p>ZSH_THEME=&quot;robbyrussell&quot;</p>
+<p>现在将文件保存在nano中，只需按 ctrl + X 。当它提示：</p>
+<p>保存修改后的缓冲区（回答“否”会破坏更改）？</p>
+<p>只需输入“Y”，然后你会得到一个看起来像这样的新提示;请注意路径/Users/jake/将匹配您当地用户的路径：</p>
+<p>要写的文件名：/Users/jake/.zshrc</p>
+<p>现在只需按 return ，文件将被保存，您现在将返回“终端”或“iTerm”中的命令行提示符。如果您现在退出“终端”或者“iTerm”然后打开一个新窗口，现在应该加载~/.zshrc设置。</p>
+<p>附上作者的iTerm2的背景图</p>
+<p><a href="https://s1.ax1x.com/2020/03/20/86X3J1.jpg">图片链接</a></p>
+<p><a href="https://jingyan.baidu.com/article/ca41422f7d5e801eae99edae.html">iTerm2如何设置背景图片</a></p>
+<p><a href="https://segmentfault.com/q/1010000002617777">iTerm2如何分屏之后背景图不变？</a></p>
+<figure data-type="image" tabindex="1"><img src="https://upload-images.jianshu.io/upload_images/19403677-f135459ee6dfd6c1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img" loading="lazy"></figure>
+]]></summary>
+        <content type="html"><![CDATA[<p>安装 iTerm2 &amp;&amp; Oh My Zsh</p>
+<ol>
+<li>
+<p>下载iTerm2<br>
+https://iterm2.com/</p>
+</li>
+<li>
+<p>下载  oh-my-zsh<br>
+curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh</p>
+</li>
+<li>
+<p>安装Powerline<br>
+如果你的终端能够正常执行pip指令，那么直接执行下面的指令可以完成安装<br>
+pip install powerline-status --user<br>
+如果没有，则先执行安装pip指令<br>
+sudo easy_install pip</p>
+</li>
+<li>
+<p>安装字体库<br>
+将字体库下载下来 	https://github.com/powerline/fonts<br>
+1）将工程下载下来后cd到install.sh文件所在目录<br>
+2）执行指令安装字体库<br>
+执行./install.sh指令安装所有Powerline字体<br>
+安装完成后提示所有字体均已下载到/Users/superdanny/Library/Fonts路径下<br>
+All Powerline fonts installed to /Users/superdanny/Library/Fonts</p>
+</li>
+<li>
+<p>设置iTerm2 的 Regular Font 和 Non-ASCII Font<br>
+Profiles -&gt; Default -&gt; Text -&gt; Regular Font<br>
+我这里设置的是12pt Meslo LG S DZ Regular for Powerline</p>
+</li>
+<li>
+<p>配色<br>
+1）安装配色方案<br>
+将配色方案下载下来		https://github.com/altercation/solarized</p>
+<pre><code> 进入刚刚下载的工程的solarized/iterm2-colors-solarized 下双击 Solarized Dark.itermcolors 和 Solarized Light.itermcolors 两个文件就可以把配置文件导入到 iTerm2 里
+</code></pre>
+<p>2）配置配色方案<br>
+通过load presets选择刚刚安装的配色主题即可<br>
+Profiles -&gt; Colors -&gt; Load Presets...</p>
+</li>
+<li>
+<p>使用agnoster主题<br>
+1）下载agnoster主题<br>
+下载主题  https://github.com/fcamblor/oh-my-zsh-agnoster-fcamblor<br>
+到下载的工程里面运行install文件,主题将安装到~/.oh-my-zsh/themes目录下<br>
+2）设置该主题<br>
+进入~/.zshrc打开.zshrc文件，然后将ZSH_THEME后面的字段改为agnoster。ZSH_THEME=&quot;agnoster&quot;（agnoster即为要设置的主题）</p>
+</li>
+<li>
+<p>增加指令高亮效果 zsh-syntax-highlighting<br>
+指令高亮效果作用是当用户输入正确命令时指令会绿色高亮，错误时命令红色高亮</p>
+<p>cd ~/.oh-my-zsh/custom/plugins/</p>
+<p>git clone https://github.com/zsh-users/zsh-syntax-highlighting.git</p>
+<p>vi ~/.zshrc</p>
+<p>打开.zshrc文件，找到plugins=(git)<br>
+plugins=(git zsh-syntax-highlighting)<br>
+然后在文件的最后一行添加：source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh</p>
+<p>执行命令使刚才的修改生效：<br>
+source ~/.zshrc</p>
+</li>
+<li>
+<p>可选择、命令补全<br>
+跟代码高亮的安装方式一样，这也是一个zsh的插件，叫做zsh-autosuggestion，用于命令建议和补全。<br>
+cd ~/.oh-my-zsh/custom/plugins/<br>
+git clone https://github.com/zsh-users/zsh-autosuggestions<br>
+vi ~/.zshrc</p>
+</li>
+</ol>
+<p>添加 plugins=(<br>
+git<br>
+zsh-autosuggestions<br>
+zsh-syntax-highlighting<br>
+)</p>
+<h2 id="获取zshrc所在目录">获取.zshrc所在目录</h2>
+<p>我这里是 /Users/macbook/.zshrc</p>
+<p>Mac OS X中默认不存在~/.zshrc，因此您需要创建它。 ~/转换为用户的主目录，.zshrc是ZSH配置文件本身。</p>
+<p>所以只需打开一个“终端”或“iTerm”窗口并像这样创建该文件;我正在使用nano作为文本编辑器，但随意使用您认为合适的文本编辑器：</p>
+<p>nano ~/.zshrc<br>
+然后将ZSH_THEME值设置为您想要使用的任何值，如下所示：</p>
+<p>ZSH_THEME=&quot;robbyrussell&quot;</p>
+<p>现在将文件保存在nano中，只需按 ctrl + X 。当它提示：</p>
+<p>保存修改后的缓冲区（回答“否”会破坏更改）？</p>
+<p>只需输入“Y”，然后你会得到一个看起来像这样的新提示;请注意路径/Users/jake/将匹配您当地用户的路径：</p>
+<p>要写的文件名：/Users/jake/.zshrc</p>
+<p>现在只需按 return ，文件将被保存，您现在将返回“终端”或“iTerm”中的命令行提示符。如果您现在退出“终端”或者“iTerm”然后打开一个新窗口，现在应该加载~/.zshrc设置。</p>
+<p>附上作者的iTerm2的背景图</p>
+<p><a href="https://s1.ax1x.com/2020/03/20/86X3J1.jpg">图片链接</a></p>
+<p><a href="https://jingyan.baidu.com/article/ca41422f7d5e801eae99edae.html">iTerm2如何设置背景图片</a></p>
+<p><a href="https://segmentfault.com/q/1010000002617777">iTerm2如何分屏之后背景图不变？</a></p>
+<figure data-type="image" tabindex="1"><img src="https://upload-images.jianshu.io/upload_images/19403677-f135459ee6dfd6c1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img" loading="lazy"></figure>
+<!-- more -->
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Hello Gridea]]></title>
         <id>https://hongchengfhc.github.io/post/hello-gridea/</id>
