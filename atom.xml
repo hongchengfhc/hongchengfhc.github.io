@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hongchengfhc.github.io/</id>
     <title>Gridea</title>
-    <updated>2020-09-14T03:07:09.433Z</updated>
+    <updated>2020-09-14T03:10:14.929Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hongchengfhc.github.io/"/>
     <link rel="self" href="https://hongchengfhc.github.io/atom.xml"/>
@@ -486,10 +486,10 @@ zsh-syntax-highlighting<br>
 <p>要写的文件名：/Users/jake/.zshrc</p>
 <p>现在只需按 return ，文件将被保存，您现在将返回“终端”或“iTerm”中的命令行提示符。如果您现在退出“终端”或者“iTerm”然后打开一个新窗口，现在应该加载~/.zshrc设置。</p>
 <p>附上作者的iTerm2的背景图</p>
-<p><a href="https://s1.ax1x.com/2020/03/20/86X3J1.jpg">图片链接</a></p>
+<figure data-type="image" tabindex="1"><img src="https://hongchengfhc.github.io//post-images/1600052992127.jpg" alt="" loading="lazy"></figure>
 <p><a href="https://jingyan.baidu.com/article/ca41422f7d5e801eae99edae.html">iTerm2如何设置背景图片</a></p>
 <p><a href="https://segmentfault.com/q/1010000002617777">iTerm2如何分屏之后背景图不变？</a></p>
-<figure data-type="image" tabindex="1"><img src="https://upload-images.jianshu.io/upload_images/19403677-f135459ee6dfd6c1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img" loading="lazy"></figure>
+<figure data-type="image" tabindex="2"><img src="https://upload-images.jianshu.io/upload_images/19403677-f135459ee6dfd6c1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img" loading="lazy"></figure>
 ]]></summary>
         <content type="html"><![CDATA[<h5 id="安装-iterm2-oh-my-zsh">安装 iTerm2 &amp;&amp; Oh My Zsh</h5>
 <ol>
@@ -578,10 +578,10 @@ zsh-syntax-highlighting<br>
 <p>要写的文件名：/Users/jake/.zshrc</p>
 <p>现在只需按 return ，文件将被保存，您现在将返回“终端”或“iTerm”中的命令行提示符。如果您现在退出“终端”或者“iTerm”然后打开一个新窗口，现在应该加载~/.zshrc设置。</p>
 <p>附上作者的iTerm2的背景图</p>
-<p><a href="https://s1.ax1x.com/2020/03/20/86X3J1.jpg">图片链接</a></p>
+<figure data-type="image" tabindex="1"><img src="https://hongchengfhc.github.io//post-images/1600052992127.jpg" alt="" loading="lazy"></figure>
 <p><a href="https://jingyan.baidu.com/article/ca41422f7d5e801eae99edae.html">iTerm2如何设置背景图片</a></p>
 <p><a href="https://segmentfault.com/q/1010000002617777">iTerm2如何分屏之后背景图不变？</a></p>
-<figure data-type="image" tabindex="1"><img src="https://upload-images.jianshu.io/upload_images/19403677-f135459ee6dfd6c1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img" loading="lazy"></figure>
+<figure data-type="image" tabindex="2"><img src="https://upload-images.jianshu.io/upload_images/19403677-f135459ee6dfd6c1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img" loading="lazy"></figure>
 <!-- more -->
 ]]></content>
     </entry>
