@@ -1,0 +1,398 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>记一次使用apng动画两种方式 | Gridea</title>
+<link rel="shortcut icon" href="https://hongchengfhc.github.io//favicon.ico?v=1600052823100">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://hongchengfhc.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="记一次使用apng动画两种方式 | Gridea - Atom Feed" href="https://hongchengfhc.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+apng-canvas
+apng-js
+
+1. 使用apng-canvas做apng动画
+使用起来代码简单，容易理解；但是监听动画的过程。
+APNG
+APNG 全称是 Animated Portable Network Graphics ..." />
+    <meta name="keywords" content="DevOps" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://hongchengfhc.github.io/">
+  <img class="avatar" src="https://hongchengfhc.github.io//images/avatar.png?v=1600052823100" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              记一次使用apng动画两种方式
+            </h2>
+            <div class="post-info">
+              <span>
+                2020-09-14
+              </span>
+              <span>
+                5 min read
+              </span>
+              
+                <a href="https://hongchengfhc.github.io/tag/06qfGqKjC/" class="post-tag">
+                  # DevOps
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <ol>
+<li>apng-canvas</li>
+<li>apng-js</li>
+</ol>
+<h3 id="1-使用apng-canvas做apng动画">1. 使用apng-canvas做apng动画</h3>
+<p>使用起来代码简单，容易理解；但是监听动画的过程。</p>
+<h5 id="apng">APNG</h5>
+<p>APNG 全称是 Animated Portable Network Graphics ， 是 PNG 格式的动画扩展。APNG 的第1帧为标准PNG图像，剩余的动画和帧速等数据放在PNG扩展数据块里。这里有点类似于视频的关键帧，关键帧有完整的图像信息，而两个关键帧之间只保留了变化的信息。<br>
+简单来说，APNG 支持全彩和透明，无杂边问题.</p>
+<p>但并不是所有软件都支持APNG。</p>
+<p>Android上有<code>APNG View</code>等，iOS上有<code>APNGKit</code>等</p>
+<p>而Web上，Firfox和Safari是支持APNG，Chrome是支持WebP的。</p>
+<p>所以我们要在Web上使用APNG可以使用Canvas</p>
+<h4 id="canvas-apng">Canvas &amp; APNG</h4>
+<p>我们可以使用 <a href="https://github.com/davidmz/apng-canvas">apng-canvas</a>库。</p>
+<h4 id="举例">举例</h4>
+<pre><code>APNG.ifNeeded().then(function() {
+    var images = document.querySelectorAll(&quot;.apng-image&quot;);
+    for (var i = 0; i &lt; images.length; i++) APNG.animateImage(images[i]);
+});
+</code></pre>
+<p><code>APNG</code> 这个对象是<code>apng-canvas</code>这个库提供的，<code>ifNeeded()</code>函数是用来判断浏览器是否支持APNG。</p>
+<p><code>APNG.animateImage()</code>是需要传入一个 Image Element，之后就交给Canvas去处理了。</p>
+<h3 id="2-使用apng-js做apng动画">2. 使用apng-js做apng动画</h3>
+<p>注：底部有作者 apng.vue的组件源码作参考</p>
+<h5 id="apng-js">apng-js</h5>
+<p><a href="https://github.com/davidmz/apng-js">apng-js</a> 官方<a href="https://davidmz.github.io/apng-js/">demo</a></p>
+<h5 id="使用方式">使用方式</h5>
+<pre><code>import parseAPNG from 'apng-js';
+
+const apng = parseAPNG(buffer);
+if (apng instanceof Error) {
+    // handle error
+}
+// work with apng object
+</code></pre>
+<p><code>parseAPNG</code>的参数是一个ArrayBuffer类型，比起apng-canvas的使用要较为复杂一些。<br>
+在这里我就举一下我之前的做法：</p>
+<p>我们需要的是加载本地和远端的apng图片来进行动画操作.</p>
+<p>因为最终参数需要一个ArrayBuffer类型的，而我们只有一张图片的url，因此需要进行转换。<br>
+经过测试得出转换步骤如下：</p>
+<ol>
+<li>先去请求这张图片以返回类型设为blob类型</li>
+</ol>
+<pre><code>// 加载图片资源，得到blob类型的值
+loaderURL(url) {
+  function createXmlHttpRequest() {
+    if (window.ActiveXObject) {
+      return new ActiveXObject('Microsoft.XMLHTTP');
+    } else if (window.XMLHttpRequest) {
+      return new XMLHttpRequest();
+    }
+  }
+  return new Promise((resolve) =&gt; {
+    let xhr = createXmlHttpRequest();
+    xhr.open(&quot;get&quot;, url, true);
+    xhr.responseType = &quot;blob&quot;;
+    xhr.onload = function (res) {
+      if (this.status == 200) {
+        var blob = this.response;
+        resolve(blob);
+      }
+    }
+    xhr.send();
+  })
+}
+</code></pre>
+<ol start="2">
+<li>将blob转换成ArrayBuffer类型</li>
+</ol>
+<pre><code>// 将blob转换成buffer
+blobToArrayBuffer(blob) {
+  return new Promise((resolve) =&gt; {
+    // Blob 转 ArrayBuffer
+    let reader = new FileReader();
+    reader.readAsArrayBuffer(blob);
+    reader.onload = function() {
+      console.log(reader.result)
+      resolve(reader.result)
+    }
+  })
+}
+</code></pre>
+<ol start="3">
+<li>可以使用apng-js的parseAPNG得到apng对象，通过该对象可以获得动画播放器player</li>
+</ol>
+<pre><code>var apng = parseAPNG(buffer);
+apng.getPlayer(canvas.getContent('2d')).then(player =&gt; {
+    // 调用播放动画
+    player.play();
+})
+</code></pre>
+<p>player对象中有</p>
+<ul>
+<li>play --  playback started;</li>
+<li>frame -- frame played (frame number passed as event parameter);</li>
+<li>pause --  playback paused;</li>
+<li>stop -- playback stopped;</li>
+<li>end -- playback ended (for APNG with finite count of plays).<br>
+通过官方文档可看出，我们可以监听整个动画的事件。<br>
+官方demo中监听代码片段<br>
+<img src="https://upload-images.jianshu.io/upload_images/19403677-ef5b1a70c3138d06.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img" loading="lazy"></li>
+</ul>
+<p>作者apng.vue源码</p>
+<pre><code>&lt;template lang=&quot;pug&quot;&gt;
+  .apng-div(ref=&quot;apng-div&quot; v-if=&quot;src&quot;)
+    canvas(ref=&quot;apng-canvas&quot;)
+&lt;/template&gt;
+
+&lt;script&gt;
+// require('./../libs/apng-canvas.min.js')
+import commonMixin from '@/mixins/commonMixin'
+import parseAPNG from 'apng-js'
+
+export default {
+  mixins: [commonMixin],
+  data() {
+    return {
+    }
+  },
+
+  props: {
+    width: {
+      type: String | Number,
+      required: true
+    },
+    height: {
+      type: String | Number,
+      required: true
+    },
+    src: {
+      type: String,
+      required: true
+    }
+  },
+
+  mounted() {
+    let canvas = this.$refs['apng-canvas'];
+    this.loaderURL(this.src).then(blob =&gt; {
+      console.log(blob)
+
+      this.blobToArrayBuffer(blob).then(arrayBuffer =&gt; {
+        let apng = parseAPNG(arrayBuffer);
+        canvas.width = apng.width;
+        canvas.height = apng.height;
+        let scale = this.width * this.remVal / apng.width
+        canvas.style = 'zoom: ' + scale;
+        apng.getPlayer(canvas.getContext('2d')).then(player =&gt; {
+          player.play();
+        })
+      })
+    })
+  },
+  methods: {
+    calc(val) {
+      return this.remVal * val;
+    },
+    blobToArrayBuffer(blob) {
+      return new Promise((resolve) =&gt; {
+        // Blob 转 ArrayBuffer
+        let reader = new FileReader();
+        reader.readAsArrayBuffer(blob);
+        reader.onload = function() {
+          console.log(reader.result)
+          resolve(reader.result)
+        }
+      })
+    },
+    loaderURL(url) {
+      function createXmlHttpRequest() {
+        if (window.ActiveXObject) {
+          return new ActiveXObject('Microsoft.XMLHTTP');
+        } else if (window.XMLHttpRequest) {
+          return new XMLHttpRequest();
+        }
+      }
+      return new Promise((resolve) =&gt; {
+        let xhr = createXmlHttpRequest();
+        xhr.open(&quot;get&quot;, url, true);
+        xhr.responseType = &quot;blob&quot;;
+        xhr.onload = function (res) {
+          if (this.status == 200) {
+            var blob = this.response;
+            resolve(blob);
+          }
+        }
+        xhr.send();
+      })
+    }
+  }
+}
+&lt;/script&gt;
+
+&lt;style lang=&quot;less&quot; scoped&gt;
+
+&lt;/style&gt;
+
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#1-%E4%BD%BF%E7%94%A8apng-canvas%E5%81%9Aapng%E5%8A%A8%E7%94%BB">1. 使用apng-canvas做apng动画</a><br>
+*
+<ul>
+<li><a href="#apng">APNG</a></li>
+<li><a href="#canvas-apng">Canvas &amp; APNG</a></li>
+<li><a href="#%E4%B8%BE%E4%BE%8B">举例</a></li>
+</ul>
+</li>
+<li><a href="#2-%E4%BD%BF%E7%94%A8apng-js%E5%81%9Aapng%E5%8A%A8%E7%94%BB">2. 使用apng-js做apng动画</a><br>
+*
+<ul>
+<li><a href="#apng-js">apng-js</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F">使用方式</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://hongchengfhc.github.io/post/pm2-qi-dong-npm-ming-ling/">
+              <h3 class="post-title">
+                pm2启动npm命令
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://hongchengfhc.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

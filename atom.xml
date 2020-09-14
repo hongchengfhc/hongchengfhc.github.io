@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hongchengfhc.github.io/</id>
     <title>Gridea</title>
-    <updated>2020-08-19T07:55:10.691Z</updated>
+    <updated>2020-09-14T03:07:09.433Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hongchengfhc.github.io/"/>
     <link rel="self" href="https://hongchengfhc.github.io/atom.xml"/>
@@ -11,12 +11,395 @@
     <icon>https://hongchengfhc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Gridea</rights>
     <entry>
+        <title type="html"><![CDATA[记一次使用apng动画两种方式]]></title>
+        <id>https://hongchengfhc.github.io/post/ji-yi-ci-shi-yong-apng-dong-hua-liang-chong-fang-shi/</id>
+        <link href="https://hongchengfhc.github.io/post/ji-yi-ci-shi-yong-apng-dong-hua-liang-chong-fang-shi/">
+        </link>
+        <updated>2020-09-14T03:05:29.000Z</updated>
+        <content type="html"><![CDATA[<ol>
+<li>apng-canvas</li>
+<li>apng-js</li>
+</ol>
+<h3 id="1-使用apng-canvas做apng动画">1. 使用apng-canvas做apng动画</h3>
+<p>使用起来代码简单，容易理解；但是监听动画的过程。</p>
+<h5 id="apng">APNG</h5>
+<p>APNG 全称是 Animated Portable Network Graphics ， 是 PNG 格式的动画扩展。APNG 的第1帧为标准PNG图像，剩余的动画和帧速等数据放在PNG扩展数据块里。这里有点类似于视频的关键帧，关键帧有完整的图像信息，而两个关键帧之间只保留了变化的信息。<br>
+简单来说，APNG 支持全彩和透明，无杂边问题.</p>
+<p>但并不是所有软件都支持APNG。</p>
+<p>Android上有<code>APNG View</code>等，iOS上有<code>APNGKit</code>等</p>
+<p>而Web上，Firfox和Safari是支持APNG，Chrome是支持WebP的。</p>
+<p>所以我们要在Web上使用APNG可以使用Canvas</p>
+<h4 id="canvas-apng">Canvas &amp; APNG</h4>
+<p>我们可以使用 <a href="https://github.com/davidmz/apng-canvas">apng-canvas</a>库。</p>
+<h4 id="举例">举例</h4>
+<pre><code>APNG.ifNeeded().then(function() {
+    var images = document.querySelectorAll(&quot;.apng-image&quot;);
+    for (var i = 0; i &lt; images.length; i++) APNG.animateImage(images[i]);
+});
+</code></pre>
+<p><code>APNG</code> 这个对象是<code>apng-canvas</code>这个库提供的，<code>ifNeeded()</code>函数是用来判断浏览器是否支持APNG。</p>
+<p><code>APNG.animateImage()</code>是需要传入一个 Image Element，之后就交给Canvas去处理了。</p>
+<h3 id="2-使用apng-js做apng动画">2. 使用apng-js做apng动画</h3>
+<p>注：底部有作者 apng.vue的组件源码作参考</p>
+<h5 id="apng-js">apng-js</h5>
+<p><a href="https://github.com/davidmz/apng-js">apng-js</a> 官方<a href="https://davidmz.github.io/apng-js/">demo</a></p>
+<h5 id="使用方式">使用方式</h5>
+<pre><code>import parseAPNG from 'apng-js';
+
+const apng = parseAPNG(buffer);
+if (apng instanceof Error) {
+    // handle error
+}
+// work with apng object
+</code></pre>
+<p><code>parseAPNG</code>的参数是一个ArrayBuffer类型，比起apng-canvas的使用要较为复杂一些。<br>
+在这里我就举一下我之前的做法：</p>
+<p>我们需要的是加载本地和远端的apng图片来进行动画操作.</p>
+<p>因为最终参数需要一个ArrayBuffer类型的，而我们只有一张图片的url，因此需要进行转换。<br>
+经过测试得出转换步骤如下：</p>
+<ol>
+<li>先去请求这张图片以返回类型设为blob类型</li>
+</ol>
+<pre><code>// 加载图片资源，得到blob类型的值
+loaderURL(url) {
+  function createXmlHttpRequest() {
+    if (window.ActiveXObject) {
+      return new ActiveXObject('Microsoft.XMLHTTP');
+    } else if (window.XMLHttpRequest) {
+      return new XMLHttpRequest();
+    }
+  }
+  return new Promise((resolve) =&gt; {
+    let xhr = createXmlHttpRequest();
+    xhr.open(&quot;get&quot;, url, true);
+    xhr.responseType = &quot;blob&quot;;
+    xhr.onload = function (res) {
+      if (this.status == 200) {
+        var blob = this.response;
+        resolve(blob);
+      }
+    }
+    xhr.send();
+  })
+}
+</code></pre>
+<ol start="2">
+<li>将blob转换成ArrayBuffer类型</li>
+</ol>
+<pre><code>// 将blob转换成buffer
+blobToArrayBuffer(blob) {
+  return new Promise((resolve) =&gt; {
+    // Blob 转 ArrayBuffer
+    let reader = new FileReader();
+    reader.readAsArrayBuffer(blob);
+    reader.onload = function() {
+      console.log(reader.result)
+      resolve(reader.result)
+    }
+  })
+}
+</code></pre>
+<ol start="3">
+<li>可以使用apng-js的parseAPNG得到apng对象，通过该对象可以获得动画播放器player</li>
+</ol>
+<pre><code>var apng = parseAPNG(buffer);
+apng.getPlayer(canvas.getContent('2d')).then(player =&gt; {
+    // 调用播放动画
+    player.play();
+})
+</code></pre>
+<p>player对象中有</p>
+<ul>
+<li>play --  playback started;</li>
+<li>frame -- frame played (frame number passed as event parameter);</li>
+<li>pause --  playback paused;</li>
+<li>stop -- playback stopped;</li>
+<li>end -- playback ended (for APNG with finite count of plays).<br>
+通过官方文档可看出，我们可以监听整个动画的事件。<br>
+官方demo中监听代码片段<br>
+<img src="https://upload-images.jianshu.io/upload_images/19403677-ef5b1a70c3138d06.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img" loading="lazy"></li>
+</ul>
+<p>作者apng.vue源码</p>
+<pre><code>&lt;template lang=&quot;pug&quot;&gt;
+  .apng-div(ref=&quot;apng-div&quot; v-if=&quot;src&quot;)
+    canvas(ref=&quot;apng-canvas&quot;)
+&lt;/template&gt;
+
+&lt;script&gt;
+// require('./../libs/apng-canvas.min.js')
+import commonMixin from '@/mixins/commonMixin'
+import parseAPNG from 'apng-js'
+
+export default {
+  mixins: [commonMixin],
+  data() {
+    return {
+    }
+  },
+
+  props: {
+    width: {
+      type: String | Number,
+      required: true
+    },
+    height: {
+      type: String | Number,
+      required: true
+    },
+    src: {
+      type: String,
+      required: true
+    }
+  },
+
+  mounted() {
+    let canvas = this.$refs['apng-canvas'];
+    this.loaderURL(this.src).then(blob =&gt; {
+      console.log(blob)
+
+      this.blobToArrayBuffer(blob).then(arrayBuffer =&gt; {
+        let apng = parseAPNG(arrayBuffer);
+        canvas.width = apng.width;
+        canvas.height = apng.height;
+        let scale = this.width * this.remVal / apng.width
+        canvas.style = 'zoom: ' + scale;
+        apng.getPlayer(canvas.getContext('2d')).then(player =&gt; {
+          player.play();
+        })
+      })
+    })
+  },
+  methods: {
+    calc(val) {
+      return this.remVal * val;
+    },
+    blobToArrayBuffer(blob) {
+      return new Promise((resolve) =&gt; {
+        // Blob 转 ArrayBuffer
+        let reader = new FileReader();
+        reader.readAsArrayBuffer(blob);
+        reader.onload = function() {
+          console.log(reader.result)
+          resolve(reader.result)
+        }
+      })
+    },
+    loaderURL(url) {
+      function createXmlHttpRequest() {
+        if (window.ActiveXObject) {
+          return new ActiveXObject('Microsoft.XMLHTTP');
+        } else if (window.XMLHttpRequest) {
+          return new XMLHttpRequest();
+        }
+      }
+      return new Promise((resolve) =&gt; {
+        let xhr = createXmlHttpRequest();
+        xhr.open(&quot;get&quot;, url, true);
+        xhr.responseType = &quot;blob&quot;;
+        xhr.onload = function (res) {
+          if (this.status == 200) {
+            var blob = this.response;
+            resolve(blob);
+          }
+        }
+        xhr.send();
+      })
+    }
+  }
+}
+&lt;/script&gt;
+
+&lt;style lang=&quot;less&quot; scoped&gt;
+
+&lt;/style&gt;
+
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[pm2启动npm命令]]></title>
+        <id>https://hongchengfhc.github.io/post/pm2-qi-dong-npm-ming-ling/</id>
+        <link href="https://hongchengfhc.github.io/post/pm2-qi-dong-npm-ming-ling/">
+        </link>
+        <updated>2020-08-19T08:01:29.000Z</updated>
+        <content type="html"><![CDATA[<h5 id="使用方式">* 使用方式</h5>
+<pre><code>package.json中
+&quot;scripts&quot;: {
+    &quot;start&quot;: &quot;node ./bin/www&quot;,
+    &quot;dev&quot;: &quot;cross-env EXPRESS_NODE_ENV=dev EXPRESS_PORT=3000 nodemon ./bin/www --exec babel-node&quot;,
+    &quot;sit&quot;: &quot;cross-env EXPRESS_NODE_ENV=sit nodemon ./bin/www --exec babel-node&quot;,
+  },
+  
+  
+简单用法
+1. npm run dev
+2. pm2 start npm -- run dev
+以上使用是等效的
+  
+pm2 start npm --watch --name nickname -- run sit
+// 启动 npm run sit
+eg: pm2 start npm --watch --name h5toolsit -- run sit
+其中 --watch监听代码变化，--name 重命令任务名称，-- run后面跟脚本名字
+</code></pre>
+<h3 id="为什么需要使用pm2">为什么需要使用PM2</h3>
+<ul>
+<li>
+<p>因为node.js 是单进程，进程被杀死后整个服务就跪了，所以需要进程管理工具，但是pm2 远远不止这些。</p>
+</li>
+<li>
+<p>介绍<br>
+PM2 是一个带有负载均衡功能的 Node 应用的进程管理器。 当你要把你的独立代码利用全部的服务器上的所有 CPU，并保证进程永远都活着，0 秒的重载， PM2 是完美的。</p>
+</li>
+</ul>
+<h5 id="特性">特性</h5>
+<pre><code>1.内建负载均衡（使用Node cluster 集群模块）
+2.后台运行
+3.0秒停机重载(维护升级的时候不需要停机).
+4.具有Ubuntu和CentOS 的启动脚本
+5.停止不稳定的进程（避免无限循环）
+6.控制台检测
+7.提供 HTTP API
+8.远程控制和实时的接口API ( Nodejs 9.模块,允许和PM2进程管理器交互 )
+</code></pre>
+<h3 id="全局安装">全局安装</h3>
+<pre><code>npm install -g pm2
+</code></pre>
+<h5 id="查看详细状态信息">查看详细状态信息</h5>
+<pre><code>pm2 show (appname | id)
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://upload-images.jianshu.io/upload_images/19403677-5c286846ba1fba70.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="状态图片" loading="lazy"></figure>
+<hr>
+<h5 id="查看所有启动的进程列表">查看所有启动的进程列表</h5>
+<pre><code>pm2 list |  pm2 ls
+</code></pre>
+<h2 id=""><img src="https://upload-images.jianshu.io/upload_images/19403677-4ed4249d57ee0a02.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="列表图片" loading="lazy"></h2>
+<h5 id="监控每个node进程的cpu的内存使用情况">监控每个node进程的cpu的内存使用情况</h5>
+<pre><code>pm2 monit
+</code></pre>
+<h2 id="-2"><img src="https://upload-images.jianshu.io/upload_images/19403677-74842ef539c6e777.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="monit图片" loading="lazy"></h2>
+<h5 id="显示所有进程的日志信息">显示所有进程的日志信息</h5>
+<pre><code>pm2 logs
+</code></pre>
+<h2 id="-3"><img src="https://upload-images.jianshu.io/upload_images/19403677-4296e640ef585f02.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="日志图片" loading="lazy"></h2>
+<h4 id="常用命令">常用命令</h4>
+<pre><code>npm install pm2 -g     # 命令行安装 pm2 
+pm2 start app.js -i 4 #后台运行pm2，启动4个app.js 
+                              # 也可以把'max' 参数传递给 start
+                              # 正确的进程数目依赖于Cpu的核心数目
+pm2 start app.js --name my-api # 命名进程
+pm2 list               # 显示所有进程状态
+pm2 monit              # 监视所有进程
+pm2 logs               #  显示所有进程日志
+pm2 stop all           # 停止所有进程
+pm2 restart all        # 重启所有进程
+pm2 reload all         # 0秒停机重载进程 (用于 NETWORKED 进程)
+pm2 stop 0             # 停止指定的进程
+pm2 restart 0          # 重启指定的进程
+pm2 startup            # 产生 init 脚本 保持进程活着
+pm2 web                # 运行健壮的 computer API endpoint (http://localhost:9615)
+pm2 delete 0           # 杀死指定的进程
+pm2 delete all         # 杀死全部进程
+</code></pre>
+<p><a href="%5Bhttps://juejin.im/post/5be406705188256dbb5176f9%5D(https://juejin.im/post/5be406705188256dbb5176f9)">更多用法</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Mac显示隐藏文件]]></title>
+        <id>https://hongchengfhc.github.io/post/mac-xian-shi-yin-cang-wen-jian/</id>
+        <link href="https://hongchengfhc.github.io/post/mac-xian-shi-yin-cang-wen-jian/">
+        </link>
+        <updated>2020-08-19T08:00:49.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="显示隐藏文件">显示隐藏文件</h3>
+<pre><code>defaults write com.apple.finder AppleShowAllFiles -boolean true;killall Finder
+</code></pre>
+<h3 id="不显示隐藏文件">不显示隐藏文件</h3>
+<pre><code>defaults write com.apple.finder AppleShowAllFiles -boolean false;killall Finder
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[电脑上微信客户端多开]]></title>
+        <id>https://hongchengfhc.github.io/post/dian-nao-shang-wei-xin-ke-hu-duan-duo-kai/</id>
+        <link href="https://hongchengfhc.github.io/post/dian-nao-shang-wei-xin-ke-hu-duan-duo-kai/">
+        </link>
+        <updated>2020-08-19T08:00:13.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="mac上微信多开">Mac上微信多开</h3>
+<pre><code>nohup /Applications/WeChat.app/Contents/MacOS/WeChat &gt; /dev/null 2&gt;&amp;1 &amp;
+</code></pre>
+<h3 id="windows微信多开">Windows微信多开</h3>
+<blockquote>
+<ul>
+<li>找到wechat.exe的地址</li>
+<li>我这里为 C:\Program Files (x86)\Tencent\WeChat\WeChat.exe</li>
+</ul>
+</blockquote>
+<pre><code>TASKKILL /F /IM wechat.exe
+start &quot;&quot; &quot;C:\Program Files (x86)\Tencent\WeChat\WeChat.exe&quot;
+start &quot;&quot; &quot;C:\Program Files (x86)\Tencent\WeChat\WeChat.exe&quot;
+
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[使用nvm和nrm安装并管理node.js开发环境]]></title>
+        <id>https://hongchengfhc.github.io/post/shi-yong-nvm-he-nrm-an-zhuang-bing-guan-li-nodejs-kai-fa-huan-jing/</id>
+        <link href="https://hongchengfhc.github.io/post/shi-yong-nvm-he-nrm-an-zhuang-bing-guan-li-nodejs-kai-fa-huan-jing/">
+        </link>
+        <updated>2020-08-19T07:58:12.000Z</updated>
+        <content type="html"><![CDATA[<p>在进行前端开发的时候，会安装多个版本的node.js，另外还会用到第三方源的管理工具npm,所以这里推荐两个工具来分别管理它们:  <a href="%5Bhttps://github.com/nvm-sh/nvm%5D(https://github.com/nvm-sh/nvm)">nvm</a> 和 <a href="%5Bhttps://github.com/Pana/nrm%5D(https://github.com/Pana/nrm)">nrm</a></p>
+<h3 id="卸载已安装到全局的-nodenpm">卸载已安装到全局的 node/npm</h3>
+<p>如果之前是在官网下载的 node 安装包，运行后会自动安装在全局目录，其中</p>
+<p>node 命令在 /usr/local/bin/node ，npm 命令在全局 node_modules 目录中，具体路径为 /usr/local/lib/node_modules/npm</p>
+<p>安装 nvm 之后最好先删除下已安装的 node 和全局 node 模块：</p>
+<pre><code>npm ls -g --depth=0 #查看已经安装在全局的模块，以便删除这些全局模块后再按照不同的 node 版本重新进行全局安装
+
+sudo rm -rf /usr/local/lib/node_modules #删除全局 node_modules 目录
+sudo rm /usr/local/bin/node #删除 node
+cd  /usr/local/bin &amp;&amp; ls -l | grep &quot;../lib/node_modules/&quot; | awk '{print $9}'| xargs rm #删除全局 node 模块注册的软链
+</code></pre>
+<h3 id="安装-nvm">安装 nvm</h3>
+<h4 id="mac-或-linux-系统">Mac 或 Linux 系统</h4>
+<p>可以使用下面的脚本安装:</p>
+<pre><code>curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+</code></pre>
+<p>执行完成之后需要关闭当前的命令行，然后重新打开。如果出现<code>Unknown option: -c</code>错误，需要先<a href="https://stackoverflow.com/a/27674776/1805493">升级git到1.7.10以上版本</a>。如果出现 <code>nvm: command not found</code> 错误的话，可以首先执行 <code>touch ~/.bash_profile</code> 命令创建bash_profile文件，然后执行 <code>source ~/.bash_profile</code>命令或关闭terminal窗口并重新打开一下即可。<br>
+Mac下推荐使用 <a href="%5Bhttps://github.com/robbyrussell/oh-my-zsh%5D(https://github.com/robbyrussell/oh-my-zsh)">oh-my-zsh</a> 代替默认的base shell</p>
+<h3 id="安装切换各版本-nodenpm">安装切换各版本 node/npm</h3>
+<pre><code>nvm install stable #安装最新稳定版 node，现在是 5.0.0
+nvm install 4.2.2 #安装 4.2.2 版本
+nvm install 0.12.7 #安装 0.12.7 版本
+
+# 特别说明：以下模块安装仅供演示说明，并非必须安装模块
+nvm use 0 #切换至 0.12.7 版本
+npm install -g mz-fis #安装 mz-fis 模块至全局目录，安装完成的路径是 /Users/&lt;你的用户名&gt;/.nvm/versions/node/v0.12.7/lib/mz-fis
+nvm use 4 #切换至 4.2.2 版本
+npm install -g react-native-cli #安装 react-native-cli 模块至全局目录，安装完成的路径是 /Users/&lt;你的用户名&gt;/.nvm/versions/node/v4.2.2/lib/react-native-cli
+
+nvm alias default 0.12.7 #设置默认 node 版本为 0.12.7
+</code></pre>
+<h3 id="使用nvmrc-文件配置项目所使用的-node-版本">使用.nvmrc 文件配置项目所使用的 node 版本</h3>
+<p>如果你的默认 node 版本（通过 nvm alias 命令设置的）与项目所需的版本不同，则可在项目根目录或其任意父级目录中创建 .nvmrc 文件，在文件中指定使用的 node 版本号，例如：</p>
+<pre><code>cd &lt;项目根目录&gt;  #进入项目根目录
+echo 4 &gt; .nvmrc #添加 .nvmrc 文件
+nvm use #无需指定版本号，会自动使用 .nvmrc 文件中配置的版本
+node -v #查看 node 是否切换为对应版本
+</code></pre>
+<h3 id="使用-nrm-管理不同的npm源">使用 <a href="https://github.com/Pana/nrm">nrm</a> 管理不同的npm源</h3>
+<p>众所周知的原因，国内使用原始的npm源速度非常慢，但使用别名也会出现很多不方便的地方，nrm由此产生，可以随意切换不同的npm源。</p>
+<p>安装非常方便，使用 npm install nrm -g 进行安装，安装成功之后可以使用 nrm ls 查看源列表：<br>
+<img src="https://upload-images.jianshu.io/upload_images/19403677-a6a0310f7e92e566.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="nrmls-icon.png" loading="lazy"></p>
+<p>然后通过 nrm use cnpm 将npm源切换为cnpm，再使用 nrm ls 命令查看，可以发现源已经切换为 cnpm了：<br>
+<img src="https://upload-images.jianshu.io/upload_images/19403677-4b0f5c70ca31e505.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="usecnpm-icon.png" loading="lazy"><br>
+这样设置之后，以后使用npm命令进行安装或更新的时候，默认就使用cnpm源了，非常方便。</p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[安装 iTerm2 && Oh My Zsh]]></title>
         <id>https://hongchengfhc.github.io/post/an-zhuang-iterm2-and-oh-my-zsh/</id>
         <link href="https://hongchengfhc.github.io/post/an-zhuang-iterm2-and-oh-my-zsh/">
         </link>
         <updated>2020-08-19T07:47:36.000Z</updated>
-        <summary type="html"><![CDATA[<p>安装 iTerm2 &amp;&amp; Oh My Zsh</p>
+        <summary type="html"><![CDATA[<h5 id="安装-iterm2-oh-my-zsh">安装 iTerm2 &amp;&amp; Oh My Zsh</h5>
 <ol>
 <li>
 <p>下载iTerm2<br>
@@ -108,7 +491,7 @@ zsh-syntax-highlighting<br>
 <p><a href="https://segmentfault.com/q/1010000002617777">iTerm2如何分屏之后背景图不变？</a></p>
 <figure data-type="image" tabindex="1"><img src="https://upload-images.jianshu.io/upload_images/19403677-f135459ee6dfd6c1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img" loading="lazy"></figure>
 ]]></summary>
-        <content type="html"><![CDATA[<p>安装 iTerm2 &amp;&amp; Oh My Zsh</p>
+        <content type="html"><![CDATA[<h5 id="安装-iterm2-oh-my-zsh">安装 iTerm2 &amp;&amp; Oh My Zsh</h5>
 <ol>
 <li>
 <p>下载iTerm2<br>
