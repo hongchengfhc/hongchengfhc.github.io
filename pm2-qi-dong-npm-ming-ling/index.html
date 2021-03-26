@@ -1,102 +1,98 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" >
+
 <title>pm2启动npm命令 | Gridea</title>
-<link rel="shortcut icon" href="https://hongchengfhc.github.io//favicon.ico?v=1616737919788">
-<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<meta name="description" content="温故而知新">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="shortcut icon" href="https://hongchengfhc.github.io//favicon.ico?v=1616738903506">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://unpkg.com/papercss@1.6.1/dist/paper.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://hongchengfhc.github.io//styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="pm2启动npm命令 | Gridea - Atom Feed" href="https://hongchengfhc.github.io//atom.xml">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
 
-    <meta name="description" content="* 使用方式
-package.json中
-&quot;scripts&quot;: {
-    &quot;start&quot;: &quot;node ./bin/www&quot;,
-    &quot;dev&quot;: &quo..." />
-    <meta name="keywords" content="nodejs" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
-    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
   </head>
   <body>
-    <div class="main">
-      <div class="main-content">
-        <div class="site-header">
-  <a href="https://hongchengfhc.github.io/">
-  <img class="avatar" src="https://hongchengfhc.github.io//images/avatar.png?v=1616737919788" alt="">
-  </a>
-  <h1 class="site-title">
-    Gridea
-  </h1>
-  <p class="site-description">
-    温故而知新
-  </p>
-  <div class="menu-container">
-    
-      
-        <a href="/" class="menu">
-          首页
-        </a>
-      
-    
-      
-        <a href="/archives" class="menu">
-          归档
-        </a>
-      
-    
-      
-        <a href="/tags" class="menu">
-          标签
-        </a>
-      
-    
-      
-        <a href="/post/about" class="menu">
-          关于
-        </a>
-      
-    
+  
+    <nav class="navbar border fixed split-nav">
+  <div class="nav-brand">
+    <h3><a href="https://hongchengfhc.github.io/">Gridea</a></h3>
   </div>
-  <div class="social-container">
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
+  <div class="collapsible">
+    <input id="collapsible1" type="checkbox" name="collapsible1">
+    <button>
+      <label for="collapsible1">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+      </label>
+    </button>
+    <div class="collapsible-body">
+      <ul class="inline">
+        
+          <li>
+            
+              <a href="/" class="menu">
+                首页
+              </a>
+            
+          </li>
+        
+          <li>
+            
+              <a href="/archives" class="menu">
+                归档
+              </a>
+            
+          </li>
+        
+          <li>
+            
+              <a href="/tags" class="menu">
+                标签
+              </a>
+            
+          </li>
+        
+          <li>
+            
+              <a href="/post/about" class="menu">
+                关于
+              </a>
+            
+          </li>
+        
+      </ul>
+    </div>
   </div>
-</div>
+</nav>
 
-        <div class="post-detail">
-          <article class="post">
-            <h2 class="post-title">
-              pm2启动npm命令
-            </h2>
-            <div class="post-info">
-              <span>
-                2020-08-19
-              </span>
-              <span>
-                3 min read
-              </span>
+    <div id="top" class="row site">
+      <div class="sm-12 md-8 col">
+        <div class="paper">
+          <article class="article">
+            <h1>pm2启动npm命令</h1>
+            <p class="article-meta">
+              2020-08-19
               
-                <a href="https://hongchengfhc.github.io/GdEax51KqE/" class="post-tag">
-                  # nodejs
+                <a href="https://hongchengfhc.github.io/GdEax51KqE/" class="badge secondary">
+                  nodejs
                 </a>
               
-            </div>
+            </p>
             
-            <div class="post-content-wrapper">
-              <div class="post-content">
-                <h5 id="使用方式">* 使用方式</h5>
+            <div class="post-content">
+              <h5 id="使用方式">* 使用方式</h5>
 <pre><code>package.json中
 &quot;scripts&quot;: {
     &quot;start&quot;: &quot;node ./bin/www&quot;,
@@ -176,122 +172,164 @@ pm2 delete all         # 杀死全部进程
 </code></pre>
 <p><a href="%5Bhttps://juejin.im/post/5be406705188256dbb5176f9%5D(https://juejin.im/post/5be406705188256dbb5176f9)">更多用法</a></p>
 
-              </div>
-              <div class="toc-container">
-                <ul class="markdownIt-TOC">
-<li>
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F">* 使用方式</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E4%BD%BF%E7%94%A8pm2">为什么需要使用PM2</a><br>
-*
-<ul>
-<li><a href="#%E7%89%B9%E6%80%A7">特性</a></li>
-</ul>
-</li>
-<li><a href="#%E5%85%A8%E5%B1%80%E5%AE%89%E8%A3%85">全局安装</a><br>
-*
-<ul>
-<li><a href="#%E6%9F%A5%E7%9C%8B%E8%AF%A6%E7%BB%86%E7%8A%B6%E6%80%81%E4%BF%A1%E6%81%AF">查看详细状态信息</a></li>
-<li><a href="#%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E5%90%AF%E5%8A%A8%E7%9A%84%E8%BF%9B%E7%A8%8B%E5%88%97%E8%A1%A8">查看所有启动的进程列表</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#">!列表图片</a><br>
-*<br>
-*<br>
-* <a href="#%E7%9B%91%E6%8E%A7%E6%AF%8F%E4%B8%AAnode%E8%BF%9B%E7%A8%8B%E7%9A%84cpu%E7%9A%84%E5%86%85%E5%AD%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5">监控每个node进程的cpu的内存使用情况</a></li>
-<li><a href="#-2">!monit图片</a><br>
-*<br>
-*<br>
-* <a href="#%E6%98%BE%E7%A4%BA%E6%89%80%E6%9C%89%E8%BF%9B%E7%A8%8B%E7%9A%84%E6%97%A5%E5%BF%97%E4%BF%A1%E6%81%AF">显示所有进程的日志信息</a></li>
-<li><a href="#-3">!日志图片</a><br>
-*
-<ul>
-<li><a href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4">常用命令</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-              </div>
             </div>
           </article>
         </div>
-
+        <div class="paper" data-aos="fade-in">
+          
+            <div class="next-post">
+              <div class="next">
+                下一篇
+              </div>
+              <a href="https://hongchengfhc.github.io/mac-xian-shi-yin-cang-wen-jian/">
+                <h3 class="post-title">
+                  Mac显示隐藏文件
+                </h3>
+              </a>
+            </div>
+          
+        </div>
         
-          <div class="next-post">
-            <div class="next">下一篇</div>
-            <a href="https://hongchengfhc.github.io/mac-xian-shi-yin-cang-wen-jian/">
-              <h3 class="post-title">
-                Mac显示隐藏文件
-              </h3>
-            </a>
-          </div>
-        
+      </div>
 
+      <div class="sm-12 md-4 col sidebar">
+  <div class="paper info-container">
+    <img src="https://hongchengfhc.github.io//images/avatar.png?v=1616738903506" class="no-responsive avatar">
+    <div class="text-muted">温故而知新</div>
+    <div class="social-container">
+      
         
-
-        <div class="site-footer">
-  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
-  <a class="rss" href="https://hongchengfhc.github.io//atom.xml" target="_blank">
-    <i class="ri-rss-line"></i> RSS
-  </a>
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+  </div>
+  <div class="paper">
+    <div class="sidebar-title">
+      最新文章
+    </div>
+    <div class="row">
+      <ul>
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-02-03-03-javascript-xing-neng-you-hua-2/">进阶1-02-03-03 JavaScript性能优化2</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-02-03-02-javascript-xing-neng-jian-ce-ji-you-hua/">进阶1-02-03-02 JavaScript性能检测及优化</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-02-02ts-jie-shao-ji-js-lei-xing-jian-cha/">进阶1-02-02TS介绍及JS类型检查</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-02-01-esmascript-xin-te-xing/">进阶1-02-01 ESMAScript 新特性</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-01-03-shou-xie-promise/">进阶1-01-03手写Promise</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-01-02-yi-bu-bian-cheng/">进阶1-01-02异步编程</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-01-01-han-shu-shi-bian-cheng/">进阶1-01-01 函数式编程</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/ji-yi-ci-shi-yong-apng-dong-hua-liang-chong-fang-shi/">记一次使用apng动画两种方式</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/pm2-qi-dong-npm-ming-ling/">pm2启动npm命令</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/mac-xian-shi-yin-cang-wen-jian/">Mac显示隐藏文件</a>
+            </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </ul>
+    </div>
+  </div>
+  <div class="paper">
+    <div class="sidebar-title">
+      标签列表
+    </div>
+    <div class="row">
+      
+        <a href="https://hongchengfhc.github.io/06qfGqKjC/" class="badge success">
+          DevOps
+        </a>
+      
+        <a href="https://hongchengfhc.github.io/GdEax51KqE/" class="badge ">
+          nodejs
+        </a>
+      
+        <a href="https://hongchengfhc.github.io/pHijz0VSW/" class="badge warning">
+          黑科技
+        </a>
+      
+    </div>
+  </div>
+  <div class="paper">
+    Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://hongchengfhc.github.io//atom.xml" target="_blank">RSS</a>
+  </div>
 </div>
 
-      </div>
+
     </div>
 
-    <script>
-      hljs.initHighlightingOnLoad()
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 
-      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+<script type="application/javascript">
 
-      // This should probably be throttled.
-      // Especially because it triggers during smooth scrolling.
-      // https://lodash.com/docs/4.17.10#throttle
-      // You could do like...
-      // window.addEventListener("scroll", () => {
-      //    _.throttle(doThatStuff, 100);
-      // });
-      // Only not doing it here to keep this Pen dependency-free.
+AOS.init();
 
-      window.addEventListener("scroll", event => {
-        let fromTop = window.scrollY;
+hljs.initHighlightingOnLoad()
 
-        mainNavLinks.forEach((link, index) => {
-          let section = document.getElementById(decodeURI(link.hash).substring(1));
-          let nextSection = null
-          if (mainNavLinks[index + 1]) {
-            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
-          }
-          if (section.offsetTop <= fromTop) {
-            if (nextSection) {
-              if (nextSection.offsetTop > fromTop) {
-                link.classList.add("current");
-              } else {
-                link.classList.remove("current");    
-              }
-            } else {
-              link.classList.add("current");
-            }
-          } else {
-            link.classList.remove("current");
-          }
-        });
-      });
+</script>
 
-    </script>
+
+
+
   </body>
 </html>

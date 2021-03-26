@@ -1,104 +1,94 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" >
+
 <title>进阶1-02-02TS介绍及JS类型检查 | Gridea</title>
-<link rel="shortcut icon" href="https://hongchengfhc.github.io//favicon.ico?v=1616737919788">
-<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<meta name="description" content="温故而知新">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="shortcut icon" href="https://hongchengfhc.github.io//favicon.ico?v=1616738903506">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://unpkg.com/papercss@1.6.1/dist/paper.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://hongchengfhc.github.io//styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="进阶1-02-02TS介绍及JS类型检查 | Gridea - Atom Feed" href="https://hongchengfhc.github.io//atom.xml">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
 
-    <meta name="description" content="
-TypeScript 大大提高代码的可靠程度
-JavaScript 自有类型系统的问题
 
-介绍TypeScript前先介绍一下类型检查
-介绍模块
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
 
-强类型与弱类型
-静态类型与动态类型
-JavaScript 自有类型系统的问题
-Flow静态..." />
-    <meta name="keywords" content="" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
-    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
   </head>
   <body>
-    <div class="main">
-      <div class="main-content">
-        <div class="site-header">
-  <a href="https://hongchengfhc.github.io/">
-  <img class="avatar" src="https://hongchengfhc.github.io//images/avatar.png?v=1616737919788" alt="">
-  </a>
-  <h1 class="site-title">
-    Gridea
-  </h1>
-  <p class="site-description">
-    温故而知新
-  </p>
-  <div class="menu-container">
-    
-      
-        <a href="/" class="menu">
-          首页
-        </a>
-      
-    
-      
-        <a href="/archives" class="menu">
-          归档
-        </a>
-      
-    
-      
-        <a href="/tags" class="menu">
-          标签
-        </a>
-      
-    
-      
-        <a href="/post/about" class="menu">
-          关于
-        </a>
-      
-    
+  
+    <nav class="navbar border fixed split-nav">
+  <div class="nav-brand">
+    <h3><a href="https://hongchengfhc.github.io/">Gridea</a></h3>
   </div>
-  <div class="social-container">
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  </div>
-</div>
-
-        <div class="post-detail">
-          <article class="post">
-            <h2 class="post-title">
-              进阶1-02-02TS介绍及JS类型检查
-            </h2>
-            <div class="post-info">
-              <span>
-                2021-03-26
-              </span>
-              <span>
-                13 min read
-              </span>
-              
-            </div>
+  <div class="collapsible">
+    <input id="collapsible1" type="checkbox" name="collapsible1">
+    <button>
+      <label for="collapsible1">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+      </label>
+    </button>
+    <div class="collapsible-body">
+      <ul class="inline">
+        
+          <li>
             
-            <div class="post-content-wrapper">
-              <div class="post-content">
-                <ol>
+              <a href="/" class="menu">
+                首页
+              </a>
+            
+          </li>
+        
+          <li>
+            
+              <a href="/archives" class="menu">
+                归档
+              </a>
+            
+          </li>
+        
+          <li>
+            
+              <a href="/tags" class="menu">
+                标签
+              </a>
+            
+          </li>
+        
+          <li>
+            
+              <a href="/post/about" class="menu">
+                关于
+              </a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div id="top" class="row site">
+      <div class="sm-12 md-8 col">
+        <div class="paper">
+          <article class="article">
+            <h1>进阶1-02-02TS介绍及JS类型检查</h1>
+            <p class="article-meta">
+              2021-03-26
+              
+            </p>
+            
+            <div class="post-content">
+              <ol>
 <li><code>TypeScript</code> 大大提高代码的可靠程度</li>
 <li><code>JavaScript</code> 自有类型系统的问题</li>
 </ol>
@@ -753,172 +743,164 @@ const res = camelCase('hello typed') // 在这里函数没有提示，需要声�
 </code></pre>
 <p><strong>引用第三方模块，如果模块中不包含类型声明文件，就需要自己声明</strong></p>
 
-              </div>
-              <div class="toc-container">
-                <ul class="markdownIt-TOC">
-<li><a href="#%E4%BB%8B%E7%BB%8Dtypescript%E5%89%8D%E5%85%88%E4%BB%8B%E7%BB%8D%E4%B8%80%E4%B8%8B%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%9F%A5">介绍TypeScript前先介绍一下类型检查</a><br>
-*<br>
-*<br>
-* <a href="#%E4%BB%8B%E7%BB%8D%E6%A8%A1%E5%9D%97">介绍模块</a>
-<ul>
-<li><a href="#1-%E7%B1%BB%E5%9E%8B%E4%BB%8B%E7%BB%8D">1. 类型介绍</a>
-<ul>
-<li><a href="#1-%E5%BC%BA%E7%B1%BB%E5%9E%8B-vs-%E5%BC%B1%E7%B1%BB%E5%9E%8B">1. 强类型 vs 弱类型</a><br>
-*
-<ul>
-<li><a href="#%E4%B8%AA%E4%BA%BA%E7%90%86%E8%A7%A3">个人理解:</a></li>
-</ul>
-</li>
-<li><a href="#2-%E7%B1%BB%E5%9E%8B%E7%B3%BB%E7%BB%9F">2. 类型系统</a>
-<ul>
-<li><a href="#%E7%B1%BB%E5%9E%8B%E5%AE%89%E5%85%A8%E5%88%86%E4%B8%BA-%E5%BC%BA%E7%B1%BB%E5%9E%8B-%E5%92%8C-%E5%BC%B1%E7%B1%BB%E5%9E%8B">类型安全分为 <code>强类型</code> 和 <code>弱类型</code></a></li>
-<li><a href="#%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%9F%A5%E5%88%86%E4%B8%BA-%E9%9D%99%E6%80%81%E7%B1%BB%E5%9E%8B-%E5%92%8C-%E5%8A%A8%E6%80%81%E7%B1%BB%E5%9E%8B">类型检查分为 <code>静态类型</code> 和 <code>动态类型</code></a></li>
-<li><a href="#21-javascript-%E7%B1%BB%E5%9E%8B%E7%B3%BB%E7%BB%9F%E7%89%B9%E5%BE%81">2.1 JavaScript 类型系统特征</a>
-<ul>
-<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88javascript%E4%B8%8D%E6%98%AF%E5%BC%BA%E7%B1%BB%E5%9E%8B-%E9%9D%99%E6%80%81%E7%B1%BB%E5%9E%8B">? 为什么JavaScript不是强类型 / 静态类型</a></li>
-</ul>
-</li>
-<li><a href="#%E5%BC%B1%E7%B1%BB%E5%9E%8B%E7%9A%84%E9%97%AE%E9%A2%98">弱类型的问题</a></li>
-<li><a href="#%E5%BC%BA%E7%B1%BB%E5%9E%8B%E7%9A%84%E4%BC%98%E5%8A%BF">强类型的优势</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#2-flow-js%E7%9A%84%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%9F%A5%E5%B7%A5%E5%85%B7">2. Flow js的类型检查工具</a><br>
-*
-<ul>
-<li><a href="#flow">Flow</a></li>
-<li><a href="#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B">快速上手</a></li>
-<li><a href="#%E7%BC%96%E8%AF%91">编译</a>
-<ul>
-<li><a href="#%E5%B0%9D%E8%AF%95%E4%BD%BF%E7%94%A8babel">尝试使用babel</a></li>
-</ul>
-</li>
-<li><a href="#%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7%E6%8F%92%E4%BB%B6-flow-lanugage-support">开发工具插件 Flow Lanugage Support</a></li>
-<li><a href="#%E7%B1%BB%E5%9E%8B%E6%8E%A8%E6%96%AD-type-inference">类型推断 Type Inference</a></li>
-<li><a href="#%E7%B1%BB%E5%9E%8B%E6%B3%A8%E8%A7%A3-type-annotations">类型注解 Type Annotations</a></li>
-<li><a href="#%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B-primitive-types">原始类型 Primitive Types</a></li>
-<li><a href="#%E6%95%B0%E7%BB%84%E7%B1%BB%E5%9E%8B-array-types">数组类型 Array Types</a></li>
-<li><a href="#%E5%AF%B9%E8%B1%A1%E7%B1%BB%E5%9E%8B-object-types">对象类型 Object Types</a></li>
-<li><a href="#%E5%87%BD%E6%95%B0%E7%B1%BB%E5%9E%8B-function-types">函数类型 Function Types</a></li>
-<li><a href="#%E7%89%B9%E6%AE%8A%E7%B1%BB%E5%9E%8B">特殊类型</a></li>
-<li><a href="#mixed-any-%E4%BB%BB%E6%84%8F%E7%B1%BB%E5%9E%8B">Mixed &amp; Any 任意类型</a></li>
-<li><a href="#%E7%B1%BB%E5%9E%8B%E5%B0%8F%E7%BB%93">类型小结</a>
-<ul>
-<li><a href="#%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83api-%E5%86%85%E7%BD%AE%E5%AF%B9%E8%B1%A1">运行环境API -&gt; 内置对象</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#3-typescript">3. TypeScript</a>
-<ul>
-<li><a href="#typescript-javascript%E7%9A%84%E8%B6%85%E9%9B%86-superset">TypeScript JavaScript的超集 (superset)</a>
-<ul>
-<li><a href="#%E7%BC%BA%E7%82%B9">缺点</a></li>
-</ul>
-</li>
-<li><a href="#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B-2">快速上手</a>
-<ul>
-<li><a href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">配置文件</a></li>
-<li><a href="#%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B-primitive-types-2">原始类型 Primitive Types</a></li>
-<li><a href="#%E6%A0%87%E5%87%86%E5%BA%93%E5%A3%B0%E6%98%8E">标准库声明</a></li>
-<li><a href="#%E4%B8%AD%E6%96%87%E9%94%99%E8%AF%AF%E4%BF%A1%E6%81%AF">中文错误信息</a></li>
-<li><a href="#%E4%BD%9C%E7%94%A8%E5%9F%9F%E9%97%AE%E9%A2%98">作用域问题</a></li>
-<li><a href="#object-%E7%B1%BB%E5%9E%8B-object-types">Object 类型 Object Types</a></li>
-<li><a href="#%E6%95%B0%E7%BB%84%E7%B1%BB%E5%9E%8B-array-types-2">数组类型 Array Types</a></li>
-<li><a href="#%E5%85%83%E7%BB%84%E7%B1%BB%E5%9E%8B-tuple-types">元组类型 Tuple Types</a></li>
-<li><a href="#%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B-enum-types">枚举类型 Enum Types</a></li>
-<li><a href="#%E5%87%BD%E6%95%B0%E7%B1%BB%E5%9E%8B-function-types-2">函数类型 Function Types</a></li>
-<li><a href="#%E4%BB%BB%E6%84%8F%E7%B1%BB%E5%9E%8B-any-types">任意类型 Any Types</a></li>
-<li><a href="#%E9%9A%90%E5%BC%8F%E7%B1%BB%E5%9E%8B%E6%8E%A8%E6%96%AD-type-inference">隐式类型推断 Type Inference</a></li>
-<li><a href="#%E7%B1%BB%E5%9E%8B%E6%96%AD%E8%A8%80-type-assertions">类型断言 Type assertions</a></li>
-<li><a href="#%E6%8E%A5%E5%8F%A3-interfaces">接口 Interfaces</a></li>
-<li><a href="#%E7%B1%BB">类</a>
-<ul>
-<li><a href="#1-%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8">1. 基本使用</a></li>
-<li><a href="#2-%E8%AE%BF%E9%97%AE%E4%BF%AE%E9%A5%B0%E7%AC%A6">2. 访问修饰符</a></li>
-<li><a href="#3-%E5%8F%AA%E8%AF%BB%E5%B1%9E%E6%80%A7">3. 只读属性</a></li>
-<li><a href="#4-%E7%B1%BB%E4%B8%8E%E6%8E%A5%E5%8F%A3">4. 类与接口</a></li>
-<li><a href="#5-%E6%8A%BD%E8%B1%A1%E7%B1%BB">5. 抽象类</a></li>
-<li><a href="#6-%E6%B3%9B%E5%9E%8B-generics">6. 泛型 Generics</a></li>
-<li><a href="#7-%E7%B1%BB%E5%9E%8B%E5%A3%B0%E6%98%8E-type-declaration">7. 类型声明 Type Declaration</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-              </div>
             </div>
           </article>
         </div>
-
+        <div class="paper" data-aos="fade-in">
+          
+            <div class="next-post">
+              <div class="next">
+                下一篇
+              </div>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-02-01-esmascript-xin-te-xing/">
+                <h3 class="post-title">
+                  进阶1-02-01 ESMAScript 新特性
+                </h3>
+              </a>
+            </div>
+          
+        </div>
         
-          <div class="next-post">
-            <div class="next">下一篇</div>
-            <a href="https://hongchengfhc.github.io/jin-jie-1-02-01-esmascript-xin-te-xing/">
-              <h3 class="post-title">
-                进阶1-02-01 ESMAScript 新特性
-              </h3>
-            </a>
-          </div>
-        
+      </div>
 
+      <div class="sm-12 md-4 col sidebar">
+  <div class="paper info-container">
+    <img src="https://hongchengfhc.github.io//images/avatar.png?v=1616738903506" class="no-responsive avatar">
+    <div class="text-muted">温故而知新</div>
+    <div class="social-container">
+      
         
-
-        <div class="site-footer">
-  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
-  <a class="rss" href="https://hongchengfhc.github.io//atom.xml" target="_blank">
-    <i class="ri-rss-line"></i> RSS
-  </a>
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+  </div>
+  <div class="paper">
+    <div class="sidebar-title">
+      最新文章
+    </div>
+    <div class="row">
+      <ul>
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-02-03-03-javascript-xing-neng-you-hua-2/">进阶1-02-03-03 JavaScript性能优化2</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-02-03-02-javascript-xing-neng-jian-ce-ji-you-hua/">进阶1-02-03-02 JavaScript性能检测及优化</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-02-02ts-jie-shao-ji-js-lei-xing-jian-cha/">进阶1-02-02TS介绍及JS类型检查</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-02-01-esmascript-xin-te-xing/">进阶1-02-01 ESMAScript 新特性</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-01-03-shou-xie-promise/">进阶1-01-03手写Promise</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-01-02-yi-bu-bian-cheng/">进阶1-01-02异步编程</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-01-01-han-shu-shi-bian-cheng/">进阶1-01-01 函数式编程</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/ji-yi-ci-shi-yong-apng-dong-hua-liang-chong-fang-shi/">记一次使用apng动画两种方式</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/pm2-qi-dong-npm-ming-ling/">pm2启动npm命令</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/mac-xian-shi-yin-cang-wen-jian/">Mac显示隐藏文件</a>
+            </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </ul>
+    </div>
+  </div>
+  <div class="paper">
+    <div class="sidebar-title">
+      标签列表
+    </div>
+    <div class="row">
+      
+        <a href="https://hongchengfhc.github.io/06qfGqKjC/" class="badge secondary">
+          DevOps
+        </a>
+      
+        <a href="https://hongchengfhc.github.io/GdEax51KqE/" class="badge warning">
+          nodejs
+        </a>
+      
+        <a href="https://hongchengfhc.github.io/pHijz0VSW/" class="badge secondary">
+          黑科技
+        </a>
+      
+    </div>
+  </div>
+  <div class="paper">
+    Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://hongchengfhc.github.io//atom.xml" target="_blank">RSS</a>
+  </div>
 </div>
 
-      </div>
+
     </div>
 
-    <script>
-      hljs.initHighlightingOnLoad()
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 
-      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+<script type="application/javascript">
 
-      // This should probably be throttled.
-      // Especially because it triggers during smooth scrolling.
-      // https://lodash.com/docs/4.17.10#throttle
-      // You could do like...
-      // window.addEventListener("scroll", () => {
-      //    _.throttle(doThatStuff, 100);
-      // });
-      // Only not doing it here to keep this Pen dependency-free.
+AOS.init();
 
-      window.addEventListener("scroll", event => {
-        let fromTop = window.scrollY;
+hljs.initHighlightingOnLoad()
 
-        mainNavLinks.forEach((link, index) => {
-          let section = document.getElementById(decodeURI(link.hash).substring(1));
-          let nextSection = null
-          if (mainNavLinks[index + 1]) {
-            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
-          }
-          if (section.offsetTop <= fromTop) {
-            if (nextSection) {
-              if (nextSection.offsetTop > fromTop) {
-                link.classList.add("current");
-              } else {
-                link.classList.remove("current");    
-              }
-            } else {
-              link.classList.add("current");
-            }
-          } else {
-            link.classList.remove("current");
-          }
-        });
-      });
+</script>
 
-    </script>
+
+
+
   </body>
 </html>

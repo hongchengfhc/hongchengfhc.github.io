@@ -1,102 +1,94 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" >
+
 <title>进阶1-01-01 函数式编程 | Gridea</title>
-<link rel="shortcut icon" href="https://hongchengfhc.github.io//favicon.ico?v=1616737919788">
-<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<meta name="description" content="温故而知新">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="shortcut icon" href="https://hongchengfhc.github.io//favicon.ico?v=1616738903506">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://unpkg.com/papercss@1.6.1/dist/paper.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://hongchengfhc.github.io//styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="进阶1-01-01 函数式编程 | Gridea - Atom Feed" href="https://hongchengfhc.github.io//atom.xml">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
 
-    <meta name="description" content="函数式编程
- - 函数式编程不会保留计算中间的结果，所以变量是不可变的（无状态的）
- - 我们可以把一个函数的执行结果交给另一个函数去处理
- - 函数是一等公民
- - 高阶函数-函数作为参数
- - 高阶函数-函数作为返回值
-   
 
-纯属函..." />
-    <meta name="keywords" content="" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
-    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
   </head>
   <body>
-    <div class="main">
-      <div class="main-content">
-        <div class="site-header">
-  <a href="https://hongchengfhc.github.io/">
-  <img class="avatar" src="https://hongchengfhc.github.io//images/avatar.png?v=1616737919788" alt="">
-  </a>
-  <h1 class="site-title">
-    Gridea
-  </h1>
-  <p class="site-description">
-    温故而知新
-  </p>
-  <div class="menu-container">
-    
-      
-        <a href="/" class="menu">
-          首页
-        </a>
-      
-    
-      
-        <a href="/archives" class="menu">
-          归档
-        </a>
-      
-    
-      
-        <a href="/tags" class="menu">
-          标签
-        </a>
-      
-    
-      
-        <a href="/post/about" class="menu">
-          关于
-        </a>
-      
-    
+  
+    <nav class="navbar border fixed split-nav">
+  <div class="nav-brand">
+    <h3><a href="https://hongchengfhc.github.io/">Gridea</a></h3>
   </div>
-  <div class="social-container">
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  </div>
-</div>
-
-        <div class="post-detail">
-          <article class="post">
-            <h2 class="post-title">
-              进阶1-01-01 函数式编程
-            </h2>
-            <div class="post-info">
-              <span>
-                2021-03-26
-              </span>
-              <span>
-                14 min read
-              </span>
-              
-            </div>
+  <div class="collapsible">
+    <input id="collapsible1" type="checkbox" name="collapsible1">
+    <button>
+      <label for="collapsible1">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+      </label>
+    </button>
+    <div class="collapsible-body">
+      <ul class="inline">
+        
+          <li>
             
-            <div class="post-content-wrapper">
-              <div class="post-content">
-                <h3 id="函数式编程">函数式编程</h3>
+              <a href="/" class="menu">
+                首页
+              </a>
+            
+          </li>
+        
+          <li>
+            
+              <a href="/archives" class="menu">
+                归档
+              </a>
+            
+          </li>
+        
+          <li>
+            
+              <a href="/tags" class="menu">
+                标签
+              </a>
+            
+          </li>
+        
+          <li>
+            
+              <a href="/post/about" class="menu">
+                关于
+              </a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div id="top" class="row site">
+      <div class="sm-12 md-8 col">
+        <div class="paper">
+          <article class="article">
+            <h1>进阶1-01-01 函数式编程</h1>
+            <p class="article-meta">
+              2021-03-26
+              
+            </p>
+            
+            <div class="post-content">
+              <h3 id="函数式编程">函数式编程</h3>
 <pre><code> - 函数式编程不会保留计算中间的结果，所以变量是不可变的（无状态的）
  - 我们可以把一个函数的执行结果交给另一个函数去处理
  - 函数是一等公民
@@ -742,129 +734,164 @@ console.log(r)
 
 </code></pre>
 
-              </div>
-              <div class="toc-container">
-                <ul class="markdownIt-TOC">
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B">函数式编程</a><br>
-*
-<ul>
-<li><a href="#%E7%BA%AF%E5%B1%9E%E5%87%BD%E6%95%B0%E7%9A%84%E6%A6%82%E5%BF%B5">纯属函数的概念</a></li>
-<li><a href="#%E5%87%BD%E6%95%B0%E7%9A%84%E5%89%AF%E4%BD%9C%E7%94%A8">函数的副作用</a></li>
-<li><a href="#%E6%9F%AF%E9%87%8C%E5%8C%96-haskell-brooks-curry">柯里化 (Haskell Brooks Curry)</a>
-<ul>
-<li><a href="#lodash%E4%B8%AD%E7%9A%84%E6%9F%AF%E9%87%8C%E5%8C%96%E5%87%BD%E6%95%B0">lodash中的柯里化函数</a></li>
-<li><a href="#%E6%9F%AF%E9%87%8C%E5%8C%96%E6%80%BB%E7%BB%93">柯里化总结</a></li>
-</ul>
-</li>
-<li><a href="#%E5%87%BD%E6%95%B0%E7%BB%84%E5%90%88">函数组合</a>
-<ul>
-<li><a href="#%E5%87%BD%E6%95%B0%E7%BB%84%E5%90%88%E5%85%88%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%8B-%E7%AE%A1%E9%81%93">函数组合先了解一下 管道</a></li>
-<li><a href="#%E5%87%BD%E6%95%B0%E7%BB%84%E5%90%88%E5%AE%9A%E4%B9%89">函数组合定义</a></li>
-<li><a href="#lodash-%E4%B8%AD%E7%9A%84%E7%BB%84%E5%90%88%E5%87%BD%E6%95%B0">lodash 中的组合函数</a></li>
-<li><a href="#%E5%87%BD%E6%95%B0%E7%9A%84%E7%BB%84%E5%90%88%E8%A6%81%E6%BB%A1%E8%B6%B3-%E7%BB%84%E5%90%88%E5%BE%8Bassociativity">函数的组合要满足 组合律(associativity):</a></li>
-<li><a href="#%E5%87%BD%E6%95%B0%E7%BB%84%E5%90%88-%E8%B0%83%E8%AF%95">函数组合 调试</a></li>
-</ul>
-</li>
-<li><a href="#lodashfp-%E6%A8%A1%E5%9D%97">lodash/fp 模块</a>
-<ul>
-<li><a href="#lodash-%E5%92%8C-lodashfp-%E6%A8%A1%E5%9D%97%E4%B8%AD-map-%E6%96%B9%E6%B3%95%E7%9A%84%E5%8C%BA%E5%88%AB">lodash 和 lodash/fp 模块中 map 方法的区别</a></li>
-</ul>
-</li>
-<li><a href="#point-free">Point Free</a></li>
-</ul>
-</li>
-<li><a href="#functor-%E5%87%BD%E5%AD%90">Functor (函子)</a><br>
-*
-<ul>
-<li><a href="#maybe%E5%87%BD%E5%AD%90">MayBe函子</a></li>
-<li><a href="#either%E5%87%BD%E5%AD%90">Either函子</a></li>
-<li><a href="#io%E5%87%BD%E5%AD%90">IO函子</a></li>
-<li><a href="#folktale">folktale</a>
-<ul>
-<li><a href="#task%E5%87%BD%E5%AD%90">Task函子</a></li>
-<li><a href="#pointed%E5%87%BD%E5%AD%90">Pointed函子</a></li>
-<li><a href="#io%E5%87%BD%E5%AD%90%E7%9A%84%E9%97%AE%E9%A2%98">IO函子的问题</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-              </div>
             </div>
           </article>
         </div>
-
+        <div class="paper" data-aos="fade-in">
+          
+            <div class="next-post">
+              <div class="next">
+                下一篇
+              </div>
+              <a href="https://hongchengfhc.github.io/ji-yi-ci-shi-yong-apng-dong-hua-liang-chong-fang-shi/">
+                <h3 class="post-title">
+                  记一次使用apng动画两种方式
+                </h3>
+              </a>
+            </div>
+          
+        </div>
         
-          <div class="next-post">
-            <div class="next">下一篇</div>
-            <a href="https://hongchengfhc.github.io/ji-yi-ci-shi-yong-apng-dong-hua-liang-chong-fang-shi/">
-              <h3 class="post-title">
-                记一次使用apng动画两种方式
-              </h3>
-            </a>
-          </div>
-        
+      </div>
 
+      <div class="sm-12 md-4 col sidebar">
+  <div class="paper info-container">
+    <img src="https://hongchengfhc.github.io//images/avatar.png?v=1616738903506" class="no-responsive avatar">
+    <div class="text-muted">温故而知新</div>
+    <div class="social-container">
+      
         
-
-        <div class="site-footer">
-  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
-  <a class="rss" href="https://hongchengfhc.github.io//atom.xml" target="_blank">
-    <i class="ri-rss-line"></i> RSS
-  </a>
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+  </div>
+  <div class="paper">
+    <div class="sidebar-title">
+      最新文章
+    </div>
+    <div class="row">
+      <ul>
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-02-03-03-javascript-xing-neng-you-hua-2/">进阶1-02-03-03 JavaScript性能优化2</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-02-03-02-javascript-xing-neng-jian-ce-ji-you-hua/">进阶1-02-03-02 JavaScript性能检测及优化</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-02-02ts-jie-shao-ji-js-lei-xing-jian-cha/">进阶1-02-02TS介绍及JS类型检查</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-02-01-esmascript-xin-te-xing/">进阶1-02-01 ESMAScript 新特性</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-01-03-shou-xie-promise/">进阶1-01-03手写Promise</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-01-02-yi-bu-bian-cheng/">进阶1-01-02异步编程</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/jin-jie-1-01-01-han-shu-shi-bian-cheng/">进阶1-01-01 函数式编程</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/ji-yi-ci-shi-yong-apng-dong-hua-liang-chong-fang-shi/">记一次使用apng动画两种方式</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/pm2-qi-dong-npm-ming-ling/">pm2启动npm命令</a>
+            </li>
+          
+        
+          
+            <li>
+              <a href="https://hongchengfhc.github.io/mac-xian-shi-yin-cang-wen-jian/">Mac显示隐藏文件</a>
+            </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </ul>
+    </div>
+  </div>
+  <div class="paper">
+    <div class="sidebar-title">
+      标签列表
+    </div>
+    <div class="row">
+      
+        <a href="https://hongchengfhc.github.io/06qfGqKjC/" class="badge warning">
+          DevOps
+        </a>
+      
+        <a href="https://hongchengfhc.github.io/GdEax51KqE/" class="badge warning">
+          nodejs
+        </a>
+      
+        <a href="https://hongchengfhc.github.io/pHijz0VSW/" class="badge warning">
+          黑科技
+        </a>
+      
+    </div>
+  </div>
+  <div class="paper">
+    Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://hongchengfhc.github.io//atom.xml" target="_blank">RSS</a>
+  </div>
 </div>
 
-      </div>
+
     </div>
 
-    <script>
-      hljs.initHighlightingOnLoad()
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 
-      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+<script type="application/javascript">
 
-      // This should probably be throttled.
-      // Especially because it triggers during smooth scrolling.
-      // https://lodash.com/docs/4.17.10#throttle
-      // You could do like...
-      // window.addEventListener("scroll", () => {
-      //    _.throttle(doThatStuff, 100);
-      // });
-      // Only not doing it here to keep this Pen dependency-free.
+AOS.init();
 
-      window.addEventListener("scroll", event => {
-        let fromTop = window.scrollY;
+hljs.initHighlightingOnLoad()
 
-        mainNavLinks.forEach((link, index) => {
-          let section = document.getElementById(decodeURI(link.hash).substring(1));
-          let nextSection = null
-          if (mainNavLinks[index + 1]) {
-            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
-          }
-          if (section.offsetTop <= fromTop) {
-            if (nextSection) {
-              if (nextSection.offsetTop > fromTop) {
-                link.classList.add("current");
-              } else {
-                link.classList.remove("current");    
-              }
-            } else {
-              link.classList.add("current");
-            }
-          } else {
-            link.classList.remove("current");
-          }
-        });
-      });
+</script>
 
-    </script>
+
+
+
   </body>
 </html>
