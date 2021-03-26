@@ -1,0 +1,297 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>pm2启动npm命令 | Gridea</title>
+<link rel="shortcut icon" href="https://hongchengfhc.github.io//favicon.ico?v=1616737758970">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://hongchengfhc.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="pm2启动npm命令 | Gridea - Atom Feed" href="https://hongchengfhc.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="* 使用方式
+package.json中
+&quot;scripts&quot;: {
+    &quot;start&quot;: &quot;node ./bin/www&quot;,
+    &quot;dev&quot;: &quo..." />
+    <meta name="keywords" content="nodejs" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://hongchengfhc.github.io/">
+  <img class="avatar" src="https://hongchengfhc.github.io//images/avatar.png?v=1616737758970" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              pm2启动npm命令
+            </h2>
+            <div class="post-info">
+              <span>
+                2020-08-19
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+                <a href="https://hongchengfhc.github.io/GdEax51KqE/" class="post-tag">
+                  # nodejs
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h5 id="使用方式">* 使用方式</h5>
+<pre><code>package.json中
+&quot;scripts&quot;: {
+    &quot;start&quot;: &quot;node ./bin/www&quot;,
+    &quot;dev&quot;: &quot;cross-env EXPRESS_NODE_ENV=dev EXPRESS_PORT=3000 nodemon ./bin/www --exec babel-node&quot;,
+    &quot;sit&quot;: &quot;cross-env EXPRESS_NODE_ENV=sit nodemon ./bin/www --exec babel-node&quot;,
+  },
+  
+  
+简单用法
+1. npm run dev
+2. pm2 start npm -- run dev
+以上使用是等效的
+  
+pm2 start npm --watch --name nickname -- run sit
+// 启动 npm run sit
+eg: pm2 start npm --watch --name h5toolsit -- run sit
+其中 --watch监听代码变化，--name 重命令任务名称，-- run后面跟脚本名字
+</code></pre>
+<h3 id="为什么需要使用pm2">为什么需要使用PM2</h3>
+<ul>
+<li>
+<p>因为node.js 是单进程，进程被杀死后整个服务就跪了，所以需要进程管理工具，但是pm2 远远不止这些。</p>
+</li>
+<li>
+<p>介绍<br>
+PM2 是一个带有负载均衡功能的 Node 应用的进程管理器。 当你要把你的独立代码利用全部的服务器上的所有 CPU，并保证进程永远都活着，0 秒的重载， PM2 是完美的。</p>
+</li>
+</ul>
+<h5 id="特性">特性</h5>
+<pre><code>1.内建负载均衡（使用Node cluster 集群模块）
+2.后台运行
+3.0秒停机重载(维护升级的时候不需要停机).
+4.具有Ubuntu和CentOS 的启动脚本
+5.停止不稳定的进程（避免无限循环）
+6.控制台检测
+7.提供 HTTP API
+8.远程控制和实时的接口API ( Nodejs 9.模块,允许和PM2进程管理器交互 )
+</code></pre>
+<h3 id="全局安装">全局安装</h3>
+<pre><code>npm install -g pm2
+</code></pre>
+<h5 id="查看详细状态信息">查看详细状态信息</h5>
+<pre><code>pm2 show (appname | id)
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://upload-images.jianshu.io/upload_images/19403677-5c286846ba1fba70.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="状态图片" loading="lazy"></figure>
+<hr>
+<h5 id="查看所有启动的进程列表">查看所有启动的进程列表</h5>
+<pre><code>pm2 list |  pm2 ls
+</code></pre>
+<h2 id=""><img src="https://upload-images.jianshu.io/upload_images/19403677-4ed4249d57ee0a02.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="列表图片" loading="lazy"></h2>
+<h5 id="监控每个node进程的cpu的内存使用情况">监控每个node进程的cpu的内存使用情况</h5>
+<pre><code>pm2 monit
+</code></pre>
+<h2 id="-2"><img src="https://upload-images.jianshu.io/upload_images/19403677-74842ef539c6e777.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="monit图片" loading="lazy"></h2>
+<h5 id="显示所有进程的日志信息">显示所有进程的日志信息</h5>
+<pre><code>pm2 logs
+</code></pre>
+<h2 id="-3"><img src="https://upload-images.jianshu.io/upload_images/19403677-4296e640ef585f02.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="日志图片" loading="lazy"></h2>
+<h4 id="常用命令">常用命令</h4>
+<pre><code>npm install pm2 -g     # 命令行安装 pm2 
+pm2 start app.js -i 4 #后台运行pm2，启动4个app.js 
+                              # 也可以把'max' 参数传递给 start
+                              # 正确的进程数目依赖于Cpu的核心数目
+pm2 start app.js --name my-api # 命名进程
+pm2 list               # 显示所有进程状态
+pm2 monit              # 监视所有进程
+pm2 logs               #  显示所有进程日志
+pm2 stop all           # 停止所有进程
+pm2 restart all        # 重启所有进程
+pm2 reload all         # 0秒停机重载进程 (用于 NETWORKED 进程)
+pm2 stop 0             # 停止指定的进程
+pm2 restart 0          # 重启指定的进程
+pm2 startup            # 产生 init 脚本 保持进程活着
+pm2 web                # 运行健壮的 computer API endpoint (http://localhost:9615)
+pm2 delete 0           # 杀死指定的进程
+pm2 delete all         # 杀死全部进程
+</code></pre>
+<p><a href="%5Bhttps://juejin.im/post/5be406705188256dbb5176f9%5D(https://juejin.im/post/5be406705188256dbb5176f9)">更多用法</a></p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F">* 使用方式</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E4%BD%BF%E7%94%A8pm2">为什么需要使用PM2</a><br>
+*
+<ul>
+<li><a href="#%E7%89%B9%E6%80%A7">特性</a></li>
+</ul>
+</li>
+<li><a href="#%E5%85%A8%E5%B1%80%E5%AE%89%E8%A3%85">全局安装</a><br>
+*
+<ul>
+<li><a href="#%E6%9F%A5%E7%9C%8B%E8%AF%A6%E7%BB%86%E7%8A%B6%E6%80%81%E4%BF%A1%E6%81%AF">查看详细状态信息</a></li>
+<li><a href="#%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E5%90%AF%E5%8A%A8%E7%9A%84%E8%BF%9B%E7%A8%8B%E5%88%97%E8%A1%A8">查看所有启动的进程列表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#">!列表图片</a><br>
+*<br>
+*<br>
+* <a href="#%E7%9B%91%E6%8E%A7%E6%AF%8F%E4%B8%AAnode%E8%BF%9B%E7%A8%8B%E7%9A%84cpu%E7%9A%84%E5%86%85%E5%AD%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5">监控每个node进程的cpu的内存使用情况</a></li>
+<li><a href="#-2">!monit图片</a><br>
+*<br>
+*<br>
+* <a href="#%E6%98%BE%E7%A4%BA%E6%89%80%E6%9C%89%E8%BF%9B%E7%A8%8B%E7%9A%84%E6%97%A5%E5%BF%97%E4%BF%A1%E6%81%AF">显示所有进程的日志信息</a></li>
+<li><a href="#-3">!日志图片</a><br>
+*
+<ul>
+<li><a href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4">常用命令</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://hongchengfhc.github.io/mac-xian-shi-yin-cang-wen-jian/">
+              <h3 class="post-title">
+                Mac显示隐藏文件
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://hongchengfhc.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

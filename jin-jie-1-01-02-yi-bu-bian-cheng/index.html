@@ -1,0 +1,538 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>进阶1-01-02异步编程 | Gridea</title>
+<link rel="shortcut icon" href="https://hongchengfhc.github.io//favicon.ico?v=1616737758970">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://hongchengfhc.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="进阶1-01-02异步编程 | Gridea - Atom Feed" href="https://hongchengfhc.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="1. 同步模式、异步模式、回调函数
+JavaScript 单线程
+
+JavaScript设计初衷，运行在浏览器端的脚本语言，DOM操作实现交互
+不使用单线程，会造成严重的线程同步问题
+例如：一个线程删除，一个线程修改
+
+JavaScript..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://hongchengfhc.github.io/">
+  <img class="avatar" src="https://hongchengfhc.github.io//images/avatar.png?v=1616737758970" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              进阶1-01-02异步编程
+            </h2>
+            <div class="post-info">
+              <span>
+                2021-03-26
+              </span>
+              <span>
+                6 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h2 id="1-同步模式-异步模式-回调函数">1. 同步模式、异步模式、回调函数</h2>
+<h3 id="javascript-单线程">JavaScript 单线程</h3>
+<ul>
+<li>JavaScript设计初衷，运行在浏览器端的脚本语言，DOM操作实现交互</li>
+<li>不使用单线程，会造成严重的线程同步问题</li>
+<li>例如：一个线程删除，一个线程修改</li>
+</ul>
+<h3 id="javascript-同步模式-synchronous">JavaScript 同步模式 【Synchronous】</h3>
+<ul>
+<li>代码逐行运行</li>
+<li>会出现阻塞【某行代码运行时间过长，后面代码会一直等待】</li>
+</ul>
+<h3 id="javascript-异步模式-asynchromous">JavaScript 异步模式 【Asynchromous】</h3>
+<ul>
+<li>需要进行异步执行的代码，开启之后就会继续执行主线程代码，不会进行等待</li>
+<li>后序逻辑，一般会通过回调函数的方式定义</li>
+<li>JavaScript 是单线程的，浏览器不是单线程的</li>
+<li>类似于 setTimeout 之类的api，是有一个单独的线程去执行，等待的</li>
+</ul>
+<h3 id="font-colorred回调函数font"><font color="red">回调函数</font></h3>
+<blockquote>
+<p>所有异步编程方案的根基</p>
+</blockquote>
+<ul>
+<li>https://www.jianshu.com/p/40e459cfdc6f</li>
+<li>将函数作为参数</li>
+<li>我知道执行的相关代码，但我不知道何时能得到结果【开始调用】</li>
+<li>所以，将步骤写好【回调函数】，交给函数运行者，运行完后会帮我调用回调函数的内容</li>
+</ul>
+<pre><code>function foo(callback) {
+    setTimeout(function() {
+        callback()
+    }, 3000)
+}
+
+foo(function() {
+    console.log('这就是一个回调函数')
+    console.log('调用者定义这个函数，执行者执行这个函数')
+    console.log('其实就是调用者告诉执行者异步任务结束后应该做什么')
+})
+</code></pre>
+<h2 id="2-回调函数-promise">2. 回调函数 Promise</h2>
+<h3 id="异步模式">异步模式</h3>
+<ul>
+<li>运行环境提供的API是以同步或异步模式的方式工作</li>
+</ul>
+<figure data-type="image" tabindex="1"><a href="https://imgtu.com/i/6B6OYQ"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fff76deb498d4dabbc815cc3d0dda78a~tplv-k3u1fbpfcp-zoom-1.image" alt="6B6OYQ.png" loading="lazy"></a></figure>
+<h4 id="回调函数">回调函数</h4>
+<p>定义：由调用者定义，交给执行者执行的函数</p>
+<blockquote>
+<p>所有异步编程方案的根基</p>
+</blockquote>
+<ul>
+<li>https://www.jianshu.com/p/40e459cfdc6f</li>
+<li>将函数作为参数</li>
+<li>我知道执行的相关代码，但我不知道何时能得到结果【开始调用】</li>
+<li>所以，将步骤写好【回调函数】，交给函数运行者，运行完后会帮我调用回调函数的内容</li>
+</ul>
+<h4 id="promise">Promise</h4>
+<ul>
+<li>在ES2015中被标准化，成为语言规范</li>
+</ul>
+<pre><code class="language-mermaid">graph LR
+
+Promise2--&gt;B[Pending]
+
+B--&gt;C[Fulfilled]
+B--&gt;D[Rejected]
+
+C--&gt;onFulfilled
+D--&gt;onRejected
+
+</code></pre>
+<h4 id="promise的基本用法">Promise的基本用法</h4>
+<pre><code class="language-js">const promise = new Promise(function(resolve, reject) {
+  // 这里用于&quot;兑现&quot;承诺
+  resolve(100) // 承诺达成
+
+  reject(new Error('promise rejected')) // 承诺失败
+
+  // 两者只能调用其一
+
+})
+
+promise.then(function(value) {
+  console.log('resolved', value)
+}, function(error) {
+  console.log('rejected', error)
+})
+console.log('end')
+
+</code></pre>
+<h5 id="promise-方式的-ajax">Promise 方式的 ajax</h5>
+<pre><code class="language-js">function ajax(url) {
+  return new Promise(function(resolve, reject) {
+    
+    var xhr = new XMLHttpRequest()
+    xhr.open('GET', url)
+    xhr.responseType = 'json'
+    xhr.onload = function() {
+      if (this.status == 200) {
+        resolve(this.response)
+      } else {
+        reject(new Error(this.statusText))
+      }
+    }
+    xhr.send()
+  })
+}
+
+ajax('/api/users.json').then(function(res) {
+  console.log(res)
+}, function(error) {
+  console.log(error)
+})
+</code></pre>
+<h5 id="使用promise的链式调用尽可能保证异步任务扁平化">使用Promise的链式调用尽可能保证异步任务扁平化</h5>
+<ul>
+<li>Promise对象的then方法会返回一个全新的Promise对象</li>
+<li>后面的then方法就是在为上一个then返回的Promise注册回调</li>
+<li>前面then方法中回调函数的返回值会作为后面then方法回调的参数</li>
+<li>如果回调中返回的是Promise, 好后面then方法的回调会等待它的结束</li>
+</ul>
+<h5 id="promise的异常处理">Promise的异常处理</h5>
+<pre><code class="language-js">ajax('/api/users.json')
+    .then()
+    .catch()
+    
+// .catch() == .then(undefine, () =&gt; {
+    // catch后听处理
+})
+</code></pre>
+<blockquote>
+<p>全局能监听 unhandledrejection</p>
+</blockquote>
+<ul>
+<li>不建议在全局监听</li>
+</ul>
+<pre><code class="language-js">// 浏览器中
+window.addEventListener('unhandledrejection', event =&gt; {
+    const { reason, promise } = event
+    console.log(reason, promise)
+    // reason =&gt; Promise 失败原因，一般是一个错误对象
+    // promise =&gt; 出现异常的 Promise 对象
+    
+    event.preventDefault()
+}, false)
+
+// 浏览器中
+process.on('unhandledrejection', (reason, promise) =&gt; {
+    console.log(reason, promise)
+    // reason =&gt; Promise 失败原因，一般是一个错误对象
+    // promise =&gt; 出现异常的 Promise 对象
+})
+</code></pre>
+<h5 id="promise的静态方法">Promise的静态方法</h5>
+<ul>
+<li>Promise.resolve()</li>
+</ul>
+<pre><code class="language-js">Promise.resolve('foo')
+    .then(function(value) {
+        console.log(value)
+    })
+    
+// 等价于
+new Promise(function(resolve, reject) {
+    resolve('foo')
+})
+
+
+var promise = ajax('/api/users.json')
+var promise2 = Promise.resolve(promise)
+console.log(promise === promise2) // true
+
+
+Promise.resolve({
+  then: function (onFulfilled, onRejected) {
+    onFulfilled('foo')
+  }
+})
+
+</code></pre>
+<ul>
+<li>Promise.reject()</li>
+</ul>
+<pre><code class="language-js">Promise.reject('anything')
+  .catch(function(error) {
+    console.log(error)
+  })
+</code></pre>
+<h5 id="promise-并行执行">Promise 并行执行</h5>
+<ul>
+<li>Promise.all 等待所有任务结束</li>
+</ul>
+<pre><code class="language-js">var promise = Promise.all([
+  ajax('/api/users.json'),
+  ajax('/api/posts.json')
+])
+
+promise.then(function(values) {
+  console.log(values)
+}).catch(function(error) {
+  console.log(error)
+})
+</code></pre>
+<ul>
+<li>Promise.race 只会等待第一个结束的任务</li>
+</ul>
+<pre><code class="language-js">const request = ajax('/api/posts.json')
+const timeout = new Promise((resolve, reject) =&gt; {
+  setTimeout(() =&gt; reject(new Error('timeout')), 500)
+})
+
+Promise.race([
+  request,
+  timeout
+])
+  .then(value =&gt; {
+    console.log(value)
+  })
+  .catch(error =&gt; {
+    console.log(error)
+  })
+</code></pre>
+<h2 id="31-异步方案-generator">3.1 异步方案 Generator</h2>
+<ul>
+<li>ES2015提供的 Generator</li>
+</ul>
+<h4 id="生成器函数回顾">生成器函数回顾</h4>
+<pre><code class="language-js">// 生成器函数回顾
+function *foo() {
+  console.log('start')
+
+  try {
+    const res = yield 'foo'
+    console.log(res) // bar
+  } catch(e) {
+    console.log(e)
+  }
+}
+
+const generator = foo()
+
+const result = generator.next()
+console.log(result)
+
+generator.next('bar')
+
+generator.throw(new Error('Generator error')) // 就需要 foo当中try catch
+
+</code></pre>
+<h3 id="体验generator函数异步方案">体验Generator函数异步方案</h3>
+<pre><code class="language-js">function *main() {
+  const users = yield ajax('/api/users.json')
+  console.log(users)
+
+  const posts = yield ajax('/api/posts.json')
+  console.log(posts)
+}
+
+const g = main()
+const result = g.next()
+result.value.then(data =&gt; {
+  const result2 = g.next(data) // 在这里传入 上面 main中的users才会有值
+  if (result2.done) return
+
+  result2.value.then(data =&gt; {
+    g.next(data)
+
+  })
+})
+</code></pre>
+<h3 id="递归执行generator函数">递归执行Generator函数</h3>
+<pre><code class="language-js">
+function *main() {
+  const users = yield ajax('/api/users.json')
+  console.log(users)
+
+  const posts = yield ajax('/api/posts.json')
+  console.log(posts)
+}
+const g = main()
+
+co(main)
+
+function co(generator) {
+  const g = generator()
+
+  function handleResult(result) {
+    if (result.done) return // 生成器函数结束
+    result.value.then(data =&gt; {
+      handleResult(g.next(data))
+    }).catch(error =&gt; {
+      g.throw(error)
+    })
+  }
+  handleResult(g.next())
+}
+</code></pre>
+<h2 id="32-异步方案-async">3.2 异步方案 Async</h2>
+<h3 id="anync-await-语法糖">Anync / Await 语法糖</h3>
+<blockquote>
+<p>语言层面的异步编程标准</p>
+</blockquote>
+<pre><code class="language-js">async function main() {
+  try {
+    const users = await ajax('/api/users.json')
+    console.log(users)
+
+    const posts = await ajax('/api/posts.json')
+    console.log(posts)
+  } catch(e) {
+    console.log(e)
+  }
+}
+
+const promise = main()
+promise.then(() =&gt; {
+  console.log('all completed')
+})
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#1-%E5%90%8C%E6%AD%A5%E6%A8%A1%E5%BC%8F-%E5%BC%82%E6%AD%A5%E6%A8%A1%E5%BC%8F-%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0">1. 同步模式、异步模式、回调函数</a>
+<ul>
+<li><a href="#javascript-%E5%8D%95%E7%BA%BF%E7%A8%8B">JavaScript 单线程</a></li>
+<li><a href="#javascript-%E5%90%8C%E6%AD%A5%E6%A8%A1%E5%BC%8F-synchronous">JavaScript 同步模式 【Synchronous】</a></li>
+<li><a href="#javascript-%E5%BC%82%E6%AD%A5%E6%A8%A1%E5%BC%8F-asynchromous">JavaScript 异步模式 【Asynchromous】</a></li>
+<li><a href="#font-colorred%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0font"><font color="red">回调函数</font></a></li>
+</ul>
+</li>
+<li><a href="#2-%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0-promise">2. 回调函数 Promise</a>
+<ul>
+<li><a href="#%E5%BC%82%E6%AD%A5%E6%A8%A1%E5%BC%8F">异步模式</a>
+<ul>
+<li><a href="#%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0">回调函数</a></li>
+<li><a href="#promise">Promise</a></li>
+<li><a href="#promise%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95">Promise的基本用法</a>
+<ul>
+<li><a href="#promise-%E6%96%B9%E5%BC%8F%E7%9A%84-ajax">Promise 方式的 ajax</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8promise%E7%9A%84%E9%93%BE%E5%BC%8F%E8%B0%83%E7%94%A8%E5%B0%BD%E5%8F%AF%E8%83%BD%E4%BF%9D%E8%AF%81%E5%BC%82%E6%AD%A5%E4%BB%BB%E5%8A%A1%E6%89%81%E5%B9%B3%E5%8C%96">使用Promise的链式调用尽可能保证异步任务扁平化</a></li>
+<li><a href="#promise%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86">Promise的异常处理</a></li>
+<li><a href="#promise%E7%9A%84%E9%9D%99%E6%80%81%E6%96%B9%E6%B3%95">Promise的静态方法</a></li>
+<li><a href="#promise-%E5%B9%B6%E8%A1%8C%E6%89%A7%E8%A1%8C">Promise 并行执行</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#31-%E5%BC%82%E6%AD%A5%E6%96%B9%E6%A1%88-generator">3.1 异步方案 Generator</a><br>
+*
+<ul>
+<li><a href="#%E7%94%9F%E6%88%90%E5%99%A8%E5%87%BD%E6%95%B0%E5%9B%9E%E9%A1%BE">生成器函数回顾</a></li>
+<li><a href="#%E4%BD%93%E9%AA%8Cgenerator%E5%87%BD%E6%95%B0%E5%BC%82%E6%AD%A5%E6%96%B9%E6%A1%88">体验Generator函数异步方案</a></li>
+<li><a href="#%E9%80%92%E5%BD%92%E6%89%A7%E8%A1%8Cgenerator%E5%87%BD%E6%95%B0">递归执行Generator函数</a></li>
+</ul>
+</li>
+<li><a href="#32-%E5%BC%82%E6%AD%A5%E6%96%B9%E6%A1%88-async">3.2 异步方案 Async</a>
+<ul>
+<li><a href="#anync-await-%E8%AF%AD%E6%B3%95%E7%B3%96">Anync / Await 语法糖</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://hongchengfhc.github.io/jin-jie-1-01-01-han-shu-shi-bian-cheng/">
+              <h3 class="post-title">
+                进阶1-01-01 函数式编程
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://hongchengfhc.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

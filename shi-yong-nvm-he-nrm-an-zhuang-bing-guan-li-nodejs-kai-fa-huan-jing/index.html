@@ -1,0 +1,230 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>使用nvm和nrm安装并管理node.js开发环境 | Gridea</title>
+<link rel="shortcut icon" href="https://hongchengfhc.github.io//favicon.ico?v=1616737758970">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://hongchengfhc.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="使用nvm和nrm安装并管理node.js开发环境 | Gridea - Atom Feed" href="https://hongchengfhc.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="在进行前端开发的时候，会安装多个版本的node.js，另外还会用到第三方源的管理工具npm,所以这里推荐两个工具来分别管理它们:  nvm 和 nrm
+卸载已安装到全局的 node/npm
+如果之前是在官网下载的 node 安装包，运行后会..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://hongchengfhc.github.io/">
+  <img class="avatar" src="https://hongchengfhc.github.io//images/avatar.png?v=1616737758970" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              使用nvm和nrm安装并管理node.js开发环境
+            </h2>
+            <div class="post-info">
+              <span>
+                2020-08-19
+              </span>
+              <span>
+                4 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <p>在进行前端开发的时候，会安装多个版本的node.js，另外还会用到第三方源的管理工具npm,所以这里推荐两个工具来分别管理它们:  <a href="%5Bhttps://github.com/nvm-sh/nvm%5D(https://github.com/nvm-sh/nvm)">nvm</a> 和 <a href="%5Bhttps://github.com/Pana/nrm%5D(https://github.com/Pana/nrm)">nrm</a></p>
+<h3 id="卸载已安装到全局的-nodenpm">卸载已安装到全局的 node/npm</h3>
+<p>如果之前是在官网下载的 node 安装包，运行后会自动安装在全局目录，其中</p>
+<p>node 命令在 /usr/local/bin/node ，npm 命令在全局 node_modules 目录中，具体路径为 /usr/local/lib/node_modules/npm</p>
+<p>安装 nvm 之后最好先删除下已安装的 node 和全局 node 模块：</p>
+<pre><code>npm ls -g --depth=0 #查看已经安装在全局的模块，以便删除这些全局模块后再按照不同的 node 版本重新进行全局安装
+
+sudo rm -rf /usr/local/lib/node_modules #删除全局 node_modules 目录
+sudo rm /usr/local/bin/node #删除 node
+cd  /usr/local/bin &amp;&amp; ls -l | grep &quot;../lib/node_modules/&quot; | awk '{print $9}'| xargs rm #删除全局 node 模块注册的软链
+</code></pre>
+<h3 id="安装-nvm">安装 nvm</h3>
+<h4 id="mac-或-linux-系统">Mac 或 Linux 系统</h4>
+<p>可以使用下面的脚本安装:</p>
+<pre><code>curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+</code></pre>
+<p>执行完成之后需要关闭当前的命令行，然后重新打开。如果出现<code>Unknown option: -c</code>错误，需要先<a href="https://stackoverflow.com/a/27674776/1805493">升级git到1.7.10以上版本</a>。如果出现 <code>nvm: command not found</code> 错误的话，可以首先执行 <code>touch ~/.bash_profile</code> 命令创建bash_profile文件，然后执行 <code>source ~/.bash_profile</code>命令或关闭terminal窗口并重新打开一下即可。<br>
+Mac下推荐使用 <a href="%5Bhttps://github.com/robbyrussell/oh-my-zsh%5D(https://github.com/robbyrussell/oh-my-zsh)">oh-my-zsh</a> 代替默认的base shell</p>
+<h3 id="安装切换各版本-nodenpm">安装切换各版本 node/npm</h3>
+<pre><code>nvm install stable #安装最新稳定版 node，现在是 5.0.0
+nvm install 4.2.2 #安装 4.2.2 版本
+nvm install 0.12.7 #安装 0.12.7 版本
+
+# 特别说明：以下模块安装仅供演示说明，并非必须安装模块
+nvm use 0 #切换至 0.12.7 版本
+npm install -g mz-fis #安装 mz-fis 模块至全局目录，安装完成的路径是 /Users/&lt;你的用户名&gt;/.nvm/versions/node/v0.12.7/lib/mz-fis
+nvm use 4 #切换至 4.2.2 版本
+npm install -g react-native-cli #安装 react-native-cli 模块至全局目录，安装完成的路径是 /Users/&lt;你的用户名&gt;/.nvm/versions/node/v4.2.2/lib/react-native-cli
+
+nvm alias default 0.12.7 #设置默认 node 版本为 0.12.7
+</code></pre>
+<h3 id="使用nvmrc-文件配置项目所使用的-node-版本">使用.nvmrc 文件配置项目所使用的 node 版本</h3>
+<p>如果你的默认 node 版本（通过 nvm alias 命令设置的）与项目所需的版本不同，则可在项目根目录或其任意父级目录中创建 .nvmrc 文件，在文件中指定使用的 node 版本号，例如：</p>
+<pre><code>cd &lt;项目根目录&gt;  #进入项目根目录
+echo 4 &gt; .nvmrc #添加 .nvmrc 文件
+nvm use #无需指定版本号，会自动使用 .nvmrc 文件中配置的版本
+node -v #查看 node 是否切换为对应版本
+</code></pre>
+<h3 id="使用-nrm-管理不同的npm源">使用 <a href="https://github.com/Pana/nrm">nrm</a> 管理不同的npm源</h3>
+<p>众所周知的原因，国内使用原始的npm源速度非常慢，但使用别名也会出现很多不方便的地方，nrm由此产生，可以随意切换不同的npm源。</p>
+<p>安装非常方便，使用 npm install nrm -g 进行安装，安装成功之后可以使用 nrm ls 查看源列表：<br>
+<img src="https://upload-images.jianshu.io/upload_images/19403677-a6a0310f7e92e566.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="nrmls-icon.png" loading="lazy"></p>
+<p>然后通过 nrm use cnpm 将npm源切换为cnpm，再使用 nrm ls 命令查看，可以发现源已经切换为 cnpm了：<br>
+<img src="https://upload-images.jianshu.io/upload_images/19403677-4b0f5c70ca31e505.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="usecnpm-icon.png" loading="lazy"><br>
+这样设置之后，以后使用npm命令进行安装或更新的时候，默认就使用cnpm源了，非常方便。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#%E5%8D%B8%E8%BD%BD%E5%B7%B2%E5%AE%89%E8%A3%85%E5%88%B0%E5%85%A8%E5%B1%80%E7%9A%84-nodenpm">卸载已安装到全局的 node/npm</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85-nvm">安装 nvm</a>
+<ul>
+<li><a href="#mac-%E6%88%96-linux-%E7%B3%BB%E7%BB%9F">Mac 或 Linux 系统</a></li>
+</ul>
+</li>
+<li><a href="#%E5%AE%89%E8%A3%85%E5%88%87%E6%8D%A2%E5%90%84%E7%89%88%E6%9C%AC-nodenpm">安装切换各版本 node/npm</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8nvmrc-%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE%E9%A1%B9%E7%9B%AE%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84-node-%E7%89%88%E6%9C%AC">使用.nvmrc 文件配置项目所使用的 node 版本</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8-nrm-%E7%AE%A1%E7%90%86%E4%B8%8D%E5%90%8C%E7%9A%84npm%E6%BA%90">使用 nrm 管理不同的npm源</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://hongchengfhc.github.io/an-zhuang-iterm2-and-oh-my-zsh/">
+              <h3 class="post-title">
+                安装 iTerm2 &amp;&amp; Oh My Zsh
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://hongchengfhc.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

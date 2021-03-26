@@ -1,0 +1,339 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>进阶1-02-03-03 JavaScript性能优化2 | Gridea</title>
+<link rel="shortcut icon" href="https://hongchengfhc.github.io//favicon.ico?v=1616737758970">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://hongchengfhc.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="进阶1-02-03-03 JavaScript性能优化2 | Gridea - Atom Feed" href="https://hongchengfhc.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="先了解一下 堆栈中的JS执行过程
+
+1. 减少判断层级
+// 没有优化
+function doSomething(part, chapter) {
+    const parts = ['ES2016', '工程化', 'Vue', 'Re..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://hongchengfhc.github.io/">
+  <img class="avatar" src="https://hongchengfhc.github.io//images/avatar.png?v=1616737758970" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              进阶1-02-03-03 JavaScript性能优化2
+            </h2>
+            <div class="post-info">
+              <span>
+                2021-03-26
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="先了解一下-堆栈中的js执行过程">先了解一下 堆栈中的JS执行过程</h1>
+<figure data-type="image" tabindex="1"><a href="https://imgtu.com/i/67k5Ps"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cf4342ec94a74263b0d566cef6051d4b~tplv-k3u1fbpfcp-zoom-1.image" alt="67k5Ps.png" loading="lazy"></a></figure>
+<h3 id="1-减少判断层级">1. 减少判断层级</h3>
+<pre><code class="language-js">// 没有优化
+function doSomething(part, chapter) {
+    const parts = ['ES2016', '工程化', 'Vue', 'React', 'Node']
+    if (part) {
+        if (parts.includes(part)) {
+            console.log('属于当前课程')
+            if (chapter &gt; 5) {
+                console.log('您需要提供 VIP 身份')
+            }
+        } 
+    } else {
+        console.log('请确认模块信息')
+    }
+}
+doSomething('ES2016', 6)
+
+// 优化后
+function doSomething(part, chapter) {
+    const parts = ['ES2016', '工程化', 'Vue', 'React', 'Node']
+    
+    if (!part) {
+        console.log('请确认模块信息')
+        return
+    }
+    if (!parts.includes(part)) return
+    console.log('属于当前课程')
+    if (chapter &gt; 5) {
+        console.log('您需要提供 VIP 身份')
+    }
+}
+doSomething('ES2016', 6)
+</code></pre>
+<h3 id="2-减少作用域链查找层级">2. 减少作用域链查找层级</h3>
+<pre><code class="language-js">// 优化前
+var name = &quot;zce&quot;
+function foo() {
+    name = &quot;zce666&quot;
+    function baz() {
+        var age = 20
+        console.log(age)
+        console.log(name)
+    }
+    baz()
+}
+foo()
+
+// 优化后
+var name = &quot;zce&quot;
+function foo() {
+    // 在这里name使用了var声明
+    var name = &quot;zce666&quot;
+    function baz() {
+        var age = 20
+        console.log(age)
+        console.log(name)
+    }
+    baz()
+}
+foo()
+</code></pre>
+<h3 id="3-减少数据读取次数">3. 减少数据读取次数</h3>
+<pre><code class="language-html">&lt;button class=&quot;skip&quot; id=&quot;skip&quot;&gt;&lt;/button&gt;
+</code></pre>
+<pre><code class="language-js">// 相当于空间换时间
+// 优化前
+function hasEle(ele, cls) {
+    return ele.className == cls
+}
+
+// 优化后
+function hasEle(ele, cls) {
+    var clsname = ele.className
+    return clsname == cls
+}
+hasEle(document.getElementById('skip'), 'skip')
+</code></pre>
+<h3 id="4-字面量与构造式">4. 字面量与构造式</h3>
+<pre><code class="language-js">// 优化前
+let test = () =&gt; {
+    let obj = new Object()
+    obj.name = 'zce'
+    obj.age = 38
+    obj.slogan = '我为前端而活'
+    return obj
+}
+console.log(test())
+
+
+
+// 优化后
+let test = () =&gt; {
+    let obj = {
+        name: 'zce'，
+        age: 38,
+        slogan: '我为前端而活'
+    }
+    return obj
+}
+console.log(test())
+
+</code></pre>
+<h3 id="5-减少循环体活动">5. 减少循环体活动</h3>
+<p><code>for (var i = 0, len = arr.length; i &lt; len; i++)</code></p>
+<h3 id="6-减少声明及语句数">6. 减少声明及语句数</h3>
+<pre><code class="language-html">&lt;div id=&quot;box&quot; style=&quot;width: 100px; height: 100px;&quot;&gt;&lt;/div&gt;
+</code></pre>
+<pre><code class="language-js">var oBox = document.getElementById('box')
+
+// 优化前
+var test = (ele) =&gt; {
+    let w = ele.offsetWidth
+    let h = ele.offsetHeight
+    return w * h
+}
+
+// 优化后
+var test = (ele) =&gt; {
+    return ele.offsetWidth * ele.offsetHeight
+}
+
+// -------------------------
+// 优化前
+var test = () =&gt; {
+    var name = 'zce'
+    var age = 38
+    var slogan = '我为前端而活'
+    return name + age + slogan
+}
+
+// 优化后
+var test = () =&gt; {
+    var name = 'zce',
+        age = 38,
+        slogan = '我为前端而活'
+    return name + age + slogan
+}
+</code></pre>
+<h3 id="7-采用事件委托">7. 采用事件委托</h3>
+<pre><code class="language-html">&lt;ul id=&quot;ul&quot;&gt;
+    &lt;li&gt;ZCE&lt;/li&gt;
+    &lt;li&gt;28&lt;/li&gt;
+    &lt;li&gt;我为前端而活&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+<pre><code class="language-js">var oUl = document.getElementById('ul')
+oUl.addeventListener('click', showTxt, true)
+function showTxt(e) {
+    var target = e.target
+    if (target.nodeName.toLowerCase() == 'li') {
+        console.log(target.innerHTML)
+    }
+}
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E5%85%88%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%8B-%E5%A0%86%E6%A0%88%E4%B8%AD%E7%9A%84js%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B">先了解一下 堆栈中的JS执行过程</a><br>
+*
+<ul>
+<li><a href="#1-%E5%87%8F%E5%B0%91%E5%88%A4%E6%96%AD%E5%B1%82%E7%BA%A7">1. 减少判断层级</a></li>
+<li><a href="#2-%E5%87%8F%E5%B0%91%E4%BD%9C%E7%94%A8%E5%9F%9F%E9%93%BE%E6%9F%A5%E6%89%BE%E5%B1%82%E7%BA%A7">2. 减少作用域链查找层级</a></li>
+<li><a href="#3-%E5%87%8F%E5%B0%91%E6%95%B0%E6%8D%AE%E8%AF%BB%E5%8F%96%E6%AC%A1%E6%95%B0">3. 减少数据读取次数</a></li>
+<li><a href="#4-%E5%AD%97%E9%9D%A2%E9%87%8F%E4%B8%8E%E6%9E%84%E9%80%A0%E5%BC%8F">4. 字面量与构造式</a></li>
+<li><a href="#5-%E5%87%8F%E5%B0%91%E5%BE%AA%E7%8E%AF%E4%BD%93%E6%B4%BB%E5%8A%A8">5. 减少循环体活动</a></li>
+<li><a href="#6-%E5%87%8F%E5%B0%91%E5%A3%B0%E6%98%8E%E5%8F%8A%E8%AF%AD%E5%8F%A5%E6%95%B0">6. 减少声明及语句数</a></li>
+<li><a href="#7-%E9%87%87%E7%94%A8%E4%BA%8B%E4%BB%B6%E5%A7%94%E6%89%98">7. 采用事件委托</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://hongchengfhc.github.io/jin-jie-1-02-03-02-javascript-xing-neng-jian-ce-ji-you-hua/">
+              <h3 class="post-title">
+                进阶1-02-03-02 JavaScript性能检测及优化
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://hongchengfhc.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

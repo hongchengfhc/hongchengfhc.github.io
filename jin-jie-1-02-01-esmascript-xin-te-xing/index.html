@@ -1,0 +1,1278 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>进阶1-02-01 ESMAScript 新特性 | Gridea</title>
+<link rel="shortcut icon" href="https://hongchengfhc.github.io//favicon.ico?v=1616737758970">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://hongchengfhc.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="进阶1-02-01 ESMAScript 新特性 | Gridea - Atom Feed" href="https://hongchengfhc.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="ESMAScript 新特性
+1. ECMAScript 概述
+@Web环境
+
+@Node.js
+
+ECMAScript 版本
+
+2. ES2015 let 与块级作用域，以及const
+let
+使用var 导致变量提升
+console.l..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://hongchengfhc.github.io/">
+  <img class="avatar" src="https://hongchengfhc.github.io//images/avatar.png?v=1616737758970" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              进阶1-02-01 ESMAScript 新特性
+            </h2>
+            <div class="post-info">
+              <span>
+                2021-03-26
+              </span>
+              <span>
+                15 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="esmascript-新特性">ESMAScript 新特性</h1>
+<h2 id="1-ecmascript-概述">1. ECMAScript 概述</h2>
+<h3 id="web环境">@Web环境</h3>
+<figure data-type="image" tabindex="1"><a href="https://imgtu.com/i/653Zc9"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/195cf00ad60f40e6a5949af4e5634643~tplv-k3u1fbpfcp-zoom-1.image" alt="653Zc9.png" loading="lazy"></a></figure>
+<h3 id="nodejs">@Node.js</h3>
+<figure data-type="image" tabindex="2"><a href="https://imgtu.com/i/653K76"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/00315f7faf01474fb049ea4e92b2e297~tplv-k3u1fbpfcp-zoom-1.image" alt="653K76.png" loading="lazy"></a></figure>
+<h3 id="ecmascript-版本">ECMAScript 版本</h3>
+<figure data-type="image" tabindex="3"><a href="https://imgtu.com/i/6531hD"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c999f48b428740f4ba33289c9628f4ab~tplv-k3u1fbpfcp-zoom-1.image" alt="6531hD.png" loading="lazy"></a></figure>
+<h2 id="2-es2015-let-与块级作用域以及const">2. ES2015 let 与块级作用域，以及const</h2>
+<h4 id="let">let</h4>
+<pre><code class="language-js">使用var 导致变量提升
+console.log(foo); // undefine;
+var foo = 'zce';
+// 官方的bug不叫bug，叫特性
+</code></pre>
+<pre><code class="language-js">console.log(foo);
+let foo = 'zce';
+</code></pre>
+<h4 id="const-恒量常量">const 恒量/常量</h4>
+<blockquote>
+<p>在let的基础上增加了只读属性，声明过后不允许再被修改</p>
+</blockquote>
+<ul>
+<li><code>const</code> 它所声明的成员不能被修改，只是说我们不允许在声明了过后重新去指向一个新的内存地址，并不是说我们不允许修改恒量中的属性成员</li>
+</ul>
+<pre><code class="language-js">// 不允许以下情况
+const name = 'zce';
+name = 'jack';
+
+const name;
+name = 'zce';
+
+// 下面的代码是允许的
+const obj = {};
+obj.name = 'zce' 
+
+// 下面是不允许的
+const obj = {};
+obj = {};
+
+</code></pre>
+<h2 id="3-es2015-模板字符串">3. ES2015 模板字符串</h2>
+<h4 id="模板字符串字面量-template-literals">模板字符串字面量 Template literals</h4>
+<pre><code class="language-js">const str = `hello es2015, this is a string`
+console.log(str)
+
+// 支持多行
+const str = `hello es2015, 
+
+this is a string`
+console.log(str)
+
+
+const name = 'tom'
+const msg = `hey, ${name}  ${1 + 1}`
+console.log(msg)
+
+</code></pre>
+<h4 id="模板字符串标签函数-tagged-templates">模板字符串标签函数 Tagged templates</h4>
+<pre><code class="language-js">
+const str = console.log`hello world`
+
+const name = 'tom'
+const gender = true
+function myTagFunc (strings, name, gender) {
+    console.log(strings, name, gender)
+}
+const result = myTagFunc`hey, ${name} is a ${gender}.`
+
+
+
+const name = 'tom'
+const gender = true
+function myTagFunc (strings, name, gender) {
+    console.log(strings, name, gender)
+    return strings[0] + name + strings[1] + gender + strings[2]
+}
+const result = myTagFunc`hey, ${name} is a ${gender}.`
+console.log(result)
+
+
+
+</code></pre>
+<h4 id="字符串的扩展方法">字符串的扩展方法</h4>
+<ul>
+<li>includes()</li>
+<li>startsWith()</li>
+<li>endsWith()</li>
+</ul>
+<pre><code class="language-js">const message = 'Error: foo is not defind.'
+
+console.log(
+    message.startsWith('Error'),
+    message.endsWith('.'),
+    message.includes('foo')
+)
+
+</code></pre>
+<h2 id="4-es2015-数组和对象的解构">4. ES2015 数组和对象的解构</h2>
+<h4 id="数组中的解构">数组中的解构</h4>
+<pre><code class="language-js">const arr = [100, 200, 300]
+
+const [foo, bar, baz] = arr
+console.log(baz)
+
+const [, , baz] = arr
+console.log(baz)
+
+
+const [foo, ...rest] = arr
+console.log(rest)
+
+const [foo] = arr
+console.log(foo)
+
+const [foo, bar, baz, more] = arr
+console.log(more) // undefine
+
+
+const [foo, bar, baz, more = 'default value'] = arr
+console.log(more) // default value
+
+</code></pre>
+<h4 id="展开数组-spread">展开数组 Spread</h4>
+<pre><code class="language-js">const arr = ['foo', 'bar', 'baz']
+console.log.apply(console, arr)
+
+console.log(...arr)
+
+</code></pre>
+<h4 id="对象的解构-destructuring">对象的解构 Destructuring</h4>
+<pre><code class="language-js">const obj = { name: 'zce', age: 18}
+
+const { name, age } = obj
+console.log(name)
+
+// 以下会出现变量名冲突，但obj解构必须 使用name 所以解决方案如下
+const name = 'tom'
+const { name } = obj
+console.log(name)
+
+// 解决方案
+const { name: objName  } = obj
+console.log(objName)
+
+
+</code></pre>
+<h2 id="5-es2015函数的参数">5. ES2015函数的参数</h2>
+<h4 id="参数默认值-default-parameters">参数默认值 Default parameters</h4>
+<pre><code class="language-js">function foo(enable) {
+    enable = enable == undefine ? true : enable
+    console.log('foo invaked - enable:');
+    console.log(enable)
+}
+
+foo(true)
+
+
+// 只能是调用的时候没有传参数或者传undefine时
+function foo(enable = true) {
+    console.log('foo invaked - enable:');
+    console.log(enable)
+}
+foo(false)
+
+// 带有默认值的形参一定要在最后
+function foo(name, enable = true) {
+    console.log(name, enable)
+}
+foo('xxx')
+
+// 不过在浏览器环境试出结果  可以如下
+function foo(name = true, enable) {
+    console.log(name, enable)
+}
+foo(undefined, 200)
+
+</code></pre>
+<h4 id="剩余参数-rest-parameters">剩余参数 Rest parameters</h4>
+<pre><code class="language-js">
+console.log(1, 2, 3, 4)
+
+
+funciton foo() {
+    console.log(arguments)
+}
+
+// 只能出现在最后一位，只能出现一次
+funciton foo(...args) {
+    console.log(...args) // [1, 2, 3, 4]
+}
+foo(1, 2, 3, 4)
+
+
+
+</code></pre>
+<h2 id="6-箭头函数">6. 箭头函数</h2>
+<h4 id="箭头函数-arrow-functions">箭头函数 Arrow functions</h4>
+<blockquote>
+<p>程序员专用字体 Fira Code</p>
+</blockquote>
+<pre><code class="language-js">
+function inc(number) {
+    return number + 1
+}
+console.log(inc(100))
+
+
+const inc = n =&gt; n + 1
+console.log(inc(100))
+
+// 简化了回调函数的书写
+
+const arr = [1,2,3]
+arr.filter(function(item) {
+    return item % 2
+})
+
+arr.filter(i =&gt; item % 2)
+</code></pre>
+<h4 id="箭头函数与this">箭头函数与this</h4>
+<pre><code class="language-js">const person = {
+    name: 'tom',
+    sayHi: function() {
+        console.log(this.name)
+    }
+}
+
+person.sayHi(); // tom
+
+const person = {
+    name: 'tom',
+    sayHi: () =&gt;  {
+        console.log(this.name)
+    }
+}
+
+
+person.sayHi(); // undefined
+
+const person = {
+    name: 'tom',
+    sayHi: function() {
+        setTimeout(function() {
+            console.log(this.name)
+        })
+    }
+}
+person.sayHi(); // undefined
+
+const person = {
+    name: 'tom',
+    sayHi: function() {
+        setTimeout(() =&gt; {
+            console.log(this.name)
+        })
+    }
+}
+person.sayHi(); // tome
+
+</code></pre>
+<h2 id="7-对象-及-字面量增强">7. 对象 及 字面量增强</h2>
+<h4 id="对象及字面量增强-enhanced-object-literals">对象及字面量增强 Enhanced object literals</h4>
+<pre><code class="language-js">const bar = '345'
+const obj = {
+    foo: 123,
+    // bar: bar
+    bar,
+    
+    // method: function() {
+        
+    // }
+    method() {
+        
+    }
+};
+
+// 新增计算属性名
+const obj = {
+    [Math.random()]: 300
+}
+</code></pre>
+<h4 id="对象扩展方法">对象扩展方法</h4>
+<h5 id="objetassign">Objet.assign</h5>
+<ul>
+<li>将多个源对象中的属性复制到一个目标对象中</li>
+</ul>
+<pre><code class="language-js">const source1 = {
+    a: 123,
+    b: 123
+}
+const target = {
+    a: 456,
+    b: 456
+}
+const result = Object.assign(target, source1)
+console.log(target)
+console.log(target == result) // true
+
+// 作用 可以用来复制一个对象
+
+
+</code></pre>
+<h5 id="objectis">Object.is</h5>
+<pre><code class="language-js">console.log(
+ 0 == false,
+ 0 === false,
+ +0 === -0,
+ NaN == NaN,
+ Object.is(+0, -0),
+ Object.is(NaN, NaN)
+
+)
+</code></pre>
+<h2 id="8-es2015-proxy">8. ES2015 Proxy</h2>
+<h4 id="proxy-代理对象">Proxy 代理对象</h4>
+<blockquote>
+<p>Vue2.0 Object.defineProperty()</p>
+</blockquote>
+<pre><code class="language-js">const person = {
+    name: 'zce',
+    age: 20
+}
+
+const personProxy = new Proxy(person, {
+    get (target, property) {
+        console.log(target, property)
+        return target[property]
+    },
+    set (target, property, value) {
+        target[property] = value
+    },
+})
+
+console.log(personProxy.name)
+</code></pre>
+<h4 id="proxy-对比-defineproperty">Proxy 对比 defineProperty</h4>
+<ul>
+<li>defineProperty 只能监视属性的读写</li>
+<li>Proxy 能够监视到更多对象操作</li>
+</ul>
+<pre><code class="language-js">const person = {
+    name: 'zce',
+    age: 20
+}
+
+const perxonProxy = new Proxy(person, {
+    deleteProperty (target, property) {
+        delete target[property]
+    }
+})
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>handler方法</th>
+<th>触发方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>get</td>
+<td>读取某个属性</td>
+</tr>
+<tr>
+<td>set</td>
+<td>写入某个属性</td>
+</tr>
+<tr>
+<td>has</td>
+<td>in 操作符</td>
+</tr>
+<tr>
+<td>deleteProperty</td>
+<td>delete 操作符</td>
+</tr>
+<tr>
+<td>getPrototypeOf</td>
+<td>Object.getPrototypeOf()</td>
+</tr>
+<tr>
+<td>setPrototypeOf</td>
+<td>Object.setPrototypeOf()</td>
+</tr>
+<tr>
+<td>isExtensible</td>
+<td>Object.isExtensible()</td>
+</tr>
+<tr>
+<td>preventExtensions</td>
+<td>Object.perventExtensions()</td>
+</tr>
+<tr>
+<td>getOwnPropertyDescriptor</td>
+<td>Object.getOwnPropertyDescriptor()</td>
+</tr>
+<tr>
+<td>defineProperty</td>
+<td>Object.defineProperty()</td>
+</tr>
+<tr>
+<td>ownKeys</td>
+<td>Object.getOwnPropertyNames()、Object.getOwnPropertySymbols()</td>
+</tr>
+<tr>
+<td>apply</td>
+<td>调用一个函数</td>
+</tr>
+<tr>
+<td>construct</td>
+<td>用 new 调用一个函数</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Proxy 更好的支持数组对象的监视</li>
+</ul>
+<blockquote>
+<p>defineProperty对数组的操作是 重写数组的操作方法</p>
+</blockquote>
+<pre><code class="language-js">const list = []
+const listProxy = new Proxy(list, {
+    set (target, property, value) {
+        console.log(target, property, value)
+        target[property] = value;
+        return true;
+    }
+})
+</code></pre>
+<ul>
+<li>Proxy是以非侵入的方式监管了对象的读写</li>
+</ul>
+<h2 id="9-reflect-promise-class">9. Reflect、Promise、Class</h2>
+<h3 id="reflect-统一的对象操作api">Reflect 统一的对象操作API</h3>
+<blockquote>
+<p>属于一个静态类</p>
+</blockquote>
+<p><s>new Reflect()</s></p>
+<ul>
+<li><code>Reflect</code> 内部封闭了一系列对对象的底层操作</li>
+<li><code>Reflect</code> 成员方法就是 <code>Proxy</code> 处理对象的默认实现</li>
+</ul>
+<pre><code class="language-js">    const obj = {
+        foo: '123'
+    }
+    // 当第二个处理对象没传时，底层默认使用Reflect上的方法
+    const proxy = new Proxy(obj, {
+        get (target, property) {
+            return Reflect.get(target, property)
+        }
+    })
+</code></pre>
+<h5 id="推出reflect的意义">推出<code>Reflect</code>的意义</h5>
+<ul>
+<li>统一提供一套用于操作对象的API</li>
+</ul>
+<pre><code class="language-js">const obj = {
+    name: 'zce',
+    age: 18
+}
+// console.log('name' in obj)
+// delete obj['age']
+// Object.keys(obj)
+
+console.log(Reflect.has(obj, 'name'))
+console.log(Reflect.deleteProperty(obj, 'age'))
+console.log(Reflect.ownKeys(obj))
+</code></pre>
+<h3 id="promise">Promise</h3>
+<blockquote>
+<p>解决了传统异步编程中回调函数嵌套过深的问题</p>
+</blockquote>
+<p>在JavaScript异步编程课程中详情分析了</p>
+<h3 id="class-类">class 类</h3>
+<pre><code class="language-js">function Person(name) {
+    this.name = name;
+}
+Person.prototype.say = function() {
+    console.log(`he, my name is ${this.name}`)
+}
+
+// class
+class Person {
+    constructor(name) {
+        this.name = name;
+    }
+    
+    say () {
+        console.log(`hi, my name is ${this.name}`)
+    }
+}
+const p = new Person('tom')
+p.say()
+
+</code></pre>
+<h4 id="实例方法-vs-静态方法">实例方法 vs 静态方法</h4>
+<blockquote>
+<p>ES2015中新增添加静态成员的 static 关键词</p>
+</blockquote>
+<pre><code class="language-js">
+class Person {
+    constructor(name) {
+        this.name = name;
+    }
+    
+    say () {
+        console.log(`hi, my name is ${this.name}`)
+    }
+    static create(name) {
+        return new Person(name)
+    }
+}
+
+const tom = Person.create('tom')
+tom.say()
+</code></pre>
+<h4 id="类的继承-extends">类的继承 extends</h4>
+<pre><code class="language-js">class Person {
+    constructor(name) {
+        this.name = name;
+    }
+    
+    say () {
+        console.log(`hi, my name is ${this.name}`)
+    }
+    static create(name) {
+        return new Person(name)
+    }
+}
+
+class Student {
+    constructor(name, number) {
+        super(name)
+        this.number = number
+    }
+    hello() {
+        super.say()
+        console.log(`my school number is ${this.number}`)
+    }
+}
+const s = new Student()
+s.hello()
+</code></pre>
+<h2 id="10-set-map-symbol">10. Set Map Symbol</h2>
+<h3 id="set-数据结构-集合">Set 数据结构 （集合）</h3>
+<pre><code class="language-js">
+const s = new Set()
+s.add(1).add(2).add(2).add(3)
+
+console.log(s)
+s.forEacm(i =&gt; console.log(i))
+
+for (let i of s) {
+    console.log(i)
+}
+
+console.log(s.size)
+
+console.log(s.has(100))
+
+console.log(s.delete(3))
+
+s.clear()
+
+// 可以去重数组
+const arr = [1,2,1,3,4,1]
+const result = new Set(arr)
+console.log(result)
+
+// 如果想再得到一个数组
+const result = Array.from(new Set(arr))
+const result = [...new Set(arr)]
+
+
+</code></pre>
+<h3 id="map-数组结构">Map 数组结构</h3>
+<blockquote>
+<p>健值对类型，可以用任意类型的数据作为健</p>
+</blockquote>
+<pre><code class="language-js">
+// obj key只能是字符串 或 Symbol
+const obj = {}
+obj[true] = 'value'
+obj[123] = 'value'
+obj[{a: 1}] = 'value'
+console.log(Object.keys(obj))
+
+const m = new Map()
+const tom = {name: 'tom'}
+m.set(tom, 90)
+console.log(m)
+console.log(m.get(tom))
+
+m.has()
+m.delete()
+m.clear()
+
+m.forEach((value, key) =&gt; {
+    console.log(value, key)
+})
+
+
+</code></pre>
+<h3 id="symbol">Symbol</h3>
+<blockquote>
+<p>表示一个独一无二的值</p>
+</blockquote>
+<ul>
+<li>目前主要的作用就是为对象添加独一无二的属性名</li>
+</ul>
+<pre><code class="language-js">const cache = {}
+
+// a.js ======
+cache['foo'] = Math.random()
+
+// b.js ======
+cache['foo'] = '123'
+
+console.log(cache)
+
+// 表示一个独一无二的值
+const s = Symbol()
+console.log(Symbol() == Symbol())
+console.log(Symbol('foo'))
+
+// 对象中的key允许使用Symbol 所以有两种数据结构
+
+const obj = {}
+obj[Symbol()] = '123'
+obj[Symbol()] = '456'
+
+// a.js ===========
+const name = Symbol()
+const person = {
+    [name]: 'zce',
+    say() {
+        console.log(this[name])
+    }
+}
+person.say()
+</code></pre>
+<hr>
+<ul>
+<li>截止到ES2019，一共定义了7种数据 类型，未来会增加一个BigInt类型，目前还处在stage-4阶段，标准化就是8种数据类型</li>
+</ul>
+<h4 id="symbol-补充">Symbol 补充</h4>
+<pre><code>// 唯一性
+console.log(
+    Symbol('foo') == Symbol('foo')
+)
+// false
+
+const s1 = Symbol.for('foo')
+const s2 = Symbol.for('foo')
+s1 == s2 // true
+
+// 不是字符串会转成字符串
+console.log(
+    Symbol.for(true) == Symbol.for('true')
+)
+// true
+
+console.log(Symbol.iterator)
+console.log(Symbol.hasInstance)
+
+const obj = {}
+console.log(obj.toString())
+
+// 自定义
+const obj = {
+    [Symbol.toStringTag]: 'XObject'
+}
+
+const obj = {
+    [Symbol()]: 'symbol value',
+    foo: 'normal value'
+}
+for (var key in obj) {
+    console.log(key) // foo
+}
+console.log(Object.keys(obj)) // ['foo']
+console.log(JSON.stringify(obj)) // {foo: 'normal value'}
+
+// 可以获取对象当中Symbol类型的key 名
+console.log(Object.getOwnPropertySymbols(obj))
+
+
+</code></pre>
+<h1 id="11-forof-循环-迭代器-生成器-es-modules">11. for…of 循环、迭代器、生成器、ES Modules</h1>
+<h3 id="forof-循环">for...of 循环</h3>
+<blockquote>
+<p>以后会作为遍历所有数据结构的统一方式</p>
+</blockquote>
+<pre><code class="language-js">const arr = [100, 200, 300, 400]
+
+for (const item of arr) {
+    console.log(item) // 拿到的是每个元素
+}
+
+// for of 可以使用关键词 break 终止循环
+// arr.forEach 无法终止遍历的
+
+
+const s = new Set(['foo', 'bar'])
+for (const item of s) {
+    console.log(item)
+}
+
+const m = new Map()
+m.set('foo',l '123')
+m.set('bar', '345')
+// 可以改为这样
+// for (const item of m) {
+for (const [key, value] of m) {
+    console.log(item) // ['foo', '123'] ['bar', '345'] 
+}
+
+
+</code></pre>
+<h4 id="可迭代接口">可迭代接口</h4>
+<blockquote>
+<p>ES中能够表示有结构的数据类型越来越多<br>
+实现Iterable接口就是 for...of的前提</p>
+</blockquote>
+<ul>
+<li>给obj实现迭代接口 Iterable (yi te rui bo er)</li>
+</ul>
+<pre><code class="language-js">// 
+// Symbol.iterator (yi te rui te er)
+/*
+const obj = {
+    [Symbol.iterator]: function() {
+        return {
+            next: function() {
+                return {
+                    value: 'zce',
+                    done: true
+                }
+            }
+        }
+    }
+}
+*/
+/*
+{
+    value: 'zce',
+    done: true
+}
+迭代结果接口 IterationResuklt
+*/
+const obj = {
+    store: ['foo', 'bar', 'baz'],
+    [Symbol.iterator]: function() {
+        let index = 0
+        const self = this
+        return {
+            next: function() {
+                const result = {
+                    value: self.store[index],
+                    done: index &gt;= self.store
+                }
+                index++
+                return result
+            }
+        }
+    }
+}
+for (const item of obj) {
+    console.log('循环体')
+}
+
+</code></pre>
+<h4 id="迭代器模式">迭代器模式</h4>
+<pre><code class="language-js">// 迭代器设计模式
+
+// 场景： 你我协同开发一个任务清单应用
+
+// 我的代码 =================
+/*
+const todos = {
+    left: ['吃饭', '睡觉', '打豆豆'],
+    learn: ['语文', '数学', '外语']
+}
+
+// 你的代码 =================
+for (const item of todos.life) {
+    console.log(item)
+}
+for (const item of todos.learn) {
+    console.log(item)
+}
+*/
+const todos = {
+    life: ['吃饭', '睡觉', '打豆豆'],
+    learn: ['语文', '数学', '外语'],
+    [Symbol.iterator]: function() {
+        const all = [...this.life, ...this.learn]
+        let index = 0
+        return {
+            next: function() {
+                return {
+                    value: all[index],
+                    done: index++ &gt;= all.length
+                }
+                
+            }
+        }
+    }
+}
+
+// 你的代码 =================
+for (const item of todos) {
+    console.log(item)
+}
+</code></pre>
+<h3 id="生成器-generator-jie-le-rui-te-er">生成器 Generator (jie le rui te er)</h3>
+<pre><code class="language-js">
+function * foo() {
+    console.log('zce')
+    return 100
+}
+const result = foo()
+console.log(result.next()) 
+// zce 
+// { value: 100, done: true }
+
+
+
+function *foo() {
+    console.log('111')
+    yield 100
+    
+    console.log('222')
+    yield 200
+}
+const generator = foo()
+console.log(generator.next())
+console.log(generator.next())
+console.log(generator.next())
+
+</code></pre>
+<h5 id="生成器应用场景">生成器应用场景</h5>
+<pre><code class="language-js">// 案例1： 发号器
+function * createIdMaker() {
+    let id = 1
+    while(true) {
+        yield id++
+    }
+}
+
+const idMaker = createIdMaker()
+
+console.log(idMaker.next().value)
+console.log(idMaker.next().value)
+console.log(idMaker.next().value)
+console.log(idMaker.next().value)
+
+
+// 案例2： 使用 Generator 函数实现 iterator 方法
+const todos = {
+    life: ['吃饭', '睡觉', '打豆豆'],
+    learn: ['语文', '数学', '外语'],
+    [Symbol.iterator]: function() {
+        const all = [...this.life, ...this.learn]
+        for (const item of all) {
+            yield item
+        }
+        // let index = 0
+        // return {
+        //     next: function() {
+        //         return {
+        //            value: all[index],
+        //            done: index++ &gt;= all.length
+        //        }
+                
+        //    }
+        //}
+    }
+}
+
+</code></pre>
+<h3 id="es-modules">ES Modules</h3>
+<blockquote>
+<p>语言层面的模块化标准</p>
+</blockquote>
+<h3 id="esmascript-2016">ESMAScript 2016</h3>
+<blockquote>
+<p>小版本更新</p>
+</blockquote>
+<ul>
+<li>新增<code>Array.prototype.includes</code></li>
+</ul>
+<pre><code class="language-js">const arr = ['foo', 1, NaN, false];
+// 以前的有个问题就是不能查找到NaN
+console.log(arr.indexOf(NaN))
+console.log(arr.includes('foo'))
+console.log(arr.includes(NaN))
+</code></pre>
+<ul>
+<li>指数运算符</li>
+</ul>
+<pre><code class="language-javascript">// 以前的
+console.log(Math.pow(2, 10))
+
+// new
+console.log(2 ** 10)
+</code></pre>
+<h3 id="esmascript-2017">ESMAScript 2017</h3>
+<blockquote>
+<p>小版本</p>
+</blockquote>
+<ul>
+<li>Object.values</li>
+<li>Object.entries</li>
+<li>Object.getOwnPropertyDescriptors</li>
+<li>String.prototype.padStart / String.prototype.padEnd</li>
+<li>在函数参数中添加尾逗号</li>
+<li>Async / Await</li>
+</ul>
+<pre><code class="language-js">const obj = {
+    foo: 'value1',
+    bar: 'value2'
+}
+// Object.values
+console.log(Object.values(obj))
+
+// Object.entries
+console.log(Object.entries(obj))
+for (const [key, value] of Object.entries(obj)) {
+    console.log(key, value) // foo value1 | bar value2
+}
+// 将对象转成Map
+new Map(Object.entries(obj))
+
+// Object.getOwnPropertyDescriptors
+// 获取对象当中属性的完整信息
+const p1 = {
+    firstName: 'Lei',
+    lastName: 'wang',
+    get fullName() {
+        return this.firstName + ' ' + this.lastName
+    }
+}
+
+const p2 = Object.assign({}, p1)
+p2.firstName = 'zce'
+console.log(p2.fullName)
+console.log(p2) // { firstName: 'zce', lastName: 'Wang', fullMame: 'Lei Wang' }
+const descriptors = Object.getOwnPropertyDescriptors(p1)
+const p2 = Object.defineProperties({}, descriptors)
+p2.firstName = 'zce'
+console.log(p2.fullName) // zce wang
+
+// String.prototype.padStart / String.prototype.padEnd
+
+const books = {
+    html: 5,
+    css: 16,
+    javascript: 128
+}
+for (const [name, count] of Object.entries(books)) {
+    console.log(`${name.padEnd(16, '-')} | ${count.toString().padStart(3, '0')}`)
+}
+/*
+html------------ | 005
+css------------- | 016
+javascript------ | 128
+*/
+
+// 在函数参数中添加尾逗号
+const arr = [
+    100,
+    200,
+    300,
+]
+
+
+</code></pre>
+<h4 id="async-await">Async / Await</h4>
+<blockquote>
+<p>使用Promise的语法糖</p>
+</blockquote>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#esmascript-%E6%96%B0%E7%89%B9%E6%80%A7">ESMAScript 新特性</a>
+<ul>
+<li><a href="#1-ecmascript-%E6%A6%82%E8%BF%B0">1. ECMAScript 概述</a>
+<ul>
+<li><a href="#web%E7%8E%AF%E5%A2%83">@Web环境</a></li>
+<li><a href="#nodejs">@Node.js</a></li>
+<li><a href="#ecmascript-%E7%89%88%E6%9C%AC">ECMAScript 版本</a></li>
+</ul>
+</li>
+<li><a href="#2-es2015-let-%E4%B8%8E%E5%9D%97%E7%BA%A7%E4%BD%9C%E7%94%A8%E5%9F%9F%E4%BB%A5%E5%8F%8Aconst">2. ES2015 let 与块级作用域，以及const</a><br>
+*
+<ul>
+<li><a href="#let">let</a></li>
+<li><a href="#const-%E6%81%92%E9%87%8F%E5%B8%B8%E9%87%8F">const 恒量/常量</a></li>
+</ul>
+</li>
+<li><a href="#3-es2015-%E6%A8%A1%E6%9D%BF%E5%AD%97%E7%AC%A6%E4%B8%B2">3. ES2015 模板字符串</a><br>
+*
+<ul>
+<li><a href="#%E6%A8%A1%E6%9D%BF%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AD%97%E9%9D%A2%E9%87%8F-template-literals">模板字符串字面量 Template literals</a></li>
+<li><a href="#%E6%A8%A1%E6%9D%BF%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%A0%87%E7%AD%BE%E5%87%BD%E6%95%B0-tagged-templates">模板字符串标签函数 Tagged templates</a></li>
+<li><a href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95">字符串的扩展方法</a></li>
+</ul>
+</li>
+<li><a href="#4-es2015-%E6%95%B0%E7%BB%84%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%A7%A3%E6%9E%84">4. ES2015 数组和对象的解构</a><br>
+*
+<ul>
+<li><a href="#%E6%95%B0%E7%BB%84%E4%B8%AD%E7%9A%84%E8%A7%A3%E6%9E%84">数组中的解构</a></li>
+<li><a href="#%E5%B1%95%E5%BC%80%E6%95%B0%E7%BB%84-spread">展开数组 Spread</a></li>
+<li><a href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%A7%A3%E6%9E%84-destructuring">对象的解构 Destructuring</a></li>
+</ul>
+</li>
+<li><a href="#5-es2015%E5%87%BD%E6%95%B0%E7%9A%84%E5%8F%82%E6%95%B0">5. ES2015函数的参数</a><br>
+*
+<ul>
+<li><a href="#%E5%8F%82%E6%95%B0%E9%BB%98%E8%AE%A4%E5%80%BC-default-parameters">参数默认值 Default parameters</a></li>
+<li><a href="#%E5%89%A9%E4%BD%99%E5%8F%82%E6%95%B0-rest-parameters">剩余参数 Rest parameters</a></li>
+</ul>
+</li>
+<li><a href="#6-%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0">6. 箭头函数</a><br>
+*
+<ul>
+<li><a href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0-arrow-functions">箭头函数 Arrow functions</a></li>
+<li><a href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E4%B8%8Ethis">箭头函数与this</a></li>
+</ul>
+</li>
+<li><a href="#7-%E5%AF%B9%E8%B1%A1-%E5%8F%8A-%E5%AD%97%E9%9D%A2%E9%87%8F%E5%A2%9E%E5%BC%BA">7. 对象 及 字面量增强</a><br>
+*
+<ul>
+<li><a href="#%E5%AF%B9%E8%B1%A1%E5%8F%8A%E5%AD%97%E9%9D%A2%E9%87%8F%E5%A2%9E%E5%BC%BA-enhanced-object-literals">对象及字面量增强 Enhanced object literals</a></li>
+<li><a href="#%E5%AF%B9%E8%B1%A1%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95">对象扩展方法</a>
+<ul>
+<li><a href="#objetassign">Objet.assign</a></li>
+<li><a href="#objectis">Object.is</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#8-es2015-proxy">8. ES2015 Proxy</a><br>
+*
+<ul>
+<li><a href="#proxy-%E4%BB%A3%E7%90%86%E5%AF%B9%E8%B1%A1">Proxy 代理对象</a></li>
+<li><a href="#proxy-%E5%AF%B9%E6%AF%94-defineproperty">Proxy 对比 defineProperty</a></li>
+</ul>
+</li>
+<li><a href="#9-reflect-promise-class">9. Reflect、Promise、Class</a>
+<ul>
+<li><a href="#reflect-%E7%BB%9F%E4%B8%80%E7%9A%84%E5%AF%B9%E8%B1%A1%E6%93%8D%E4%BD%9Capi">Reflect 统一的对象操作API</a><br>
+*
+<ul>
+<li><a href="#%E6%8E%A8%E5%87%BAreflect%E7%9A%84%E6%84%8F%E4%B9%89">推出<code>Reflect</code>的意义</a></li>
+</ul>
+</li>
+<li><a href="#promise">Promise</a></li>
+<li><a href="#class-%E7%B1%BB">class 类</a>
+<ul>
+<li><a href="#%E5%AE%9E%E4%BE%8B%E6%96%B9%E6%B3%95-vs-%E9%9D%99%E6%80%81%E6%96%B9%E6%B3%95">实例方法 vs 静态方法</a></li>
+<li><a href="#%E7%B1%BB%E7%9A%84%E7%BB%A7%E6%89%BF-extends">类的继承 extends</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#10-set-map-symbol">10. Set Map Symbol</a>
+<ul>
+<li><a href="#set-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%9B%86%E5%90%88">Set 数据结构 （集合）</a></li>
+<li><a href="#map-%E6%95%B0%E7%BB%84%E7%BB%93%E6%9E%84">Map 数组结构</a></li>
+<li><a href="#symbol">Symbol</a>
+<ul>
+<li><a href="#symbol-%E8%A1%A5%E5%85%85">Symbol 补充</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#11-forof-%E5%BE%AA%E7%8E%AF-%E8%BF%AD%E4%BB%A3%E5%99%A8-%E7%94%9F%E6%88%90%E5%99%A8-es-modules">11. for…of 循环、迭代器、生成器、ES Modules</a><br>
+*
+<ul>
+<li><a href="#forof-%E5%BE%AA%E7%8E%AF">for...of 循环</a>
+<ul>
+<li><a href="#%E5%8F%AF%E8%BF%AD%E4%BB%A3%E6%8E%A5%E5%8F%A3">可迭代接口</a></li>
+<li><a href="#%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F">迭代器模式</a></li>
+</ul>
+</li>
+<li><a href="#%E7%94%9F%E6%88%90%E5%99%A8-generator-jie-le-rui-te-er">生成器 Generator (jie le rui te er)</a><br>
+*
+<ul>
+<li><a href="#%E7%94%9F%E6%88%90%E5%99%A8%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF">生成器应用场景</a></li>
+</ul>
+</li>
+<li><a href="#es-modules">ES Modules</a></li>
+<li><a href="#esmascript-2016">ESMAScript 2016</a></li>
+<li><a href="#esmascript-2017">ESMAScript 2017</a>
+<ul>
+<li><a href="#async-await">Async / Await</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://hongchengfhc.github.io/jin-jie-1-01-03-shou-xie-promise/">
+              <h3 class="post-title">
+                进阶1-01-03手写Promise
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://hongchengfhc.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

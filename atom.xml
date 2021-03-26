@@ -2,18 +2,3353 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hongchengfhc.github.io/</id>
     <title>Gridea</title>
-    <updated>2020-09-14T03:15:50.126Z</updated>
+    <updated>2021-03-26T05:49:26.331Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hongchengfhc.github.io/"/>
     <link rel="self" href="https://hongchengfhc.github.io/atom.xml"/>
     <subtitle>温故而知新</subtitle>
     <logo>https://hongchengfhc.github.io/images/avatar.png</logo>
     <icon>https://hongchengfhc.github.io/favicon.ico</icon>
-    <rights>All rights reserved 2020, Gridea</rights>
+    <rights>All rights reserved 2021, Gridea</rights>
+    <entry>
+        <title type="html"><![CDATA[进阶1-02-03-03 JavaScript性能优化2]]></title>
+        <id>https://hongchengfhc.github.io/jin-jie-1-02-03-03-javascript-xing-neng-you-hua-2/</id>
+        <link href="https://hongchengfhc.github.io/jin-jie-1-02-03-03-javascript-xing-neng-you-hua-2/">
+        </link>
+        <updated>2021-03-26T05:49:08.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="先了解一下-堆栈中的js执行过程">先了解一下 堆栈中的JS执行过程</h1>
+<figure data-type="image" tabindex="1"><a href="https://imgtu.com/i/67k5Ps"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cf4342ec94a74263b0d566cef6051d4b~tplv-k3u1fbpfcp-zoom-1.image" alt="67k5Ps.png" loading="lazy"></a></figure>
+<h3 id="1-减少判断层级">1. 减少判断层级</h3>
+<pre><code class="language-js">// 没有优化
+function doSomething(part, chapter) {
+    const parts = ['ES2016', '工程化', 'Vue', 'React', 'Node']
+    if (part) {
+        if (parts.includes(part)) {
+            console.log('属于当前课程')
+            if (chapter &gt; 5) {
+                console.log('您需要提供 VIP 身份')
+            }
+        } 
+    } else {
+        console.log('请确认模块信息')
+    }
+}
+doSomething('ES2016', 6)
+
+// 优化后
+function doSomething(part, chapter) {
+    const parts = ['ES2016', '工程化', 'Vue', 'React', 'Node']
+    
+    if (!part) {
+        console.log('请确认模块信息')
+        return
+    }
+    if (!parts.includes(part)) return
+    console.log('属于当前课程')
+    if (chapter &gt; 5) {
+        console.log('您需要提供 VIP 身份')
+    }
+}
+doSomething('ES2016', 6)
+</code></pre>
+<h3 id="2-减少作用域链查找层级">2. 减少作用域链查找层级</h3>
+<pre><code class="language-js">// 优化前
+var name = &quot;zce&quot;
+function foo() {
+    name = &quot;zce666&quot;
+    function baz() {
+        var age = 20
+        console.log(age)
+        console.log(name)
+    }
+    baz()
+}
+foo()
+
+// 优化后
+var name = &quot;zce&quot;
+function foo() {
+    // 在这里name使用了var声明
+    var name = &quot;zce666&quot;
+    function baz() {
+        var age = 20
+        console.log(age)
+        console.log(name)
+    }
+    baz()
+}
+foo()
+</code></pre>
+<h3 id="3-减少数据读取次数">3. 减少数据读取次数</h3>
+<pre><code class="language-html">&lt;button class=&quot;skip&quot; id=&quot;skip&quot;&gt;&lt;/button&gt;
+</code></pre>
+<pre><code class="language-js">// 相当于空间换时间
+// 优化前
+function hasEle(ele, cls) {
+    return ele.className == cls
+}
+
+// 优化后
+function hasEle(ele, cls) {
+    var clsname = ele.className
+    return clsname == cls
+}
+hasEle(document.getElementById('skip'), 'skip')
+</code></pre>
+<h3 id="4-字面量与构造式">4. 字面量与构造式</h3>
+<pre><code class="language-js">// 优化前
+let test = () =&gt; {
+    let obj = new Object()
+    obj.name = 'zce'
+    obj.age = 38
+    obj.slogan = '我为前端而活'
+    return obj
+}
+console.log(test())
+
+
+
+// 优化后
+let test = () =&gt; {
+    let obj = {
+        name: 'zce'，
+        age: 38,
+        slogan: '我为前端而活'
+    }
+    return obj
+}
+console.log(test())
+
+</code></pre>
+<h3 id="5-减少循环体活动">5. 减少循环体活动</h3>
+<p><code>for (var i = 0, len = arr.length; i &lt; len; i++)</code></p>
+<h3 id="6-减少声明及语句数">6. 减少声明及语句数</h3>
+<pre><code class="language-html">&lt;div id=&quot;box&quot; style=&quot;width: 100px; height: 100px;&quot;&gt;&lt;/div&gt;
+</code></pre>
+<pre><code class="language-js">var oBox = document.getElementById('box')
+
+// 优化前
+var test = (ele) =&gt; {
+    let w = ele.offsetWidth
+    let h = ele.offsetHeight
+    return w * h
+}
+
+// 优化后
+var test = (ele) =&gt; {
+    return ele.offsetWidth * ele.offsetHeight
+}
+
+// -------------------------
+// 优化前
+var test = () =&gt; {
+    var name = 'zce'
+    var age = 38
+    var slogan = '我为前端而活'
+    return name + age + slogan
+}
+
+// 优化后
+var test = () =&gt; {
+    var name = 'zce',
+        age = 38,
+        slogan = '我为前端而活'
+    return name + age + slogan
+}
+</code></pre>
+<h3 id="7-采用事件委托">7. 采用事件委托</h3>
+<pre><code class="language-html">&lt;ul id=&quot;ul&quot;&gt;
+    &lt;li&gt;ZCE&lt;/li&gt;
+    &lt;li&gt;28&lt;/li&gt;
+    &lt;li&gt;我为前端而活&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+<pre><code class="language-js">var oUl = document.getElementById('ul')
+oUl.addeventListener('click', showTxt, true)
+function showTxt(e) {
+    var target = e.target
+    if (target.nodeName.toLowerCase() == 'li') {
+        console.log(target.innerHTML)
+    }
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[进阶1-02-03-02 JavaScript性能检测及优化]]></title>
+        <id>https://hongchengfhc.github.io/jin-jie-1-02-03-02-javascript-xing-neng-jian-ce-ji-you-hua/</id>
+        <link href="https://hongchengfhc.github.io/jin-jie-1-02-03-02-javascript-xing-neng-jian-ce-ji-you-hua/">
+        </link>
+        <updated>2021-03-26T05:48:28.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="1-performance工具">1. Performance工具</h1>
+<h3 id="1-为什么使用performance">1. 为什么使用Performance</h3>
+<ul>
+<li>GC的目的是为了实现内存空间的良性循环</li>
+<li>良性循环的基石是合理使用</li>
+<li>时刻关注才能确定是否合理</li>
+<li>Performance提供多种监控的方式</li>
+</ul>
+<h5 id="通过performance时刻监控内存">通过Performance时刻监控内存</h5>
+<h4 id="performance使用步骤">Performance使用步骤</h4>
+<ul>
+<li>打开浏览器输入目标网址</li>
+<li>进入开发人员工具面板，选择性能</li>
+<li>开启录制功能，访问具体界面</li>
+<li>执行用户行为，一段时间后停止录制</li>
+<li>分析界面中记录的内存信息</li>
+</ul>
+<hr>
+<h3 id="2-内存问题的体现">2. 内存问题的体现</h3>
+<h4 id="内存问题的外在表现">内存问题的外在表现</h4>
+<ul>
+<li>页面出现延迟加载或经常性暂停</li>
+<li>页面持续性出现糟糕的性能</li>
+<li>页面的性能随时间延长越来越差</li>
+</ul>
+<hr>
+<h3 id="3-监控内存的几种方式">3. 监控内存的几种方式</h3>
+<h4 id="界定内存问题的标准">界定内存问题的标准</h4>
+<ul>
+<li>内存泄露：内存使用持续升高</li>
+<li>内存膨胀：在多数设备上都存在性能问题</li>
+<li>频繁垃圾回收：通过内存变化图进行分析</li>
+</ul>
+<h4 id="监控内存的几种方式">监控内存的几种方式</h4>
+<ol>
+<li>浏览器任务管理器</li>
+<li>Timeline时序图记录</li>
+<li>堆快照查找分离DOM
+<ul>
+<li>什么是分离DOM
+<ul>
+<li>界面元素存活在DOM树上</li>
+<li>垃圾对象时的DOM节点</li>
+<li>分离状态的DOM节点</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>判断是否存在频繁的垃圾回收
+<ul>
+<li>为什么要确定频繁垃圾回收
+<ul>
+<li>GC工作时应用程序是静止的</li>
+<li>频繁且过长的GC会导致应用假死</li>
+<li>用户使用中感知应用卡顿</li>
+</ul>
+</li>
+<li>如何确定频繁的垃圾回收
+<ul>
+<li>Timeline中频繁的上升下降</li>
+<li>任务管理器中数据频繁的增加减小</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="4-performance总结">4. Performance总结</h3>
+<ul>
+<li>Performance使用流程</li>
+<li>内存问题的相关分析</li>
+<li>Performance时序图监控内存变化</li>
+<li>任务管理器监控内存变化</li>
+<li>堆快照查找分离DOM</li>
+</ul>
+<h1 id="2-优化">2. 优化</h1>
+<h2 id="1-代码优化">1. 代码优化</h2>
+<h3 id="如何精准测试-javascript性能">如何精准测试 JavaScript性能</h3>
+<ul>
+<li>本质上就是采集大量的执行样本进行数学统计和分析</li>
+<li>使用基于Benchmark.js的 https://jsperf.com/ 完成</li>
+</ul>
+<h4 id="jsperf使用流程">Jsperf使用流程</h4>
+<ul>
+<li>使用GitHub账号登录</li>
+<li>填写个人信息（非必须）</li>
+<li>填写详细的测试用例信息（title、slug）</li>
+<li>填写准备代码（DOM操作时经常使用</li>
+<li>填写必要有setup与teardown代码</li>
+<li>填写测试代码片段</li>
+</ul>
+<h2 id="2-全局变量">2. 全局变量</h2>
+<h3 id="21-慎用全局变量">2.1 慎用全局变量</h3>
+<h4 id="为什么要慎用">为什么要慎用</h4>
+<ul>
+<li>全局变量定义在全局执行上下文，是所有作用域链的顶端</li>
+<li>全局执行上下文一直存在于上下文执行栈，直到程序退出</li>
+<li>如果某个局部作用域出现了同名变量则会遮蔽或污染全局</li>
+</ul>
+<pre><code class="language-js">// 1. 片段1
+var i, str = ''
+for (i = 0; i &lt; 100000; i++) {
+    str += i
+}
+
+// 2. 片段2 效率更好
+for (let i = 0; i &lt; 1000; i++) {
+    let str = ''
+    str += i
+}
+</code></pre>
+<figure data-type="image" tabindex="1"><a href="https://imgtu.com/i/6oUbSP"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e0c3b338d9374197a13a71344c3b226f~tplv-k3u1fbpfcp-zoom-1.image" alt="6oUbSP.png" loading="lazy"></a></figure>
+<h3 id="22-缓存全局变量">2.2 缓存全局变量</h3>
+<p>将使用中无法避免的全局变量缓存到局部</p>
+<pre><code class="language-HTML">&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn1&quot;&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn2&quot;&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn3&quot;&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn4&quot;&gt;
+&lt;p&gt;111&lt;/p&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn5&quot;&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn6&quot;&gt;
+&lt;p&gt;222&lt;/p&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn7&quot;&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn8&quot;&gt;
+&lt;p&gt;333&lt;/p&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn9&quot;&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn10&quot;&gt;
+</code></pre>
+<pre><code class="language-js">function getBtn() {
+    let oBtn1 = document.getElementById('btn1')
+    let oBtn3 = document.getElementById('btn3')
+    let oBtn5 = document.getElementById('btn5')
+    let oBtn7 = document.getElementById('btn7')
+    let oBtn9 = document.getElementById('btn9')
+}
+
+function getBtn2() {
+    let obj = document
+    let oBtn1 = obj.getElementById('btn1')
+    let oBtn3 = obj.getElementById('btn3')
+    let oBtn5 = obj.getElementById('btn5')
+    let oBtn7 = obj.getElementById('btn7')
+    let oBtn9 = obj.getElementById('btn9')
+}
+</code></pre>
+<figure data-type="image" tabindex="2"><a href="https://imgtu.com/i/6oUWLD"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/62083ddc59a84fc9abb492f8073fdcd2~tplv-k3u1fbpfcp-zoom-1.image" alt="6oUWLD.png" loading="lazy"></a></figure>
+<h2 id="3-通过原型新增方法">3. 通过原型新增方法</h2>
+<blockquote>
+<p>在原型对象上新增实例对象需要的方法</p>
+</blockquote>
+<pre><code class="language-js">var fn1 = function() {
+    this.foo = function() {
+        console.log(11111)
+    }
+}
+let f1 = new fn1()
+
+var fn2 = function() {}
+fn2.prototype.foo = function() {
+    console.log(11111)
+}
+let f2 = new fn2()
+</code></pre>
+<figure data-type="image" tabindex="3"><a href="https://imgtu.com/i/6odsv6"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6c35413e5af448aab3141557772da2d7~tplv-k3u1fbpfcp-zoom-1.image" alt="6odsv6.png" loading="lazy"></a></figure>
+<h2 id="4-避开闭包陷阱">4. 避开闭包陷阱</h2>
+<h4 id="闭包特点">闭包特点</h4>
+<ul>
+<li>外部具有指向内部的引用</li>
+<li>在“外”部作用域访问“内”部作用域的数据</li>
+</ul>
+<pre><code class="language-js">function foo() {
+    var name = 'lg'
+    function fn() {
+        console.log(name)
+    }
+    return fn
+}
+var a = foo()
+a()
+</code></pre>
+<h4 id="关于闭包">关于闭包</h4>
+<ul>
+<li>闭包是一种强大的语法</li>
+<li>闭包使用不当很容易出现内存泄露</li>
+<li>不要为了闭包而闭包</li>
+</ul>
+<pre><code class="language-js">function foo() {
+    var el = document.getElementById('btn')
+    el.onclick = function () {
+        console.log(el.id)
+    }
+    
+    el = null // 在这里加上，可以避免内存泄露，但这样在运行过程中会报错
+}
+foo()
+// 以上就出现了闭包陷阱
+</code></pre>
+<h2 id="5-避免属性访问方法使用">5. 避免属性访问方法使用</h2>
+<h3 id="51-javascript中的面向对象">5.1 JavaScript中的面向对象</h3>
+<ul>
+<li>JS不需属性的访问方法，所有属性都是外部可见的</li>
+<li>使用属性访问方法只会增加一层重定义，没有访问的控制力</li>
+</ul>
+<pre><code class="language-js">function Person() {
+    this.name = 'icoder'
+    this.age = 18
+    this.getAge = function() {
+        return this.age
+    }
+}
+const p1 = new Person()
+const a = p1.getAge()
+
+function Person() {
+    this.name = 'icoder'
+    this.age = 18
+}
+const p2 = new Person()
+const b = p2.age
+
+</code></pre>
+<figure data-type="image" tabindex="4"><a href="https://imgtu.com/i/6TcuT0"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3ddc8be5873448d7a4dbcdc46220401c~tplv-k3u1fbpfcp-zoom-1.image" alt="6TcuT0.png" loading="lazy"></a></figure>
+<h3 id="52-for循环优化">5.2 For循环优化</h3>
+<figure data-type="image" tabindex="5"><a href="https://imgtu.com/i/6Tcq7q"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9816c7efd12c4b9790acf476cf8fd46c~tplv-k3u1fbpfcp-zoom-1.image" alt="6Tcq7q.png" loading="lazy"></a></figure>
+<h4 id="521-采用最优循环方式">5.2.1 采用最优循环方式</h4>
+<pre><code class="language-js">var arrList = new Array(1, 2, 3, 4, 5)
+
+// 最快
+arrList.forEach(function(item) {
+    console.log(item)
+})
+
+// 其次
+for (var i = arrList.length; i; i--){
+    console.log(arrList[i])
+}
+
+// 最慢
+for (var i in arrList) {
+    console.log(arrList[i])
+}
+</code></pre>
+<h3 id="6-文档碎片优化节点添加">6. 文档碎片优化节点添加</h3>
+<h4 id="61-节点添加优化">6.1 节点添加优化</h4>
+<blockquote>
+<p>节点的添加操作必然会有回流和重绘</p>
+</blockquote>
+<ul>
+<li>回流：规模尺寸，布局，隐藏等改变</li>
+<li>重绘：只影响元素外观<br>
+https://www.jianshu.com/p/e081f9aa03fb</li>
+</ul>
+<figure data-type="image" tabindex="6"><a href="https://imgtu.com/i/6T2bF0"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d10a0b70ff2a4bdb82bf7f600cd62219~tplv-k3u1fbpfcp-zoom-1.image" alt="6T2bF0.png" loading="lazy"></a></figure>
+<h4 id="62-克隆优化节点操作">6.2 克隆优化节点操作</h4>
+<pre><code class="language-html">&lt;p id=&quot;box1&quot;&gt;old&lt;/p&gt;
+</code></pre>
+<pre><code class="language-js">// 执行结果 29387
+function (var i = 0; i &lt; 3; i++) {
+    var op = document.createElement('p')
+    op.innerHTML = i
+    document.body.appendChild(op)
+}
+
+// 执行结果  31740
+var oldP = document.getElementById('box1')
+function (var i = 0; i &lt; 3; i++) {
+    var op = oldP.cloneNode(false)
+    op.innerHTML = i
+    document.body.appendChild(op)
+}
+
+
+</code></pre>
+<h4 id="63-直接量替换object操作">6.3 直接量替换<code>Object</code>操作</h4>
+<pre><code class="language-js">// 执行结果 703,598,776
+var a = [1, 2, 3]
+
+// 执行结果 714,136,415
+var arr = new Array(3)
+arr[0] = 1
+arr[1] = 2
+arr[2] = 3
+
+</code></pre>
+<h3 id="代码优化总结"><code>代码优化总结：</code></h3>
+<ol>
+<li>慎用全局变量</li>
+<li>缓存全局变量</li>
+<li>通过原型新增方法</li>
+<li>避开装饰陷阱</li>
+<li>避免属性访问方法使用</li>
+<li><code>for</code>循环优化</li>
+<li>文档碎片优化节点添加</li>
+</ol>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[进阶1-02-02TS介绍及JS类型检查]]></title>
+        <id>https://hongchengfhc.github.io/jin-jie-1-02-02ts-jie-shao-ji-js-lei-xing-jian-cha/</id>
+        <link href="https://hongchengfhc.github.io/jin-jie-1-02-02ts-jie-shao-ji-js-lei-xing-jian-cha/">
+        </link>
+        <updated>2021-03-26T05:48:07.000Z</updated>
+        <content type="html"><![CDATA[<ol>
+<li><code>TypeScript</code> 大大提高代码的可靠程度</li>
+<li><code>JavaScript</code> 自有类型系统的问题</li>
+</ol>
+<h1 id="介绍typescript前先介绍一下类型检查">介绍TypeScript前先介绍一下类型检查</h1>
+<h4 id="介绍模块">介绍模块</h4>
+<ol>
+<li>强类型与弱类型</li>
+<li>静态类型与动态类型</li>
+<li><code>JavaScript</code> 自有类型系统的问题</li>
+<li><code>Flow</code>静态类型检查方案</li>
+<li><code>TypeScript</code>语言规范与基本应用</li>
+</ol>
+<h2 id="1-类型介绍">1. 类型介绍</h2>
+<h3 id="1-强类型-vs-弱类型">1. 强类型 vs 弱类型</h3>
+<ol>
+<li>强类型:  语言层面限制函数的实参类型必须与形参类型相同</li>
+</ol>
+<p>eg:</p>
+<pre><code class="language-java">class Main {
+    static void foo(int num) {
+        System.out.println(num);
+    }
+    
+    public static void main(String[] args) {
+        Main.foo(100); // ok
+        
+        Main.foo(&quot;100&quot;); // error &quot;100&quot; is a string
+        
+        Main.foo(Integer.parseInt(&quot;100 &quot;)); // ok
+    }
+}
+</code></pre>
+<ol start="2">
+<li>弱类型：语言层面不会限制实参的类型<br>
+eg</li>
+</ol>
+<pre><code class="language-js">function foo(num) {
+    console.log(num)
+}
+foo(100) // ok
+foo('100') // ok
+foo(parseInt('100')) // ok
+</code></pre>
+<blockquote>
+<p>由于这种强弱类型之分根本不是某个权威机构的定义;</p>
+</blockquote>
+<blockquote>
+<p>强类型有更强的类型约束，而弱类型中几乎没有什么约束</p>
+</blockquote>
+<h5 id="个人理解">个人理解:</h5>
+<ol>
+<li>强类型语言中不允许什么问题的隐式类型转换</li>
+<li>弱类型语言则允许任意的数据隐式类型转换</li>
+<li>强类型不允许随意的隐式类型转换，而弱类型是允许的</li>
+<li>变量类型允许随时改变的特点，不是强毕竟类型的差异</li>
+</ol>
+<h3 id="2-类型系统">2. 类型系统</h3>
+<blockquote>
+<p>静态类型与动态类型</p>
+</blockquote>
+<ol>
+<li>静态类型: 一个变量声明时它的类型就是明确的,声明过后，它的类型就不允许修改了</li>
+<li>动态类型：在运行阶段才能够明确变量类型，而且变量的类型随时可以改变<br>
+eg:</li>
+</ol>
+<pre><code class="language-js">var foo = 100
+foo = 'bar' // ok
+console.log(foo)
+</code></pre>
+<p><strong>也可以说在动态类型语文中的变量没有类型，而变量中存放的值是有类型的</strong></p>
+<h4 id="类型安全分为-强类型-和-弱类型">类型安全分为 <code>强类型</code> 和 <code>弱类型</code></h4>
+<h4 id="类型检查分为-静态类型-和-动态类型">类型检查分为 <code>静态类型</code> 和 <code>动态类型</code></h4>
+<p>如下图<br>
+<a href="https://imgtu.com/i/6fUjc4"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ac1925adb7414225aca91db0345d7e7f~tplv-k3u1fbpfcp-zoom-1.image" alt="6fUjc4.png" loading="lazy"></a></p>
+<h4 id="21-javascript-类型系统特征">2.1 JavaScript 类型系统特征</h4>
+<blockquote>
+<p><code>弱类型</code> 且 <code>动态类型</code></p>
+</blockquote>
+<p><font color="red"><strong>js的类型用一个词描述：【<code>任性</code>】</strong></font> 缺失了类型系统的可靠性 --&gt; <font color="red"><code>不靠谱</code></font></p>
+<h5 id="为什么javascript不是强类型-静态类型">? 为什么JavaScript不是强类型 / 静态类型</h5>
+<pre><code>1. 早前的 JavaScript 应用简单
+2. JavaScript 没有编译环节
+3. 选择为 弱类型 / 动态类型
+4. 在大规模应用下，这种【优势】就变成了短板
+</code></pre>
+<h4 id="弱类型的问题">弱类型的问题</h4>
+<blockquote>
+<p>举例</p>
+</blockquote>
+<pre><code class="language-js">// 01
+const obj = {}
+obj.foo()
+// 报错要等到运行阶段才能发现类型异常
+// ======================
+// 02
+function sum(a, b) {
+    return a + b
+}
+console.log(sum(100, 100)) // 200
+console.log(sum(100, '100')) // 100100
+// ======================
+// 03
+const obj = {}
+obj[true] = 100 // 会自动转换成字符串
+
+console.log(obj['true'])
+</code></pre>
+<h4 id="强类型的优势">强类型的优势</h4>
+<ol>
+<li>错误更早暴露</li>
+<li>代码更智能，编码更准确</li>
+<li>重构更牢靠</li>
+<li>减少不必要的类型判断</li>
+<li>......</li>
+</ol>
+<h2 id="2-flow-js的类型检查工具">2. Flow js的类型检查工具</h2>
+<h4 id="flow">Flow</h4>
+<blockquote>
+<p>JavaScript的类型的检查器</p>
+</blockquote>
+<p><strong>Flow只是一个小工具，So Easy</strong></p>
+<pre><code class="language-js">// 类型注解
+function sum (a: number, b: number) {
+    return a + b
+}
+sum(100, 50) // ok
+sum('100', 50) // error
+</code></pre>
+<h4 id="快速上手">快速上手</h4>
+<pre><code class="language-js">// 安装 yarn add flow-bin --dev
+
+// 增加.flowconfig文件 yarn flow init
+/*
+.flowconfig
+[ignore]
+[include]
+[libs]
+[lints]
+[options]
+[strict]
+*/
+
+// 使用的时候需要在文件顶上增加 @flow，并且需要关闭掉vscode的语法校验
+// @flow
+function sum (a, b) {
+    return a + b
+}
+
+// 终端使用命令检查 
+// 执行 yarn flow
+// 停止 yarn flow stop
+</code></pre>
+<h4 id="编译">编译</h4>
+<ul>
+<li>写好的js文件没办法用node执</li>
+</ul>
+<pre><code class="language-js">// 所以安装 yarn add flow-remove-types --dev
+
+// 执行 yarn flow-remove-types [文件目录] . -d [输出目录]
+
+</code></pre>
+<h5 id="尝试使用babel">尝试使用babel</h5>
+<pre><code>// @babel/core 核心模块
+// @babel/cli cli工具，可以让我们在命令行中直接使用babel命令去完成编译
+// @babel/preset-flow --dev
+// 安装
+// yarn add @babel/core @babel/cli @babel/preset-flow --dev
+
+// 2. 添加babel的配置文件 .babelrc
+/*
+// .babelrc
+{
+    &quot;presets&quot;: [&quot;@babel/preset-flow&quot;]
+}
+
+*/
+// 执行命令 yarn babel src -d dist
+
+</code></pre>
+<h4 id="开发工具插件-flow-lanugage-support">开发工具插件 Flow Lanugage Support</h4>
+<blockquote>
+<p>让错误直接在开发工具上显示出来</p>
+</blockquote>
+<ul>
+<li>下载插件 Flow Lanugage Support</li>
+</ul>
+<h4 id="类型推断-type-inference">类型推断 Type Inference</h4>
+<pre><code class="language-js">/**
+* 类型推断
+* @flow
+*/
+function square (n) {
+    return n * n
+}
+square('100') // 这里用了字符串,flow会推导出 n*n是错误的
+</code></pre>
+<h4 id="类型注解-type-annotations">类型注解 Type Annotations</h4>
+<pre><code>// 1. 函数的参数上以及返参
+funcion square(n:  number): number {
+    return n * n
+}
+// 2. 变量
+let num: number = 100;
+
+// 3. 没有返回值标记成void
+function say(): void {}
+</code></pre>
+<h4 id="原始类型-primitive-types">原始类型 Primitive Types</h4>
+<pre><code class="language-js">let a: string = 'foobar'
+
+let b: number = Infinity // NaN // 100
+
+let c: boolean = true
+
+let d: null = null
+
+let e: void = undefined
+
+let f: symbol = Symbol()
+</code></pre>
+<h4 id="数组类型-array-types">数组类型 Array Types</h4>
+<pre><code class="language-js">// 泛型
+const arr1: Array&lt;number&gt; = [1, 2, 3]
+
+const arr2: number[] = [1, 2, 3]
+
+// 元组
+const f00: [string, number] = ['foo', 100]
+</code></pre>
+<h4 id="对象类型-object-types">对象类型 Object Types</h4>
+<pre><code class="language-js">const obj1: {foo: string, bar: number} = { foo: 'string', bar: 100 }
+
+const obj2: {foo?: string, bar: number} = {bar: 100}  // foo可选
+
+const obj3: {[string]: string} = {}
+obj3.key1 = 'value1'
+obj3.key2 = 'value2'
+</code></pre>
+<h4 id="函数类型-function-types">函数类型 Function Types</h4>
+<pre><code class="language-js">
+function foo(callback: (string, number) =&gt; void) {
+    callback('string', 100)
+}
+
+foo(function(str, n) {
+    // str =&gt; string
+    // n =&gt; number
+})
+</code></pre>
+<h4 id="特殊类型">特殊类型</h4>
+<pre><code class="language-js">
+// 字面量类型
+const a: 'foo' = 'foo' // a变量只能为 foo字符串
+
+const type: 'success' | 'warning' | 'danger' = 'success'
+
+const b: string | number = 100 // 'string'
+
+type StringOrNumber = string | number
+
+const c: StringOrNumber = 'string' // 100
+
+// maybe 类型
+const gender: ?number = null // undefined // number
+// 上面等价于下面这个
+const gender: number | null | void = undefined // null // number
+
+</code></pre>
+<h4 id="mixed-any-任意类型">Mixed &amp; Any 任意类型</h4>
+<pre><code class="language-js">// mixed 就是所有类型 ==&gt; string | number | boolean | ....
+function passMixed(value: mixed) {
+    
+}
+passMixed('string')
+passMixed(100)
+
+// -----------------------
+
+function passAny(value: any) {
+    
+}
+passAny('string')
+passAny(100)
+
+// 区别是  any是弱类型  mixed是强类型
+function passMixed(value: mixed) {
+    value.substr(1)
+    value * value
+    // 这里会提示报错
+    // 改成下面
+    if (typeof value == 'value') {
+        value.substr(1)
+    }
+    if (typeof value == 'number') {
+        value * value
+    }
+}
+passMixed('string')
+passMixed(100)
+
+// -----------------------
+
+function passAny(value: any) {
+    value.substr(1)
+    value * value
+}
+passAny('string')
+passAny(100)
+
+</code></pre>
+<h3 id="类型小结">类型小结</h3>
+<ul>
+<li>官方文档 https://flow.org/en/docs/types/</li>
+<li>第三方类型手册 https://www.saltycrane.com/cheat-sheets/flow-type/latest/</li>
+</ul>
+<h4 id="运行环境api-内置对象">运行环境API -&gt; 内置对象</h4>
+<pre><code class="language-js">const element: HTMLElement | null = document.getElementById('app') // 这里必须传字符串 传数字会提示报错
+
+// https://github.com/facebook/flow/blob/master/lib/core.js
+// https://github.com/facebook/flow/blob/master/lib/dom.js
+// https://github.com/facebook/flow/blob/master/lib/bom.js
+// https://github.com/facebook/flow/blob/master/lib/cssom.js
+// https://github.com/facebook/flow/blob/master/lib/node.js
+
+</code></pre>
+<h2 id="3-typescript">3. TypeScript</h2>
+<h3 id="typescript-javascript的超集-superset">TypeScript JavaScript的超集 (superset)</h3>
+<blockquote>
+<p>任何一种JavaScript运行环境都支持</p>
+</blockquote>
+<ul>
+<li>功能更为强大，生态也更健全、更完善</li>
+<li>开源框架使用ts Angular / Vue.js3.0</li>
+<li>TypeScript -- 前端领域中的第二语言</li>
+</ul>
+<figure data-type="image" tabindex="1"><a href="https://imgtu.com/i/6h2r1s"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e031654f7294489a96eb58c458182d75~tplv-k3u1fbpfcp-zoom-1.image" alt="6h2r1s.png" loading="lazy"></a></figure>
+<p>TypeScript属于渐进式</p>
+<h4 id="缺点">缺点</h4>
+<ol>
+<li>语言本身多了很多概念</li>
+<li>项目初期，TypeScript会增加一些成本</li>
+</ol>
+<hr>
+<h3 id="快速上手-2">快速上手</h3>
+<pre><code class="language-shell">yarn init --yes
+
+yarn add typescript --dev
+
+yarn tsc xxxx.ts
+
+</code></pre>
+<pre><code>// 可以完全按照 JavaScript 标准语法编写代码
+</code></pre>
+<h4 id="配置文件">配置文件</h4>
+<blockquote>
+<p>yarn tsc --init 生成一个tsconfig.json</p>
+</blockquote>
+<pre><code class="language-js">compilerOptions
+    target: 编译之后的ES版本
+    module: 输出的代码采用什么样的方式进行模块化
+    lib: 指定所引用的标准库 [&quot;ES2015&quot;, &quot;DOM&quot;]
+    outDir: 设置编译结果输出到的文件夹 dist
+    rootDir: 配置我们源代码的文件夹 src
+    sourceMap: 是否开启源代码映射
+    strice: 是否开启严格模式
+需要直接运行tsc命令编译整个项目
+yarn tsc
+</code></pre>
+<h4 id="原始类型-primitive-types-2">原始类型 Primitive Types</h4>
+<pre><code>const a: string = 'foobar'
+
+const b: number = 100 // NaN Infinity
+
+const c: boolean = true // false
+// 以上是在非严格模式下均可设置为 null
+
+const e: void = undefined
+
+const f: null = null
+
+const g: undefined = undefined
+
+const h: symbol = Symbol()
+</code></pre>
+<h4 id="标准库声明">标准库声明</h4>
+<blockquote>
+<p>就是内置对象所对应的声明</p>
+</blockquote>
+<h4 id="中文错误信息">中文错误信息</h4>
+<pre><code>const error: string = 100
+</code></pre>
+<h4 id="作用域问题">作用域问题</h4>
+<blockquote>
+<p>两个.ts文件使用相同变量量会提示错误</p>
+</blockquote>
+<ul>
+<li>解决就是用单独的作用域，可以使用 <code>export {}</code></li>
+</ul>
+<h4 id="object-类型-object-types">Object 类型 Object Types</h4>
+<blockquote>
+<p>不单指对象</p>
+</blockquote>
+<pre><code class="language-ts">const foo: object = {} // [] // function() {}
+
+// 可以这样定义指定为对象 可以用接口
+const obj = {foo: number } = { foo: 123 }
+</code></pre>
+<h4 id="数组类型-array-types-2">数组类型 Array Types</h4>
+<pre><code class="language-js">const arr1: Array&lt;number&gt; = [1, 2, 3]
+const arr2: number[] = [1, 2, 3]
+
+// -------------------------
+
+function sum(...args: number[]) {
+    return args.reduce((prev, current) =&gt; prev + current, 0)
+}
+sum(1, 2, 3)
+
+</code></pre>
+<h4 id="元组类型-tuple-types">元组类型 Tuple Types</h4>
+<blockquote>
+<p>明确元素数量以及每个元素类型的一个数组，类型不必要完全相同</p>
+</blockquote>
+<pre><code class="language-js">const tuple:  [number, string] = [18, 'string']
+
+tuple[0]
+tuple[1]
+
+const [age, name] = tuple
+
+// ------------------------
+
+</code></pre>
+<h4 id="枚举类型-enum-types">枚举类型 Enum Types</h4>
+<ol>
+<li>给一组数值去分别取上更好理解的名字</li>
+<li>一个枚举中只会存在几个固定的值，并不会出现超出范围的可能性</li>
+</ol>
+<pre><code class="language-js">enum OrderStatus {
+    WaitPay = 0,
+    Pay = 1,
+    Cancel = 2
+}
+
+// 枚举的值可以是字符串
+enum OrderStatus {
+    WaitPay = 'waitPay',
+    Pay = 'pay'
+}
+// 会被编译成以下代码
+var OrderStatus;
+(function (OrderStatus) {
+    OrderStatus[&quot;WaitPay&quot;] = &quot;waitpay&quot;;
+    OrderStatus[&quot;Pay&quot;] = &quot;pay&quot;;
+})(OrderStatus || (OrderStatus = {}));
+
+// 如果枚举的值是数值的，可以这样取 OrderStatus[0]
+
+// 在enum 的前面加上 const
+const enum OrderStatus {
+    WaitPay = 0,
+    Pay
+}
+// 编译的时候会去掉枚举相关的信息，只留下 0 , 1 , 3
+</code></pre>
+<h4 id="函数类型-function-types-2">函数类型 Function Types</h4>
+<blockquote>
+<p>输入输出类型限制</p>
+</blockquote>
+<pre><code class="language-js">function func1(a: number, b: number): string {
+    return 'func1'
+}
+// 可选参数 可以设置 a?: number
+
+// -------------------------
+// 函数的表示式
+const func2: (a: number, b: number) =&gt; string = function(a: number, b: number): string {
+    return 'func2'
+}
+</code></pre>
+<h4 id="任意类型-any-types">任意类型 Any Types</h4>
+<blockquote>
+<p>不会有任何的类型检查</p>
+</blockquote>
+<pre><code class="language-js">function stringify(value: any) {
+    return JSON.stringify(value)
+}
+</code></pre>
+<h4 id="隐式类型推断-type-inference">隐式类型推断 Type Inference</h4>
+<blockquote>
+<p>建议为每个变量添加明确的类型</p>
+</blockquote>
+<pre><code class="language-js">let age = 18 // 推断为age: number
+
+age = 'string' // 会报错
+
+let foo; // 推断为any
+foo = 100
+foo = 'string'
+// 都是可以的
+
+</code></pre>
+<h4 id="类型断言-type-assertions">类型断言 Type assertions</h4>
+<blockquote></blockquote>
+<pre><code class="language-js">// 假定这个 nums 来自一个明确的接口
+const nums = [110, 120, 119, 112]
+
+const res = nums.find(i =&gt; i &gt; 0) // 推导出res 为 number | undefined
+
+// 我们需要告诉Ts,这就是一个number类型
+const num1 = res as number
+const num1 = &lt;number&gt;res  // JSX 下不能使用
+</code></pre>
+<h4 id="接口-interfaces">接口 Interfaces</h4>
+<blockquote>
+<p>一种规范，约定</p>
+</blockquote>
+<pre><code class="language-js">
+interface IPost {
+    title: string;
+    content: string
+}
+
+function printPost(post: IPost) {
+    console.log(post.title)
+    console.log(post.content)
+}
+</code></pre>
+<ul>
+<li>可选成员、只读成员</li>
+</ul>
+<pre><code class="language-js">interface IPost {
+    title: string;
+    content: string;
+    subtitle?: string // 可选参数  string | undefined
+    readonly summary: string // 不允许修改
+}
+
+// 动态成员
+interface Cache {
+    [prop: string]: string
+}
+</code></pre>
+<h4 id="类">类</h4>
+<blockquote>
+<p>用来描述一类具体对象的抽象成员</p>
+</blockquote>
+<ol>
+<li>ES6以前， 函数 + 原型 模拟实现类</li>
+<li>ES6开始 JavaScript中有了专门的class</li>
+<li>TypeScript 增强了class 的相关语法</li>
+</ol>
+<h5 id="1-基本使用">1. 基本使用</h5>
+<pre><code class="language-ts">class Person {
+
+    name: string;
+    age: number;
+
+    constructor(name: string, age: number) {
+        this.name = name;
+        this.age = age;
+    }
+
+    sayHi(msg: string) {
+        console.log(`I am ${this.name} , ${msg}`)
+    }
+}
+</code></pre>
+<h5 id="2-访问修饰符">2. 访问修饰符</h5>
+<ol>
+<li>private 私有属性，只能在内部用this访问</li>
+<li>public public 公有成员</li>
+<li>protected 受保护的  不能在外部访问</li>
+</ol>
+<p><strong>protected在子类中使用this是可以访问到的</strong></p>
+<h5 id="3-只读属性">3. 只读属性</h5>
+<blockquote>
+<p>在访问修饰符后面加上 readonly</p>
+</blockquote>
+<pre><code class="language-js">// 比如
+public readonly name: string;
+</code></pre>
+<h5 id="4-类与接口">4. 类与接口</h5>
+<pre><code>// 规定协议 
+
+interface Eat {
+    eat(food: string): void
+}
+
+interface Run {
+    run(distance: number): void
+}
+
+class Person implements Eat, Run {
+    eat(food: string): void {
+
+    }
+    run(distance: number): void {
+
+    }
+}
+
+class Animal implements Eat, Run {
+    eat(food: string): void {
+
+    }
+    run(distance: number): void {
+
+    }
+}
+</code></pre>
+<h5 id="5-抽象类">5. 抽象类</h5>
+<blockquote>
+<p>抽象类使用 关键字 abstract</p>
+</blockquote>
+<pre><code class="language-js">export {} // 确保跟其它示例没有成员冲突
+abstract class Animal {
+    eat(food: string): void {
+        console.log('呼噜呼噜的吃' + food)
+    }
+    // 定义抽象方法
+    abstract run (distance: number): void
+}
+
+class Dog extends Animal {
+    run(distance: number): void {
+        console.log('四脚爬行', distance)
+    }
+}
+const d = new Dog()
+</code></pre>
+<h5 id="6-泛型-generics">6. 泛型 Generics</h5>
+<blockquote>
+<p>定义函数或接口、类的时候没有指定具体的类型，等到我们使用的时候再去指定具体类型的特征</p>
+</blockquote>
+<pre><code class="language-typescript">function createArray&lt;T&gt;(length: number, value: T): T[] {
+    const arr = Array&lt;T&gt;(length).fill(value)
+    return arr
+}
+const res = createArray&lt;string&gt;(3, 'foo')
+
+</code></pre>
+<h5 id="7-类型声明-type-declaration">7. 类型声明 Type Declaration</h5>
+<blockquote>
+<p>为了兼容普通的js模块</p>
+</blockquote>
+<pre><code class="language-typescript">import { camelCase } from 'lodash'
+
+declare function camelCase (input: string): string
+const res = camelCase('hello typed') // 在这里函数没有提示，需要声明 如上
+
+</code></pre>
+<p><strong>引用第三方模块，如果模块中不包含类型声明文件，就需要自己声明</strong></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[进阶1-02-01 ESMAScript 新特性]]></title>
+        <id>https://hongchengfhc.github.io/jin-jie-1-02-01-esmascript-xin-te-xing/</id>
+        <link href="https://hongchengfhc.github.io/jin-jie-1-02-01-esmascript-xin-te-xing/">
+        </link>
+        <updated>2021-03-26T05:47:25.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="esmascript-新特性">ESMAScript 新特性</h1>
+<h2 id="1-ecmascript-概述">1. ECMAScript 概述</h2>
+<h3 id="web环境">@Web环境</h3>
+<figure data-type="image" tabindex="1"><a href="https://imgtu.com/i/653Zc9"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/195cf00ad60f40e6a5949af4e5634643~tplv-k3u1fbpfcp-zoom-1.image" alt="653Zc9.png" loading="lazy"></a></figure>
+<h3 id="nodejs">@Node.js</h3>
+<figure data-type="image" tabindex="2"><a href="https://imgtu.com/i/653K76"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/00315f7faf01474fb049ea4e92b2e297~tplv-k3u1fbpfcp-zoom-1.image" alt="653K76.png" loading="lazy"></a></figure>
+<h3 id="ecmascript-版本">ECMAScript 版本</h3>
+<figure data-type="image" tabindex="3"><a href="https://imgtu.com/i/6531hD"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c999f48b428740f4ba33289c9628f4ab~tplv-k3u1fbpfcp-zoom-1.image" alt="6531hD.png" loading="lazy"></a></figure>
+<h2 id="2-es2015-let-与块级作用域以及const">2. ES2015 let 与块级作用域，以及const</h2>
+<h4 id="let">let</h4>
+<pre><code class="language-js">使用var 导致变量提升
+console.log(foo); // undefine;
+var foo = 'zce';
+// 官方的bug不叫bug，叫特性
+</code></pre>
+<pre><code class="language-js">console.log(foo);
+let foo = 'zce';
+</code></pre>
+<h4 id="const-恒量常量">const 恒量/常量</h4>
+<blockquote>
+<p>在let的基础上增加了只读属性，声明过后不允许再被修改</p>
+</blockquote>
+<ul>
+<li><code>const</code> 它所声明的成员不能被修改，只是说我们不允许在声明了过后重新去指向一个新的内存地址，并不是说我们不允许修改恒量中的属性成员</li>
+</ul>
+<pre><code class="language-js">// 不允许以下情况
+const name = 'zce';
+name = 'jack';
+
+const name;
+name = 'zce';
+
+// 下面的代码是允许的
+const obj = {};
+obj.name = 'zce' 
+
+// 下面是不允许的
+const obj = {};
+obj = {};
+
+</code></pre>
+<h2 id="3-es2015-模板字符串">3. ES2015 模板字符串</h2>
+<h4 id="模板字符串字面量-template-literals">模板字符串字面量 Template literals</h4>
+<pre><code class="language-js">const str = `hello es2015, this is a string`
+console.log(str)
+
+// 支持多行
+const str = `hello es2015, 
+
+this is a string`
+console.log(str)
+
+
+const name = 'tom'
+const msg = `hey, ${name}  ${1 + 1}`
+console.log(msg)
+
+</code></pre>
+<h4 id="模板字符串标签函数-tagged-templates">模板字符串标签函数 Tagged templates</h4>
+<pre><code class="language-js">
+const str = console.log`hello world`
+
+const name = 'tom'
+const gender = true
+function myTagFunc (strings, name, gender) {
+    console.log(strings, name, gender)
+}
+const result = myTagFunc`hey, ${name} is a ${gender}.`
+
+
+
+const name = 'tom'
+const gender = true
+function myTagFunc (strings, name, gender) {
+    console.log(strings, name, gender)
+    return strings[0] + name + strings[1] + gender + strings[2]
+}
+const result = myTagFunc`hey, ${name} is a ${gender}.`
+console.log(result)
+
+
+
+</code></pre>
+<h4 id="字符串的扩展方法">字符串的扩展方法</h4>
+<ul>
+<li>includes()</li>
+<li>startsWith()</li>
+<li>endsWith()</li>
+</ul>
+<pre><code class="language-js">const message = 'Error: foo is not defind.'
+
+console.log(
+    message.startsWith('Error'),
+    message.endsWith('.'),
+    message.includes('foo')
+)
+
+</code></pre>
+<h2 id="4-es2015-数组和对象的解构">4. ES2015 数组和对象的解构</h2>
+<h4 id="数组中的解构">数组中的解构</h4>
+<pre><code class="language-js">const arr = [100, 200, 300]
+
+const [foo, bar, baz] = arr
+console.log(baz)
+
+const [, , baz] = arr
+console.log(baz)
+
+
+const [foo, ...rest] = arr
+console.log(rest)
+
+const [foo] = arr
+console.log(foo)
+
+const [foo, bar, baz, more] = arr
+console.log(more) // undefine
+
+
+const [foo, bar, baz, more = 'default value'] = arr
+console.log(more) // default value
+
+</code></pre>
+<h4 id="展开数组-spread">展开数组 Spread</h4>
+<pre><code class="language-js">const arr = ['foo', 'bar', 'baz']
+console.log.apply(console, arr)
+
+console.log(...arr)
+
+</code></pre>
+<h4 id="对象的解构-destructuring">对象的解构 Destructuring</h4>
+<pre><code class="language-js">const obj = { name: 'zce', age: 18}
+
+const { name, age } = obj
+console.log(name)
+
+// 以下会出现变量名冲突，但obj解构必须 使用name 所以解决方案如下
+const name = 'tom'
+const { name } = obj
+console.log(name)
+
+// 解决方案
+const { name: objName  } = obj
+console.log(objName)
+
+
+</code></pre>
+<h2 id="5-es2015函数的参数">5. ES2015函数的参数</h2>
+<h4 id="参数默认值-default-parameters">参数默认值 Default parameters</h4>
+<pre><code class="language-js">function foo(enable) {
+    enable = enable == undefine ? true : enable
+    console.log('foo invaked - enable:');
+    console.log(enable)
+}
+
+foo(true)
+
+
+// 只能是调用的时候没有传参数或者传undefine时
+function foo(enable = true) {
+    console.log('foo invaked - enable:');
+    console.log(enable)
+}
+foo(false)
+
+// 带有默认值的形参一定要在最后
+function foo(name, enable = true) {
+    console.log(name, enable)
+}
+foo('xxx')
+
+// 不过在浏览器环境试出结果  可以如下
+function foo(name = true, enable) {
+    console.log(name, enable)
+}
+foo(undefined, 200)
+
+</code></pre>
+<h4 id="剩余参数-rest-parameters">剩余参数 Rest parameters</h4>
+<pre><code class="language-js">
+console.log(1, 2, 3, 4)
+
+
+funciton foo() {
+    console.log(arguments)
+}
+
+// 只能出现在最后一位，只能出现一次
+funciton foo(...args) {
+    console.log(...args) // [1, 2, 3, 4]
+}
+foo(1, 2, 3, 4)
+
+
+
+</code></pre>
+<h2 id="6-箭头函数">6. 箭头函数</h2>
+<h4 id="箭头函数-arrow-functions">箭头函数 Arrow functions</h4>
+<blockquote>
+<p>程序员专用字体 Fira Code</p>
+</blockquote>
+<pre><code class="language-js">
+function inc(number) {
+    return number + 1
+}
+console.log(inc(100))
+
+
+const inc = n =&gt; n + 1
+console.log(inc(100))
+
+// 简化了回调函数的书写
+
+const arr = [1,2,3]
+arr.filter(function(item) {
+    return item % 2
+})
+
+arr.filter(i =&gt; item % 2)
+</code></pre>
+<h4 id="箭头函数与this">箭头函数与this</h4>
+<pre><code class="language-js">const person = {
+    name: 'tom',
+    sayHi: function() {
+        console.log(this.name)
+    }
+}
+
+person.sayHi(); // tom
+
+const person = {
+    name: 'tom',
+    sayHi: () =&gt;  {
+        console.log(this.name)
+    }
+}
+
+
+person.sayHi(); // undefined
+
+const person = {
+    name: 'tom',
+    sayHi: function() {
+        setTimeout(function() {
+            console.log(this.name)
+        })
+    }
+}
+person.sayHi(); // undefined
+
+const person = {
+    name: 'tom',
+    sayHi: function() {
+        setTimeout(() =&gt; {
+            console.log(this.name)
+        })
+    }
+}
+person.sayHi(); // tome
+
+</code></pre>
+<h2 id="7-对象-及-字面量增强">7. 对象 及 字面量增强</h2>
+<h4 id="对象及字面量增强-enhanced-object-literals">对象及字面量增强 Enhanced object literals</h4>
+<pre><code class="language-js">const bar = '345'
+const obj = {
+    foo: 123,
+    // bar: bar
+    bar,
+    
+    // method: function() {
+        
+    // }
+    method() {
+        
+    }
+};
+
+// 新增计算属性名
+const obj = {
+    [Math.random()]: 300
+}
+</code></pre>
+<h4 id="对象扩展方法">对象扩展方法</h4>
+<h5 id="objetassign">Objet.assign</h5>
+<ul>
+<li>将多个源对象中的属性复制到一个目标对象中</li>
+</ul>
+<pre><code class="language-js">const source1 = {
+    a: 123,
+    b: 123
+}
+const target = {
+    a: 456,
+    b: 456
+}
+const result = Object.assign(target, source1)
+console.log(target)
+console.log(target == result) // true
+
+// 作用 可以用来复制一个对象
+
+
+</code></pre>
+<h5 id="objectis">Object.is</h5>
+<pre><code class="language-js">console.log(
+ 0 == false,
+ 0 === false,
+ +0 === -0,
+ NaN == NaN,
+ Object.is(+0, -0),
+ Object.is(NaN, NaN)
+
+)
+</code></pre>
+<h2 id="8-es2015-proxy">8. ES2015 Proxy</h2>
+<h4 id="proxy-代理对象">Proxy 代理对象</h4>
+<blockquote>
+<p>Vue2.0 Object.defineProperty()</p>
+</blockquote>
+<pre><code class="language-js">const person = {
+    name: 'zce',
+    age: 20
+}
+
+const personProxy = new Proxy(person, {
+    get (target, property) {
+        console.log(target, property)
+        return target[property]
+    },
+    set (target, property, value) {
+        target[property] = value
+    },
+})
+
+console.log(personProxy.name)
+</code></pre>
+<h4 id="proxy-对比-defineproperty">Proxy 对比 defineProperty</h4>
+<ul>
+<li>defineProperty 只能监视属性的读写</li>
+<li>Proxy 能够监视到更多对象操作</li>
+</ul>
+<pre><code class="language-js">const person = {
+    name: 'zce',
+    age: 20
+}
+
+const perxonProxy = new Proxy(person, {
+    deleteProperty (target, property) {
+        delete target[property]
+    }
+})
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>handler方法</th>
+<th>触发方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>get</td>
+<td>读取某个属性</td>
+</tr>
+<tr>
+<td>set</td>
+<td>写入某个属性</td>
+</tr>
+<tr>
+<td>has</td>
+<td>in 操作符</td>
+</tr>
+<tr>
+<td>deleteProperty</td>
+<td>delete 操作符</td>
+</tr>
+<tr>
+<td>getPrototypeOf</td>
+<td>Object.getPrototypeOf()</td>
+</tr>
+<tr>
+<td>setPrototypeOf</td>
+<td>Object.setPrototypeOf()</td>
+</tr>
+<tr>
+<td>isExtensible</td>
+<td>Object.isExtensible()</td>
+</tr>
+<tr>
+<td>preventExtensions</td>
+<td>Object.perventExtensions()</td>
+</tr>
+<tr>
+<td>getOwnPropertyDescriptor</td>
+<td>Object.getOwnPropertyDescriptor()</td>
+</tr>
+<tr>
+<td>defineProperty</td>
+<td>Object.defineProperty()</td>
+</tr>
+<tr>
+<td>ownKeys</td>
+<td>Object.getOwnPropertyNames()、Object.getOwnPropertySymbols()</td>
+</tr>
+<tr>
+<td>apply</td>
+<td>调用一个函数</td>
+</tr>
+<tr>
+<td>construct</td>
+<td>用 new 调用一个函数</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Proxy 更好的支持数组对象的监视</li>
+</ul>
+<blockquote>
+<p>defineProperty对数组的操作是 重写数组的操作方法</p>
+</blockquote>
+<pre><code class="language-js">const list = []
+const listProxy = new Proxy(list, {
+    set (target, property, value) {
+        console.log(target, property, value)
+        target[property] = value;
+        return true;
+    }
+})
+</code></pre>
+<ul>
+<li>Proxy是以非侵入的方式监管了对象的读写</li>
+</ul>
+<h2 id="9-reflect-promise-class">9. Reflect、Promise、Class</h2>
+<h3 id="reflect-统一的对象操作api">Reflect 统一的对象操作API</h3>
+<blockquote>
+<p>属于一个静态类</p>
+</blockquote>
+<p><s>new Reflect()</s></p>
+<ul>
+<li><code>Reflect</code> 内部封闭了一系列对对象的底层操作</li>
+<li><code>Reflect</code> 成员方法就是 <code>Proxy</code> 处理对象的默认实现</li>
+</ul>
+<pre><code class="language-js">    const obj = {
+        foo: '123'
+    }
+    // 当第二个处理对象没传时，底层默认使用Reflect上的方法
+    const proxy = new Proxy(obj, {
+        get (target, property) {
+            return Reflect.get(target, property)
+        }
+    })
+</code></pre>
+<h5 id="推出reflect的意义">推出<code>Reflect</code>的意义</h5>
+<ul>
+<li>统一提供一套用于操作对象的API</li>
+</ul>
+<pre><code class="language-js">const obj = {
+    name: 'zce',
+    age: 18
+}
+// console.log('name' in obj)
+// delete obj['age']
+// Object.keys(obj)
+
+console.log(Reflect.has(obj, 'name'))
+console.log(Reflect.deleteProperty(obj, 'age'))
+console.log(Reflect.ownKeys(obj))
+</code></pre>
+<h3 id="promise">Promise</h3>
+<blockquote>
+<p>解决了传统异步编程中回调函数嵌套过深的问题</p>
+</blockquote>
+<p>在JavaScript异步编程课程中详情分析了</p>
+<h3 id="class-类">class 类</h3>
+<pre><code class="language-js">function Person(name) {
+    this.name = name;
+}
+Person.prototype.say = function() {
+    console.log(`he, my name is ${this.name}`)
+}
+
+// class
+class Person {
+    constructor(name) {
+        this.name = name;
+    }
+    
+    say () {
+        console.log(`hi, my name is ${this.name}`)
+    }
+}
+const p = new Person('tom')
+p.say()
+
+</code></pre>
+<h4 id="实例方法-vs-静态方法">实例方法 vs 静态方法</h4>
+<blockquote>
+<p>ES2015中新增添加静态成员的 static 关键词</p>
+</blockquote>
+<pre><code class="language-js">
+class Person {
+    constructor(name) {
+        this.name = name;
+    }
+    
+    say () {
+        console.log(`hi, my name is ${this.name}`)
+    }
+    static create(name) {
+        return new Person(name)
+    }
+}
+
+const tom = Person.create('tom')
+tom.say()
+</code></pre>
+<h4 id="类的继承-extends">类的继承 extends</h4>
+<pre><code class="language-js">class Person {
+    constructor(name) {
+        this.name = name;
+    }
+    
+    say () {
+        console.log(`hi, my name is ${this.name}`)
+    }
+    static create(name) {
+        return new Person(name)
+    }
+}
+
+class Student {
+    constructor(name, number) {
+        super(name)
+        this.number = number
+    }
+    hello() {
+        super.say()
+        console.log(`my school number is ${this.number}`)
+    }
+}
+const s = new Student()
+s.hello()
+</code></pre>
+<h2 id="10-set-map-symbol">10. Set Map Symbol</h2>
+<h3 id="set-数据结构-集合">Set 数据结构 （集合）</h3>
+<pre><code class="language-js">
+const s = new Set()
+s.add(1).add(2).add(2).add(3)
+
+console.log(s)
+s.forEacm(i =&gt; console.log(i))
+
+for (let i of s) {
+    console.log(i)
+}
+
+console.log(s.size)
+
+console.log(s.has(100))
+
+console.log(s.delete(3))
+
+s.clear()
+
+// 可以去重数组
+const arr = [1,2,1,3,4,1]
+const result = new Set(arr)
+console.log(result)
+
+// 如果想再得到一个数组
+const result = Array.from(new Set(arr))
+const result = [...new Set(arr)]
+
+
+</code></pre>
+<h3 id="map-数组结构">Map 数组结构</h3>
+<blockquote>
+<p>健值对类型，可以用任意类型的数据作为健</p>
+</blockquote>
+<pre><code class="language-js">
+// obj key只能是字符串 或 Symbol
+const obj = {}
+obj[true] = 'value'
+obj[123] = 'value'
+obj[{a: 1}] = 'value'
+console.log(Object.keys(obj))
+
+const m = new Map()
+const tom = {name: 'tom'}
+m.set(tom, 90)
+console.log(m)
+console.log(m.get(tom))
+
+m.has()
+m.delete()
+m.clear()
+
+m.forEach((value, key) =&gt; {
+    console.log(value, key)
+})
+
+
+</code></pre>
+<h3 id="symbol">Symbol</h3>
+<blockquote>
+<p>表示一个独一无二的值</p>
+</blockquote>
+<ul>
+<li>目前主要的作用就是为对象添加独一无二的属性名</li>
+</ul>
+<pre><code class="language-js">const cache = {}
+
+// a.js ======
+cache['foo'] = Math.random()
+
+// b.js ======
+cache['foo'] = '123'
+
+console.log(cache)
+
+// 表示一个独一无二的值
+const s = Symbol()
+console.log(Symbol() == Symbol())
+console.log(Symbol('foo'))
+
+// 对象中的key允许使用Symbol 所以有两种数据结构
+
+const obj = {}
+obj[Symbol()] = '123'
+obj[Symbol()] = '456'
+
+// a.js ===========
+const name = Symbol()
+const person = {
+    [name]: 'zce',
+    say() {
+        console.log(this[name])
+    }
+}
+person.say()
+</code></pre>
+<hr>
+<ul>
+<li>截止到ES2019，一共定义了7种数据 类型，未来会增加一个BigInt类型，目前还处在stage-4阶段，标准化就是8种数据类型</li>
+</ul>
+<h4 id="symbol-补充">Symbol 补充</h4>
+<pre><code>// 唯一性
+console.log(
+    Symbol('foo') == Symbol('foo')
+)
+// false
+
+const s1 = Symbol.for('foo')
+const s2 = Symbol.for('foo')
+s1 == s2 // true
+
+// 不是字符串会转成字符串
+console.log(
+    Symbol.for(true) == Symbol.for('true')
+)
+// true
+
+console.log(Symbol.iterator)
+console.log(Symbol.hasInstance)
+
+const obj = {}
+console.log(obj.toString())
+
+// 自定义
+const obj = {
+    [Symbol.toStringTag]: 'XObject'
+}
+
+const obj = {
+    [Symbol()]: 'symbol value',
+    foo: 'normal value'
+}
+for (var key in obj) {
+    console.log(key) // foo
+}
+console.log(Object.keys(obj)) // ['foo']
+console.log(JSON.stringify(obj)) // {foo: 'normal value'}
+
+// 可以获取对象当中Symbol类型的key 名
+console.log(Object.getOwnPropertySymbols(obj))
+
+
+</code></pre>
+<h1 id="11-forof-循环-迭代器-生成器-es-modules">11. for…of 循环、迭代器、生成器、ES Modules</h1>
+<h3 id="forof-循环">for...of 循环</h3>
+<blockquote>
+<p>以后会作为遍历所有数据结构的统一方式</p>
+</blockquote>
+<pre><code class="language-js">const arr = [100, 200, 300, 400]
+
+for (const item of arr) {
+    console.log(item) // 拿到的是每个元素
+}
+
+// for of 可以使用关键词 break 终止循环
+// arr.forEach 无法终止遍历的
+
+
+const s = new Set(['foo', 'bar'])
+for (const item of s) {
+    console.log(item)
+}
+
+const m = new Map()
+m.set('foo',l '123')
+m.set('bar', '345')
+// 可以改为这样
+// for (const item of m) {
+for (const [key, value] of m) {
+    console.log(item) // ['foo', '123'] ['bar', '345'] 
+}
+
+
+</code></pre>
+<h4 id="可迭代接口">可迭代接口</h4>
+<blockquote>
+<p>ES中能够表示有结构的数据类型越来越多<br>
+实现Iterable接口就是 for...of的前提</p>
+</blockquote>
+<ul>
+<li>给obj实现迭代接口 Iterable (yi te rui bo er)</li>
+</ul>
+<pre><code class="language-js">// 
+// Symbol.iterator (yi te rui te er)
+/*
+const obj = {
+    [Symbol.iterator]: function() {
+        return {
+            next: function() {
+                return {
+                    value: 'zce',
+                    done: true
+                }
+            }
+        }
+    }
+}
+*/
+/*
+{
+    value: 'zce',
+    done: true
+}
+迭代结果接口 IterationResuklt
+*/
+const obj = {
+    store: ['foo', 'bar', 'baz'],
+    [Symbol.iterator]: function() {
+        let index = 0
+        const self = this
+        return {
+            next: function() {
+                const result = {
+                    value: self.store[index],
+                    done: index &gt;= self.store
+                }
+                index++
+                return result
+            }
+        }
+    }
+}
+for (const item of obj) {
+    console.log('循环体')
+}
+
+</code></pre>
+<h4 id="迭代器模式">迭代器模式</h4>
+<pre><code class="language-js">// 迭代器设计模式
+
+// 场景： 你我协同开发一个任务清单应用
+
+// 我的代码 =================
+/*
+const todos = {
+    left: ['吃饭', '睡觉', '打豆豆'],
+    learn: ['语文', '数学', '外语']
+}
+
+// 你的代码 =================
+for (const item of todos.life) {
+    console.log(item)
+}
+for (const item of todos.learn) {
+    console.log(item)
+}
+*/
+const todos = {
+    life: ['吃饭', '睡觉', '打豆豆'],
+    learn: ['语文', '数学', '外语'],
+    [Symbol.iterator]: function() {
+        const all = [...this.life, ...this.learn]
+        let index = 0
+        return {
+            next: function() {
+                return {
+                    value: all[index],
+                    done: index++ &gt;= all.length
+                }
+                
+            }
+        }
+    }
+}
+
+// 你的代码 =================
+for (const item of todos) {
+    console.log(item)
+}
+</code></pre>
+<h3 id="生成器-generator-jie-le-rui-te-er">生成器 Generator (jie le rui te er)</h3>
+<pre><code class="language-js">
+function * foo() {
+    console.log('zce')
+    return 100
+}
+const result = foo()
+console.log(result.next()) 
+// zce 
+// { value: 100, done: true }
+
+
+
+function *foo() {
+    console.log('111')
+    yield 100
+    
+    console.log('222')
+    yield 200
+}
+const generator = foo()
+console.log(generator.next())
+console.log(generator.next())
+console.log(generator.next())
+
+</code></pre>
+<h5 id="生成器应用场景">生成器应用场景</h5>
+<pre><code class="language-js">// 案例1： 发号器
+function * createIdMaker() {
+    let id = 1
+    while(true) {
+        yield id++
+    }
+}
+
+const idMaker = createIdMaker()
+
+console.log(idMaker.next().value)
+console.log(idMaker.next().value)
+console.log(idMaker.next().value)
+console.log(idMaker.next().value)
+
+
+// 案例2： 使用 Generator 函数实现 iterator 方法
+const todos = {
+    life: ['吃饭', '睡觉', '打豆豆'],
+    learn: ['语文', '数学', '外语'],
+    [Symbol.iterator]: function() {
+        const all = [...this.life, ...this.learn]
+        for (const item of all) {
+            yield item
+        }
+        // let index = 0
+        // return {
+        //     next: function() {
+        //         return {
+        //            value: all[index],
+        //            done: index++ &gt;= all.length
+        //        }
+                
+        //    }
+        //}
+    }
+}
+
+</code></pre>
+<h3 id="es-modules">ES Modules</h3>
+<blockquote>
+<p>语言层面的模块化标准</p>
+</blockquote>
+<h3 id="esmascript-2016">ESMAScript 2016</h3>
+<blockquote>
+<p>小版本更新</p>
+</blockquote>
+<ul>
+<li>新增<code>Array.prototype.includes</code></li>
+</ul>
+<pre><code class="language-js">const arr = ['foo', 1, NaN, false];
+// 以前的有个问题就是不能查找到NaN
+console.log(arr.indexOf(NaN))
+console.log(arr.includes('foo'))
+console.log(arr.includes(NaN))
+</code></pre>
+<ul>
+<li>指数运算符</li>
+</ul>
+<pre><code class="language-javascript">// 以前的
+console.log(Math.pow(2, 10))
+
+// new
+console.log(2 ** 10)
+</code></pre>
+<h3 id="esmascript-2017">ESMAScript 2017</h3>
+<blockquote>
+<p>小版本</p>
+</blockquote>
+<ul>
+<li>Object.values</li>
+<li>Object.entries</li>
+<li>Object.getOwnPropertyDescriptors</li>
+<li>String.prototype.padStart / String.prototype.padEnd</li>
+<li>在函数参数中添加尾逗号</li>
+<li>Async / Await</li>
+</ul>
+<pre><code class="language-js">const obj = {
+    foo: 'value1',
+    bar: 'value2'
+}
+// Object.values
+console.log(Object.values(obj))
+
+// Object.entries
+console.log(Object.entries(obj))
+for (const [key, value] of Object.entries(obj)) {
+    console.log(key, value) // foo value1 | bar value2
+}
+// 将对象转成Map
+new Map(Object.entries(obj))
+
+// Object.getOwnPropertyDescriptors
+// 获取对象当中属性的完整信息
+const p1 = {
+    firstName: 'Lei',
+    lastName: 'wang',
+    get fullName() {
+        return this.firstName + ' ' + this.lastName
+    }
+}
+
+const p2 = Object.assign({}, p1)
+p2.firstName = 'zce'
+console.log(p2.fullName)
+console.log(p2) // { firstName: 'zce', lastName: 'Wang', fullMame: 'Lei Wang' }
+const descriptors = Object.getOwnPropertyDescriptors(p1)
+const p2 = Object.defineProperties({}, descriptors)
+p2.firstName = 'zce'
+console.log(p2.fullName) // zce wang
+
+// String.prototype.padStart / String.prototype.padEnd
+
+const books = {
+    html: 5,
+    css: 16,
+    javascript: 128
+}
+for (const [name, count] of Object.entries(books)) {
+    console.log(`${name.padEnd(16, '-')} | ${count.toString().padStart(3, '0')}`)
+}
+/*
+html------------ | 005
+css------------- | 016
+javascript------ | 128
+*/
+
+// 在函数参数中添加尾逗号
+const arr = [
+    100,
+    200,
+    300,
+]
+
+
+</code></pre>
+<h4 id="async-await">Async / Await</h4>
+<blockquote>
+<p>使用Promise的语法糖</p>
+</blockquote>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[进阶1-01-03手写Promise]]></title>
+        <id>https://hongchengfhc.github.io/jin-jie-1-01-03-shou-xie-promise/</id>
+        <link href="https://hongchengfhc.github.io/jin-jie-1-01-03-shou-xie-promise/">
+        </link>
+        <updated>2021-03-26T05:46:48.000Z</updated>
+        <content type="html"><![CDATA[<pre><code>
+// 初始状态
+const PENDING = &quot;pending&quot;;
+// 完成状态
+const FULFILLED = &quot;fulfilled&quot;;
+// 失败状态
+const REJECTED = &quot;rejected&quot;;
+
+// 异步执行方法封装
+function asyncExecFun(fn) {
+  setTimeout(() =&gt; fn(), 0);
+}
+
+// 执行promise resolve功能
+function resolvePromise(promise, res, resolve, reject) {
+  // 返回同一个promise
+  if (promise === res) {
+    reject(new TypeError(&quot;Chaining cycle detected for promise #&lt;MyPromise&gt;&quot;));
+    return;
+  }
+  // promise结果
+  if (res instanceof MyPromise) {
+    res.then(resolve, reject);
+  } else {
+    // 非promise结果
+    resolve(res);
+  }
+}
+
+/**
+ * 1. 是个构造函数
+ * 2. 传入一个可执行函数 函数的入参第一个为 fullFill函数 第二个为 reject函数；  函数立即执行，  参数函数异步执行
+ * 3. 状态一旦更改就不可以变更  只能 pending =&gt; fulfilled 或者  pending =&gt; rejected
+ * 4. then 的时候要处理入参的情况 successCallback 和failCallback 均可能为非函数
+ *      默认的 failCallback 一定要将异常抛出， 这样下一个promise便可将其捕获 异常冒泡的目的
+ * 5. then 中执行回调的时候要捕获异常 将其传给下一个promise
+ *    如果promise状态未变更 则将回调方法添加到对应队列中
+ *    如果promise状态已经变更 需要异步处理成功或者失败回调
+ *    因为可能出现 回调结果和当前then返回的Promise一致 从而导致死循环问题
+ * 6. catch只是then的一种特殊的写法 方便理解和使用
+ * 7. finally 特点 1. 不过resolve或者reject都会执行
+ *                2. 回调没有参数
+ *                3. 返回一个Promise 且值可以穿透到下一个then或者catch
+ * 8. Promise.resolve, Promise.reject 根据其参数返回对应的值 或者状态的Promise即可
+ * 9. Proise.all 特点  1. 返回一个Promise
+ *                    2. 入参是数组 resolve的情况下出参也是数组 且结果顺序和调用顺序一致
+ *                    3. 所有的值或者promise都完成才能resolve 所有要计数
+ *                    4. 只要有一个为reject 返回的Promise便reject
+ * 10. Proise.race 特点 1. 返回一个Promise
+ *                    2. 入参是数组 那么出参根据第一个成功或者失败的参数来确定
+ *                    3. 只要有一个resolve 或者reject 便更改返回Promise的状态
+ *
+ *
+ */
+
+class MyPromise {
+  status = PENDING;
+  value = undefined;
+  reason = undefined;
+  successCallbacks = [];
+  failCallbacks = [];
+  constructor(exector) {
+    // 立即执行传入参数
+    // 参数直接写为 this.resolve  会导致函数内 this指向会发生改变
+    // 异步执行状态变更
+    // 捕获执行器的异常
+    try {
+        exector(
+          (value) =&gt; asyncExecFun(() =&gt; this.resolve(value)),
+          (reason) =&gt; asyncExecFun(() =&gt; this.reject(reason))
+        );
+    } catch (e) {
+        this.reject(e)
+    }
+  }
+
+  resolve(value) {
+    // 如果状态已经变更则直接返回
+    if (this.status !== PENDING) return;
+    this.value = value;
+    this.status = FULFILLED;
+    // 执行所有成功回调
+    while (this.successCallbacks.length) this.successCallbacks.shift()();
+  }
+
+  reject(reason) {
+    // 如果状态已经变更则直接返回
+    if (this.status !== PENDING) return;
+    this.reason = reason;
+    this.status = REJECTED;
+    if(!this.failCallbacks.length){
+        throw '(in MyPromise)'
+    }
+    // 执行所有失败回调
+    while (this.failCallbacks.length) this.failCallbacks.shift()();
+  }
+  then(successCallback, failCallback) {
+    // 成功函数处理 忽略函数之外的其他值
+    successCallback =
+      typeof successCallback == &quot;function&quot; ? successCallback : (v) =&gt; v;
+    // 失败函数处理 忽略函数之外的其他值 抛出异常  实现catch冒泡的关键
+    failCallback =
+      typeof failCallback == &quot;function&quot;
+        ? failCallback
+        : (reason) =&gt; {
+            throw reason;
+          };
+
+    let promise = new MyPromise((resolve, reject) =&gt; {
+      // 统一异常处理逻辑
+      const execFun = (fn, val) =&gt; {
+        try {
+          let res = fn(val);
+          resolvePromise(promise, res, resolve, reject);
+        } catch (e) {
+          reject(e);
+        }
+      };
+      // 执行成功回调
+      const execSuccessCallback = () =&gt; execFun(successCallback, this.value);
+      // 执行失败回调
+      const execFailCallback = () =&gt; execFun(failCallback, this.reason);
+      // 同步将对应成功或者失败回调事件加入对应回调队列
+      if (this.status === PENDING) {
+        // 将成功回调加入队列
+        this.successCallbacks.push(execSuccessCallback);
+        // 讲失败回调加入队列
+        this.failCallbacks.push(execFailCallback);
+        return;
+      }
+      // 延迟执行 可以将函数执行结果和当前then 返回的promise 进行比较
+      asyncExecFun(() =&gt; {
+        // 如果已经 fulfilled 可直接调用成功回调方法
+        if (this.status === FULFILLED) {
+          execSuccessCallback();
+          // 如果已经 rejected 可直接调用失败回调方法
+        } else if (this.status === REJECTED) {
+          execFailCallback();
+        }
+      });
+    });
+    return promise;
+  }
+
+  catch(failCallback) {
+    return this.then(undefined, failCallback);
+  }
+
+  finally(callback) {
+    return this.then(
+      // 穿透正常值
+      (value) =&gt; MyPromise.resolve(callback()).then(() =&gt; value),
+      (reason) =&gt;
+        MyPromise.resolve(callback()).then(() =&gt; {
+          // 穿透异常信息
+          throw reason;
+        })
+    );
+  }
+
+  static resolve(value) {
+    // 如果是MyPromise 实例 则直接返回
+    if (value instanceof MyPromise) return value;
+    // 如果是MyPromise 实例 否则返回一个 MyPromise实例
+    return new MyPromise((resolve) =&gt; resolve(value));
+  }
+  static reject(reason) {
+    // 如果是MyPromise 实例 则直接返回
+    if (reason instanceof MyPromise) return reason;
+    // 如果是MyPromise 实例 否则返回一个 MyPromise实例
+    return new MyPromise((resolve, reject) =&gt; reject(reason));
+  }
+
+  // all方法
+  static all(array) {
+    // 存储结果
+    let result = [];
+    // 存储数组长度
+    let len = array.length;
+    // 创建返回MyPromise
+    let promise = new MyPromise((resolve, reject) =&gt; {
+      // 定义当前MyPromise的索引
+      let index = 0;
+      // 添加数据的公用方法
+      function addData(key, data) {
+        // 赋值
+        result[key] = data;
+        // 索引递增
+        index++;
+        // 全部执行完则resolve
+        if (index == len) {
+          resolve(result);
+        }
+      }
+      // 按顺序变量数组
+      for (let i = 0; i &lt; len; i++) {
+        let curr = array[i];
+        // 如果是MyPromise则 按其规则处理
+        if (curr instanceof MyPromise) {
+          curr.then((value) =&gt; addData(i, value), reject);
+        } else {
+          // 非MyPromise直接赋值
+          addData(i, curr);
+        }
+      }
+    });
+    // 返回新的MyPromise实例
+    return promise;
+  }
+  // 只要有一个成功或者失败就返回
+  static race(array) {
+    let promise = new MyPromise((resolve, reject) =&gt; {
+      for (let i = 0; i &lt; array.length; i++) {
+        let curr = array[i];
+        // MyPromise实例 结果处理
+        if (curr instanceof MyPromise) {
+          curr.then(resolve, reject);
+        } else {
+          // 非MyPromise实例处理
+          resolve(curr);
+        }
+      }
+    });
+    return promise;
+  }
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[进阶1-01-02异步编程]]></title>
+        <id>https://hongchengfhc.github.io/jin-jie-1-01-02-yi-bu-bian-cheng/</id>
+        <link href="https://hongchengfhc.github.io/jin-jie-1-01-02-yi-bu-bian-cheng/">
+        </link>
+        <updated>2021-03-26T05:45:54.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="1-同步模式-异步模式-回调函数">1. 同步模式、异步模式、回调函数</h2>
+<h3 id="javascript-单线程">JavaScript 单线程</h3>
+<ul>
+<li>JavaScript设计初衷，运行在浏览器端的脚本语言，DOM操作实现交互</li>
+<li>不使用单线程，会造成严重的线程同步问题</li>
+<li>例如：一个线程删除，一个线程修改</li>
+</ul>
+<h3 id="javascript-同步模式-synchronous">JavaScript 同步模式 【Synchronous】</h3>
+<ul>
+<li>代码逐行运行</li>
+<li>会出现阻塞【某行代码运行时间过长，后面代码会一直等待】</li>
+</ul>
+<h3 id="javascript-异步模式-asynchromous">JavaScript 异步模式 【Asynchromous】</h3>
+<ul>
+<li>需要进行异步执行的代码，开启之后就会继续执行主线程代码，不会进行等待</li>
+<li>后序逻辑，一般会通过回调函数的方式定义</li>
+<li>JavaScript 是单线程的，浏览器不是单线程的</li>
+<li>类似于 setTimeout 之类的api，是有一个单独的线程去执行，等待的</li>
+</ul>
+<h3 id="font-colorred回调函数font"><font color="red">回调函数</font></h3>
+<blockquote>
+<p>所有异步编程方案的根基</p>
+</blockquote>
+<ul>
+<li>https://www.jianshu.com/p/40e459cfdc6f</li>
+<li>将函数作为参数</li>
+<li>我知道执行的相关代码，但我不知道何时能得到结果【开始调用】</li>
+<li>所以，将步骤写好【回调函数】，交给函数运行者，运行完后会帮我调用回调函数的内容</li>
+</ul>
+<pre><code>function foo(callback) {
+    setTimeout(function() {
+        callback()
+    }, 3000)
+}
+
+foo(function() {
+    console.log('这就是一个回调函数')
+    console.log('调用者定义这个函数，执行者执行这个函数')
+    console.log('其实就是调用者告诉执行者异步任务结束后应该做什么')
+})
+</code></pre>
+<h2 id="2-回调函数-promise">2. 回调函数 Promise</h2>
+<h3 id="异步模式">异步模式</h3>
+<ul>
+<li>运行环境提供的API是以同步或异步模式的方式工作</li>
+</ul>
+<figure data-type="image" tabindex="1"><a href="https://imgtu.com/i/6B6OYQ"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fff76deb498d4dabbc815cc3d0dda78a~tplv-k3u1fbpfcp-zoom-1.image" alt="6B6OYQ.png" loading="lazy"></a></figure>
+<h4 id="回调函数">回调函数</h4>
+<p>定义：由调用者定义，交给执行者执行的函数</p>
+<blockquote>
+<p>所有异步编程方案的根基</p>
+</blockquote>
+<ul>
+<li>https://www.jianshu.com/p/40e459cfdc6f</li>
+<li>将函数作为参数</li>
+<li>我知道执行的相关代码，但我不知道何时能得到结果【开始调用】</li>
+<li>所以，将步骤写好【回调函数】，交给函数运行者，运行完后会帮我调用回调函数的内容</li>
+</ul>
+<h4 id="promise">Promise</h4>
+<ul>
+<li>在ES2015中被标准化，成为语言规范</li>
+</ul>
+<pre><code class="language-mermaid">graph LR
+
+Promise2--&gt;B[Pending]
+
+B--&gt;C[Fulfilled]
+B--&gt;D[Rejected]
+
+C--&gt;onFulfilled
+D--&gt;onRejected
+
+</code></pre>
+<h4 id="promise的基本用法">Promise的基本用法</h4>
+<pre><code class="language-js">const promise = new Promise(function(resolve, reject) {
+  // 这里用于&quot;兑现&quot;承诺
+  resolve(100) // 承诺达成
+
+  reject(new Error('promise rejected')) // 承诺失败
+
+  // 两者只能调用其一
+
+})
+
+promise.then(function(value) {
+  console.log('resolved', value)
+}, function(error) {
+  console.log('rejected', error)
+})
+console.log('end')
+
+</code></pre>
+<h5 id="promise-方式的-ajax">Promise 方式的 ajax</h5>
+<pre><code class="language-js">function ajax(url) {
+  return new Promise(function(resolve, reject) {
+    
+    var xhr = new XMLHttpRequest()
+    xhr.open('GET', url)
+    xhr.responseType = 'json'
+    xhr.onload = function() {
+      if (this.status == 200) {
+        resolve(this.response)
+      } else {
+        reject(new Error(this.statusText))
+      }
+    }
+    xhr.send()
+  })
+}
+
+ajax('/api/users.json').then(function(res) {
+  console.log(res)
+}, function(error) {
+  console.log(error)
+})
+</code></pre>
+<h5 id="使用promise的链式调用尽可能保证异步任务扁平化">使用Promise的链式调用尽可能保证异步任务扁平化</h5>
+<ul>
+<li>Promise对象的then方法会返回一个全新的Promise对象</li>
+<li>后面的then方法就是在为上一个then返回的Promise注册回调</li>
+<li>前面then方法中回调函数的返回值会作为后面then方法回调的参数</li>
+<li>如果回调中返回的是Promise, 好后面then方法的回调会等待它的结束</li>
+</ul>
+<h5 id="promise的异常处理">Promise的异常处理</h5>
+<pre><code class="language-js">ajax('/api/users.json')
+    .then()
+    .catch()
+    
+// .catch() == .then(undefine, () =&gt; {
+    // catch后听处理
+})
+</code></pre>
+<blockquote>
+<p>全局能监听 unhandledrejection</p>
+</blockquote>
+<ul>
+<li>不建议在全局监听</li>
+</ul>
+<pre><code class="language-js">// 浏览器中
+window.addEventListener('unhandledrejection', event =&gt; {
+    const { reason, promise } = event
+    console.log(reason, promise)
+    // reason =&gt; Promise 失败原因，一般是一个错误对象
+    // promise =&gt; 出现异常的 Promise 对象
+    
+    event.preventDefault()
+}, false)
+
+// 浏览器中
+process.on('unhandledrejection', (reason, promise) =&gt; {
+    console.log(reason, promise)
+    // reason =&gt; Promise 失败原因，一般是一个错误对象
+    // promise =&gt; 出现异常的 Promise 对象
+})
+</code></pre>
+<h5 id="promise的静态方法">Promise的静态方法</h5>
+<ul>
+<li>Promise.resolve()</li>
+</ul>
+<pre><code class="language-js">Promise.resolve('foo')
+    .then(function(value) {
+        console.log(value)
+    })
+    
+// 等价于
+new Promise(function(resolve, reject) {
+    resolve('foo')
+})
+
+
+var promise = ajax('/api/users.json')
+var promise2 = Promise.resolve(promise)
+console.log(promise === promise2) // true
+
+
+Promise.resolve({
+  then: function (onFulfilled, onRejected) {
+    onFulfilled('foo')
+  }
+})
+
+</code></pre>
+<ul>
+<li>Promise.reject()</li>
+</ul>
+<pre><code class="language-js">Promise.reject('anything')
+  .catch(function(error) {
+    console.log(error)
+  })
+</code></pre>
+<h5 id="promise-并行执行">Promise 并行执行</h5>
+<ul>
+<li>Promise.all 等待所有任务结束</li>
+</ul>
+<pre><code class="language-js">var promise = Promise.all([
+  ajax('/api/users.json'),
+  ajax('/api/posts.json')
+])
+
+promise.then(function(values) {
+  console.log(values)
+}).catch(function(error) {
+  console.log(error)
+})
+</code></pre>
+<ul>
+<li>Promise.race 只会等待第一个结束的任务</li>
+</ul>
+<pre><code class="language-js">const request = ajax('/api/posts.json')
+const timeout = new Promise((resolve, reject) =&gt; {
+  setTimeout(() =&gt; reject(new Error('timeout')), 500)
+})
+
+Promise.race([
+  request,
+  timeout
+])
+  .then(value =&gt; {
+    console.log(value)
+  })
+  .catch(error =&gt; {
+    console.log(error)
+  })
+</code></pre>
+<h2 id="31-异步方案-generator">3.1 异步方案 Generator</h2>
+<ul>
+<li>ES2015提供的 Generator</li>
+</ul>
+<h4 id="生成器函数回顾">生成器函数回顾</h4>
+<pre><code class="language-js">// 生成器函数回顾
+function *foo() {
+  console.log('start')
+
+  try {
+    const res = yield 'foo'
+    console.log(res) // bar
+  } catch(e) {
+    console.log(e)
+  }
+}
+
+const generator = foo()
+
+const result = generator.next()
+console.log(result)
+
+generator.next('bar')
+
+generator.throw(new Error('Generator error')) // 就需要 foo当中try catch
+
+</code></pre>
+<h3 id="体验generator函数异步方案">体验Generator函数异步方案</h3>
+<pre><code class="language-js">function *main() {
+  const users = yield ajax('/api/users.json')
+  console.log(users)
+
+  const posts = yield ajax('/api/posts.json')
+  console.log(posts)
+}
+
+const g = main()
+const result = g.next()
+result.value.then(data =&gt; {
+  const result2 = g.next(data) // 在这里传入 上面 main中的users才会有值
+  if (result2.done) return
+
+  result2.value.then(data =&gt; {
+    g.next(data)
+
+  })
+})
+</code></pre>
+<h3 id="递归执行generator函数">递归执行Generator函数</h3>
+<pre><code class="language-js">
+function *main() {
+  const users = yield ajax('/api/users.json')
+  console.log(users)
+
+  const posts = yield ajax('/api/posts.json')
+  console.log(posts)
+}
+const g = main()
+
+co(main)
+
+function co(generator) {
+  const g = generator()
+
+  function handleResult(result) {
+    if (result.done) return // 生成器函数结束
+    result.value.then(data =&gt; {
+      handleResult(g.next(data))
+    }).catch(error =&gt; {
+      g.throw(error)
+    })
+  }
+  handleResult(g.next())
+}
+</code></pre>
+<h2 id="32-异步方案-async">3.2 异步方案 Async</h2>
+<h3 id="anync-await-语法糖">Anync / Await 语法糖</h3>
+<blockquote>
+<p>语言层面的异步编程标准</p>
+</blockquote>
+<pre><code class="language-js">async function main() {
+  try {
+    const users = await ajax('/api/users.json')
+    console.log(users)
+
+    const posts = await ajax('/api/posts.json')
+    console.log(posts)
+  } catch(e) {
+    console.log(e)
+  }
+}
+
+const promise = main()
+promise.then(() =&gt; {
+  console.log('all completed')
+})
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[进阶1-01-01 函数式编程]]></title>
+        <id>https://hongchengfhc.github.io/jin-jie-1-01-01-han-shu-shi-bian-cheng/</id>
+        <link href="https://hongchengfhc.github.io/jin-jie-1-01-01-han-shu-shi-bian-cheng/">
+        </link>
+        <updated>2021-03-26T05:44:35.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="函数式编程">函数式编程</h3>
+<pre><code> - 函数式编程不会保留计算中间的结果，所以变量是不可变的（无状态的）
+ - 我们可以把一个函数的执行结果交给另一个函数去处理
+ - 函数是一等公民
+ - 高阶函数-函数作为参数
+ - 高阶函数-函数作为返回值
+   
+</code></pre>
+<h5 id="纯属函数的概念">纯属函数的概念</h5>
+<pre><code>纯函数： 相同的输入永远会得到相同的输出，  而且没有任何可观察的副作用
+* 纯函数就类似数学中的函数(用来描述输入和输出之间的关系)， y = f(x);
+举例：
+数组中的 slice 和 splice 分别是纯函数和不纯函数
+* slice 返回数组中的指定部分， 不会改变原数组
+* splice 对数组进行操作返回该数组，会改变原数组
+
+好处： 
+    可缓存
+        因为纯函数对相同的输入始终有相同的结果，所以可以把纯函数的结果缓存起来
+    可测试
+        纯函数让测试更方便
+    并行处理
+        在多线程环境下并行操作共享的内存数据很可能会意外情况
+        纯函数不需要访问共享的内存数据，所以在并行环境下可以任意运行纯函数(Web Worker)
+lodash 中有个记忆函数
+_.memoize
+
+// 模拟memoize方法的实现
+function memoize (f) {
+    let cache = {};
+    return function () {
+        let key = JSON.stringify(arguments);
+        cache[key] = cache[key] || f.apply(f, arguments);
+        return cache[key]
+    }
+}
+
+</code></pre>
+<h4 id="函数的副作用">函数的副作用</h4>
+<pre><code>副作用让一个函数变的不纯，纯函数的根据相同的输入返回相同的输出，如果函数依赖于外部的状态就无法保证输出相同，就会带来副作用。
+
+副作用来源：
+ - 配置文件
+ - 数据库
+ - 获取用户的输入
+ - ......
+所有的外部交互都有可能代理副作用，副作用也使得方法能用性下降不适合扩展和可重用性，同时副作用会给程序中带来安全隐患 给程序带来不确定性，但是副作用不可能完全禁止，尽可能控制它们在可控范围内发生。
+</code></pre>
+<h4 id="柯里化-haskell-brooks-curry">柯里化 (Haskell Brooks Curry)</h4>
+<ol>
+<li>当一个函数有多个参数的时候先传递一部分参数调用它（这部分参数以后永远不变）</li>
+<li>然后返回一个新的函数接收剩余的参数，返回结果</li>
+</ol>
+<pre><code class="language-js">function checkAge (age) {
+    let min = 18;
+    return age &gt;= min;
+}
+</code></pre>
+<ul>
+<li>使用柯里化解决上一个案例中硬编码的问题</li>
+</ul>
+<pre><code class="language-js">// 柯里化
+function checkAge (min) {
+    return function (age) {
+        return age &gt;= min;
+    }
+}
+// es6
+let checkAge = min =&gt; (age =&gt; age &gt;= min);
+
+</code></pre>
+<h5 id="lodash中的柯里化函数">lodash中的柯里化函数</h5>
+<ul>
+<li>_.curry(func)</li>
+<li>功能：创建一个函数，该函数接收一个或多个func的参数，如果func所需要的参数都被提供则执行func并返回执行的结果。否则继续返回该函数并等待接收剩余的参数。</li>
+<li>参数：需要柯里化的函数</li>
+<li>返回值：柯里化后的函数</li>
+</ul>
+<pre><code class="language-js">const _ = require('lodash')
+// 要柯里化的函数
+function getSum (a, b, c) {
+    return a + b + c;
+}
+// 柯里化后的函数
+let curried = _.curry()
+
+
+</code></pre>
+<blockquote>
+<p>手写curry</p>
+</blockquote>
+<pre><code class="language-js">
+
+function getSum(a, b, c) {
+  return a + b + c;
+}
+
+const curried = curry(getSum);
+
+console.log(curried(1, 2, 3));
+console.log(curried(1)(2, 3));
+console.log(curried(1, 2)(3));
+
+function curry (func) {
+  return function curriedFn (...args) {
+    // 判断实参和形参的个数
+    if (args.length &lt; func.length) {
+      return function() {
+        // 注意：这里有些博客用的 arguments.callee
+        // 这个在es5的严格模式下禁止了
+        // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/arguments/callee
+        return curriedFn(...args.concat(Array.from(arguments)));
+      }
+    }
+    return func(...args);
+  }
+}
+</code></pre>
+<h5 id="柯里化总结">柯里化总结</h5>
+<ul>
+<li>柯里化可以让我闪给一个函数传递较少的参数得到一个已经记住了某些固定参数的新函数</li>
+<li>这是一种对函数参数的'缓存'</li>
+<li>让函数变得更灵活，让函数的粒度更小</li>
+<li>可以把多无函数转换成一元函数，可以组合使用函数产生强大的功能</li>
+</ul>
+<h4 id="函数组合">函数组合</h4>
+<ul>
+<li>纯属函数和柯里化很容易写出洋葱代码 h(g(f(x)))
+<ul>
+<li>获取数组的最后一个元素再转换成大写字母 <em>.toUpper(</em>.first(_.reverse(array)))</li>
+</ul>
+</li>
+<li>函数组合可以让我们把细粒度的函数重新组合生成一个新的函数</li>
+</ul>
+<h5 id="函数组合先了解一下-管道">函数组合先了解一下 管道</h5>
+<blockquote>
+<p>a -&gt; fn(也可以是多个管理-多个函数) -&gt; b</p>
+</blockquote>
+<pre><code class="language-js">fn = compose(f1, f2, f3);
+b = fn(a);
+</code></pre>
+<h5 id="函数组合定义">函数组合定义</h5>
+<ul>
+<li>函数组合(compose): 如果一个函数要经过多个函数处理才能得到最终值，这个时候嗯可以把中间过程的函数合并成一个函数
+<ul>
+<li>函数就像是数据的管道，函数组合就是把这些管道连接起来，让数据穿过多个管道形成最终结果</li>
+<li><font color="red">函数组合默认是从右到左执行</font></li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-js">// 组合函数
+function compose (f, g) {
+   return function (x) {
+       return f(g(x))
+   }
+}
+
+</code></pre>
+<h5 id="lodash-中的组合函数">lodash 中的组合函数</h5>
+<ul>
+<li>lodash中组合函数flow() 或者 flowRight(), 他们都是可以组合多个函数</li>
+<li>flow() 是从左到右运行</li>
+<li>flowRight() 是从右到左运行，使用的更多一些</li>
+</ul>
+<pre><code class="language-js">// 模拟 lodash  中的 flowRight
+
+const reverse = arr =&gt; arr.reverse();
+const first = arr =&gt; arr[0];
+const toUpper = s =&gt; s.toUpperCase();
+
+const f = compose(toUpper, first, reverse);
+console.log(f(['one', 'two', 'three']))
+
+function compose (...args) {
+   return function (value) {
+       return args.reverse().reduce(function (acc, fn){
+           return fn(acc);
+       }, value)    
+   }
+}
+
+// es6
+const compose = (...args) =&gt; value =&gt; args.reverse().reduce((acc, fn) =&gt; fn(acc), value);
+
+</code></pre>
+<h5 id="函数的组合要满足-组合律associativity">函数的组合要满足 组合律(associativity):</h5>
+<ul>
+<li>我们既可以把g和h组合，还可以把f和g组合，结果都是一样的。</li>
+</ul>
+<pre><code class="language-js">// 结合律 (associativity)
+let f = compose(f, g, h);
+let associative = compose(compose(f, g), h) == compose((f, compose(g, h));
+
+
+</code></pre>
+<h5 id="函数组合-调试">函数组合 调试</h5>
+<pre><code class="language-js">
+  // 举例
+  // NEVER SAY DIE  --&gt; never-say-die
+  const _ = require('lodash')
+  
+  // _.split()
+  const split = _.curry((sep, str) =&gt; _.split(str, sep))
+  
+  // _.toLower()
+  const join = _.curry((sep, array) =&gt; _.join(array, sep))
+  
+  const map = _.curry((fn, array) =&gt; _.map(array, fn))
+  const f = _.flowRight(join('-'), map(_.toLower), split(' '))
+  
+  console.log(f('NEVER SAY DIE'))
+</code></pre>
+<h4 id="lodashfp-模块">lodash/fp 模块</h4>
+<ul>
+<li>lodash 的 fp 模块提供了实用的对 函数式编程友好 的方法</li>
+<li>提供了不可变 auto-curried iteratee-first data-last 的方法 (函数优先，数据之后)</li>
+</ul>
+<pre><code class="language-js">// lodash 模块
+const _ = require('lodash')
+
+_.map(['a', 'b', 'c'], _.toUpper)
+// =&gt; ['A', 'B', 'C']
+_.map(['a', 'b', 'c'])
+// =&gt; ['a', 'b', 'c']
+
+_.split('Hello World', ' ')
+
+
+// lodash/fp 模块
+
+const fp = require('lodash/fp')
+
+fp.map(fp.toUpper, ['a', 'b', 'c'])
+fp.map(fp.toUpper)(['a', 'b', 'c'])
+
+fp.split(' ', 'Hello World')
+fp.split(' ')('Hello World')
+
+
+// 举例
+/ NEVER SAY DIE  --&gt; never-say-die
+const fp = require('lodash/fp')
+
+const f = fp.flowRight(fp.join('-'), fp.map(fp.toLower), fp.split(' '))
+console.log(f('NEVER SAY DIE'))
+
+</code></pre>
+<h5 id="lodash-和-lodashfp-模块中-map-方法的区别">lodash 和 lodash/fp 模块中 map 方法的区别</h5>
+<pre><code class="language-js">const _ = require('lodash')
+console.log(_.map(['23', '8', '10', parseInt))
+// =&gt; [23, NaN, 2]
+// 剖析
+// 进制 2-36  0就是没传，默认10进制
+// 1. parseInt('23', 0, array)
+// 2. parseInt('8', 1, array)
+// 3. parseInt('10', 2, array)
+
+
+</code></pre>
+<h4 id="point-free">Point Free</h4>
+<ul>
+<li>&quot;Point Free&quot;: 我们可以把数据处理的过程定义成与数据无关的合成运算，不需要用到代表数据的那个参数，只要把简单的运算步骤合成到一起，在使用这种模式之前我们需要定义一些辅助的基本运算函数。
+<ul>
+<li>不需要指明处理的数据</li>
+<li><strong>只需要合成运算过程</strong></li>
+<li>需要定义一些辅助的基本运算函数</li>
+</ul>
+<pre><code class="language-js">const f = fp.flowRight(fp.join('-'), fp.map(_.toLower), fp.split(' '))
+</code></pre>
+<ul>
+<li>案例演示</li>
+</ul>
+<pre><code class="language-js">// 非 Point Free 模式
+// Hello World =&gt; hello_world
+function f (word) {
+    return word.toLowerCase().replace(/\s+/g, '_')
+}
+
+// Point Free
+const fp = require('lodash/fp')
+
+const f = fp.flowRight(fp.replace(/\s+/g, '_'), fp.toLower)
+
+console.log(f('Hello World'))
+
+
+// 把一个字符串中的首字母提取并转换成大写，使用. 作用分隔符
+// world wild web ==&gt; W. W. W
+
+const fp = require('lodash/fp')
+
+const firstLetterToUpper = fp.flowRight(fp.join('. ') ,fp.map(fp), fp.split(' '))
+
+// 改进
+const firstLetterToUpper = fp.flowRight(fp.join('. ') ,fp.map(fp.flowRight(fp.first, fp.toUpper)), fp.split(' '))
+
+console.log(firstLetterToUpper('world wild web'))
+</code></pre>
+</li>
+</ul>
+<h3 id="functor-函子">Functor (函子)</h3>
+<ul>
+<li><strong>为什么要学函子</strong></li>
+</ul>
+<pre><code>到目前为止已经学习了函数式编程的一些基础，但是我们还没有演示在函数式编程中如何把副作用控制在可控的范围内、异常处理、异步操作等。
+
+</code></pre>
+<ul>
+<li><strong>什么是Functor</strong>
+<ul>
+<li>容器：包含值和值的变形关系（这个变形关系就是函数）</li>
+<li>函子：是一个特殊的容器，通过一个普通 的对象来实现，该对象具有map方法，map方法可以运行一个函数对值进行处理（变形关系）</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-js">
+// Functor 函子
+class Container {
+  constructor(value) {
+    this._value = value;
+  }
+
+  map(fn) {
+    return new Container(fn(this._value));
+  }
+}
+
+
+</code></pre>
+<h5 id="maybe函子">MayBe函子</h5>
+<ul>
+<li>我们在编程的过程中可能会遇到很多错误，需要对这些错误做相应的处理</li>
+<li>MayBe函子的作用就是可以对外部的空值情况做处理（控制副作用在允许的范围）</li>
+</ul>
+<pre><code class="language-js">
+class Maybe {
+
+  static of(value) {
+    return new Maybe(value)
+  }
+
+  constructor(value) {
+    this._value = value
+  }
+
+  // 如果对宿舍变形的话直接返回 值为 null 的函子
+  map(fn) {
+    return this.isNothing() ? Maybe.off(null) : Maybe.of(fn(this._value))
+  }
+
+  isNothing() {
+    return this._value === null || this._value === undefined
+  }
+}
+
+// 传入具体值
+// let r = Maybe.of('Hello World')
+//           .map(x =&gt; x.toUpperCase())
+// console.log(r)
+
+let r = Maybe.of(null)
+          .map(x =&gt; x.toUpperCase())
+console.log(r)
+
+
+</code></pre>
+<h5 id="either函子">Either函子</h5>
+<ul>
+<li>Either两者中的任何一个，类似于if...else...的处理</li>
+<li>异常会让函数变的不纯，Either函子可以用来做异常处理</li>
+</ul>
+<pre><code class="language-js">
+
+class Left {
+
+  static of(value) {
+    return new Left(value)
+  }
+
+  constructor(value) {
+    this._value = value
+  }
+
+  map(fn) {
+    return this
+  }
+}
+
+
+
+class Right {
+
+  static of(value) {
+    return new Right(value)
+  }
+
+  constructor(value) {
+    this._value = value
+  }
+
+  map(fn) {
+    return Right.of(fn(this._value))
+  }
+}
+
+
+// let r1 = Right.of(12).map(x =&gt; x + 2)
+// let r2 = Left.of(12).map(x =&gt; x + 2)
+
+// console.log(r1)
+// console.log(r2)
+
+function parseJSON(str) {
+  try {
+    return Right.of(JSON.parse(str))
+  } catch(e) {
+    return Left.of({ error: e.message })
+  }
+}
+// let r = parseJSON('{ name: zs }')
+let r = parseJSON('{ &quot;name&quot;: &quot;zs&quot; }').map(x =&gt; x.name.toUpperCase())
+console.log(r)
+
+</code></pre>
+<h5 id="io函子">IO函子</h5>
+<ul>
+<li>IO函子中的_value是一个函数，这里是把函数作为值来处理</li>
+<li>IO函子可以把不纯的动作存储到_value中，延迟执行这个不纯的操作（惰性执行），包装当前的操作纯</li>
+<li>把不纯属的操作交给调用者来处理</li>
+</ul>
+<pre><code class="language-js">
+
+const fp = require('lodash/fp')
+
+class IO {
+
+  static of(value) {
+    return new IO(function() {
+      return value;
+    })
+  }
+
+  constructor(fn) {
+    this._value = fn;
+  }
+
+  map(fn) {
+    return new IO(fp.flowRight(fn, this._value));
+  }
+}
+
+// 调用
+const r = IO.of(process).map(p =&gt; p.execPath);
+
+console.log(r._value());
+
+</code></pre>
+<h5 id="folktale">folktale</h5>
+<ul>
+<li>Task异步执行
+<ul>
+<li>异步任务的实现过于复杂，我们使用folkatle中的Task来演示</li>
+<li>folktale一个标准的函数式编程库
+<ul>
+<li>和lodash、remda不同的是，他没有提供很多功能函数</li>
+<li>只提供了一些函数式处理的操作，例如：compose, curry等，一些函数Task、Either、MayBe等</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-js">// folktale 中的 compose、curry
+const { compose, curry } = require('folktale/core/lamba')
+const { toUpper, first } = require('lodash/fp')
+
+// 第一个参数是传入函数的参数个数
+let f = curry(2, function(x, y) {
+  console.log(x + y)
+})
+f(3, 4)
+f(3)(4)
+
+// 函数组合
+let f = compose(toUpper, first);
+f(['one', 'two'])
+
+</code></pre>
+<h6 id="task函子">Task函子</h6>
+<ul>
+<li>folktale(2.3.2)2.x中的TaskT 1.0中的Task区别很大，1.0中的用法更接近我们现在演示的函子</li>
+<li>这里以2.3.2来演示</li>
+</ul>
+<pre><code class="language-js">
+const fs = require('fs')
+const { task } = require('folktale/concurrency/task')
+const { split, find } = require('lodash/fp')
+
+function readFile(filename) {
+    return task(resolver =&gt; {
+      fs.readFile(filename, 'utf-8', (err, data) =&gt; {
+      if (err) resolver.reject(err)
+      resolver.resolve(data)
+    })
+  })
+}
+readFile('package.json')
+    .map(split('\n'))
+    .map(find(x =&gt; x.includes('version')))
+    .run()
+    .listen({
+      onRejected: err =&gt; {
+        console.log(err)
+      },
+      onResolved: value =&gt; {
+        console.log(value)
+      }
+    })
+
+</code></pre>
+<h6 id="pointed函子">Pointed函子</h6>
+<ul>
+<li>Pointed函子是实现了of静态方法的函子</li>
+<li>of方法是为了避免使用new来创建对象，更深层的含义是of方法用来把值放到上下文Content（把值放到窗口中，使用map来处理值）</li>
+</ul>
+<pre><code class="language-js">// 就是of函数 
+class Container {
+
+  static of(value) {
+    return new Container(value)
+  }
+
+  constructor(value) {
+    this._value = value;
+  }
+
+  map(fn) {
+    return new Container(fn(this._value));
+  }
+}
+Container.of(2)
+  .map(x =&gt; x + 5)
+
+</code></pre>
+<h6 id="io函子的问题">IO函子的问题</h6>
+<ul>
+<li>Monad （单子）
+<ul>
+<li>在使用IO函子的时候，如果我们写出如下代码</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-js">
+var fs = require('fs');
+const fp = require('lodash/fp')
+
+class IO {
+
+  static of(value) {
+    return new IO(function() {
+      return value;
+    })
+  }
+
+  constructor(fn) {
+    this._value = fn;
+  }
+
+  map(fn) {
+    return new IO(fp.flowRight(fn, this._value));
+  }
+}
+
+let readFile = function(filename) {
+  return new IO(function() {
+    return fs.readFileSync(filename, 'utf-8')
+  })
+}
+
+let print = function(x) {
+  return new IO(function() {
+    console.log(x)
+    return x
+  })
+}
+
+let cat = fp.flowRight(print, readFile)
+
+// 嵌套问题
+let r = cat('package.json')._value()._value();
+console.log(r)
+
+</code></pre>
+<ul>
+<li>Monad函子是可以变扁的 Pointed函子，IO(IO(x))</li>
+<li>一个函子如果具有join和of两个方法并遵守一些定律就是一个Monad</li>
+</ul>
+<pre><code class="language-js">
+var fs = require('fs');
+const fp = require('lodash/fp')
+
+class IO {
+
+  static of(value) {
+    return new IO(function () {
+      return value;
+    })
+  }
+
+  constructor(fn) {
+    this._value = fn;
+  }
+
+  map(fn) {
+    return new IO(fp.flowRight(fn, this._value));
+  }
+
+  join() {
+    return this._value()
+  }
+
+  flatMap(fn) {
+    return this.map(fn).join()
+  }
+}
+
+let readFile = function (filename) {
+  return new IO(function () {
+    return fs.readFileSync(filename, 'utf-8')
+  })
+}
+
+let print = function (x) {
+  return new IO(function () {
+    console.log(x)
+    return x
+  })
+}
+
+let r = readFile('package.json')
+  .flatMap(print)
+  .join()
+
+console.log(r)
+
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[记一次使用apng动画两种方式]]></title>
-        <id>https://hongchengfhc.github.io/post/ji-yi-ci-shi-yong-apng-dong-hua-liang-chong-fang-shi/</id>
-        <link href="https://hongchengfhc.github.io/post/ji-yi-ci-shi-yong-apng-dong-hua-liang-chong-fang-shi/">
+        <id>https://hongchengfhc.github.io/ji-yi-ci-shi-yong-apng-dong-hua-liang-chong-fang-shi/</id>
+        <link href="https://hongchengfhc.github.io/ji-yi-ci-shi-yong-apng-dong-hua-liang-chong-fang-shi/">
         </link>
         <updated>2020-09-14T03:05:29.000Z</updated>
         <content type="html"><![CDATA[<ol>
@@ -218,8 +3553,8 @@ export default {
     </entry>
     <entry>
         <title type="html"><![CDATA[pm2启动npm命令]]></title>
-        <id>https://hongchengfhc.github.io/post/pm2-qi-dong-npm-ming-ling/</id>
-        <link href="https://hongchengfhc.github.io/post/pm2-qi-dong-npm-ming-ling/">
+        <id>https://hongchengfhc.github.io/pm2-qi-dong-npm-ming-ling/</id>
+        <link href="https://hongchengfhc.github.io/pm2-qi-dong-npm-ming-ling/">
         </link>
         <updated>2020-08-19T08:01:29.000Z</updated>
         <content type="html"><![CDATA[<h5 id="使用方式">* 使用方式</h5>
@@ -305,8 +3640,8 @@ pm2 delete all         # 杀死全部进程
     </entry>
     <entry>
         <title type="html"><![CDATA[Mac显示隐藏文件]]></title>
-        <id>https://hongchengfhc.github.io/post/mac-xian-shi-yin-cang-wen-jian/</id>
-        <link href="https://hongchengfhc.github.io/post/mac-xian-shi-yin-cang-wen-jian/">
+        <id>https://hongchengfhc.github.io/mac-xian-shi-yin-cang-wen-jian/</id>
+        <link href="https://hongchengfhc.github.io/mac-xian-shi-yin-cang-wen-jian/">
         </link>
         <updated>2020-08-19T08:00:49.000Z</updated>
         <content type="html"><![CDATA[<h3 id="显示隐藏文件">显示隐藏文件</h3>
@@ -315,306 +3650,6 @@ pm2 delete all         # 杀死全部进程
 <h3 id="不显示隐藏文件">不显示隐藏文件</h3>
 <pre><code>defaults write com.apple.finder AppleShowAllFiles -boolean false;killall Finder
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[电脑上微信客户端多开]]></title>
-        <id>https://hongchengfhc.github.io/post/dian-nao-shang-wei-xin-ke-hu-duan-duo-kai/</id>
-        <link href="https://hongchengfhc.github.io/post/dian-nao-shang-wei-xin-ke-hu-duan-duo-kai/">
-        </link>
-        <updated>2020-08-19T08:00:13.000Z</updated>
-        <content type="html"><![CDATA[<h3 id="mac上微信多开">Mac上微信多开</h3>
-<pre><code>nohup /Applications/WeChat.app/Contents/MacOS/WeChat &gt; /dev/null 2&gt;&amp;1 &amp;
-</code></pre>
-<h3 id="windows微信多开">Windows微信多开</h3>
-<blockquote>
-<ul>
-<li>找到wechat.exe的地址</li>
-<li>我这里为 C:\Program Files (x86)\Tencent\WeChat\WeChat.exe</li>
-</ul>
-</blockquote>
-<pre><code>TASKKILL /F /IM wechat.exe
-start &quot;&quot; &quot;C:\Program Files (x86)\Tencent\WeChat\WeChat.exe&quot;
-start &quot;&quot; &quot;C:\Program Files (x86)\Tencent\WeChat\WeChat.exe&quot;
-
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[使用nvm和nrm安装并管理node.js开发环境]]></title>
-        <id>https://hongchengfhc.github.io/post/shi-yong-nvm-he-nrm-an-zhuang-bing-guan-li-nodejs-kai-fa-huan-jing/</id>
-        <link href="https://hongchengfhc.github.io/post/shi-yong-nvm-he-nrm-an-zhuang-bing-guan-li-nodejs-kai-fa-huan-jing/">
-        </link>
-        <updated>2020-08-19T07:58:12.000Z</updated>
-        <content type="html"><![CDATA[<p>在进行前端开发的时候，会安装多个版本的node.js，另外还会用到第三方源的管理工具npm,所以这里推荐两个工具来分别管理它们:  <a href="%5Bhttps://github.com/nvm-sh/nvm%5D(https://github.com/nvm-sh/nvm)">nvm</a> 和 <a href="%5Bhttps://github.com/Pana/nrm%5D(https://github.com/Pana/nrm)">nrm</a></p>
-<h3 id="卸载已安装到全局的-nodenpm">卸载已安装到全局的 node/npm</h3>
-<p>如果之前是在官网下载的 node 安装包，运行后会自动安装在全局目录，其中</p>
-<p>node 命令在 /usr/local/bin/node ，npm 命令在全局 node_modules 目录中，具体路径为 /usr/local/lib/node_modules/npm</p>
-<p>安装 nvm 之后最好先删除下已安装的 node 和全局 node 模块：</p>
-<pre><code>npm ls -g --depth=0 #查看已经安装在全局的模块，以便删除这些全局模块后再按照不同的 node 版本重新进行全局安装
-
-sudo rm -rf /usr/local/lib/node_modules #删除全局 node_modules 目录
-sudo rm /usr/local/bin/node #删除 node
-cd  /usr/local/bin &amp;&amp; ls -l | grep &quot;../lib/node_modules/&quot; | awk '{print $9}'| xargs rm #删除全局 node 模块注册的软链
-</code></pre>
-<h3 id="安装-nvm">安装 nvm</h3>
-<h4 id="mac-或-linux-系统">Mac 或 Linux 系统</h4>
-<p>可以使用下面的脚本安装:</p>
-<pre><code>curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
-</code></pre>
-<p>执行完成之后需要关闭当前的命令行，然后重新打开。如果出现<code>Unknown option: -c</code>错误，需要先<a href="https://stackoverflow.com/a/27674776/1805493">升级git到1.7.10以上版本</a>。如果出现 <code>nvm: command not found</code> 错误的话，可以首先执行 <code>touch ~/.bash_profile</code> 命令创建bash_profile文件，然后执行 <code>source ~/.bash_profile</code>命令或关闭terminal窗口并重新打开一下即可。<br>
-Mac下推荐使用 <a href="%5Bhttps://github.com/robbyrussell/oh-my-zsh%5D(https://github.com/robbyrussell/oh-my-zsh)">oh-my-zsh</a> 代替默认的base shell</p>
-<h3 id="安装切换各版本-nodenpm">安装切换各版本 node/npm</h3>
-<pre><code>nvm install stable #安装最新稳定版 node，现在是 5.0.0
-nvm install 4.2.2 #安装 4.2.2 版本
-nvm install 0.12.7 #安装 0.12.7 版本
-
-# 特别说明：以下模块安装仅供演示说明，并非必须安装模块
-nvm use 0 #切换至 0.12.7 版本
-npm install -g mz-fis #安装 mz-fis 模块至全局目录，安装完成的路径是 /Users/&lt;你的用户名&gt;/.nvm/versions/node/v0.12.7/lib/mz-fis
-nvm use 4 #切换至 4.2.2 版本
-npm install -g react-native-cli #安装 react-native-cli 模块至全局目录，安装完成的路径是 /Users/&lt;你的用户名&gt;/.nvm/versions/node/v4.2.2/lib/react-native-cli
-
-nvm alias default 0.12.7 #设置默认 node 版本为 0.12.7
-</code></pre>
-<h3 id="使用nvmrc-文件配置项目所使用的-node-版本">使用.nvmrc 文件配置项目所使用的 node 版本</h3>
-<p>如果你的默认 node 版本（通过 nvm alias 命令设置的）与项目所需的版本不同，则可在项目根目录或其任意父级目录中创建 .nvmrc 文件，在文件中指定使用的 node 版本号，例如：</p>
-<pre><code>cd &lt;项目根目录&gt;  #进入项目根目录
-echo 4 &gt; .nvmrc #添加 .nvmrc 文件
-nvm use #无需指定版本号，会自动使用 .nvmrc 文件中配置的版本
-node -v #查看 node 是否切换为对应版本
-</code></pre>
-<h3 id="使用-nrm-管理不同的npm源">使用 <a href="https://github.com/Pana/nrm">nrm</a> 管理不同的npm源</h3>
-<p>众所周知的原因，国内使用原始的npm源速度非常慢，但使用别名也会出现很多不方便的地方，nrm由此产生，可以随意切换不同的npm源。</p>
-<p>安装非常方便，使用 npm install nrm -g 进行安装，安装成功之后可以使用 nrm ls 查看源列表：<br>
-<img src="https://upload-images.jianshu.io/upload_images/19403677-a6a0310f7e92e566.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="nrmls-icon.png" loading="lazy"></p>
-<p>然后通过 nrm use cnpm 将npm源切换为cnpm，再使用 nrm ls 命令查看，可以发现源已经切换为 cnpm了：<br>
-<img src="https://upload-images.jianshu.io/upload_images/19403677-4b0f5c70ca31e505.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="usecnpm-icon.png" loading="lazy"><br>
-这样设置之后，以后使用npm命令进行安装或更新的时候，默认就使用cnpm源了，非常方便。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[安装 iTerm2 && Oh My Zsh]]></title>
-        <id>https://hongchengfhc.github.io/post/an-zhuang-iterm2-and-oh-my-zsh/</id>
-        <link href="https://hongchengfhc.github.io/post/an-zhuang-iterm2-and-oh-my-zsh/">
-        </link>
-        <updated>2020-08-19T07:47:36.000Z</updated>
-        <summary type="html"><![CDATA[<h5 id="安装-iterm2-oh-my-zsh">安装 iTerm2 &amp;&amp; Oh My Zsh</h5>
-<ol>
-<li>
-<p>下载iTerm2<br>
-https://iterm2.com/</p>
-</li>
-<li>
-<p>下载  oh-my-zsh<br>
-curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh</p>
-</li>
-<li>
-<p>安装Powerline<br>
-如果你的终端能够正常执行pip指令，那么直接执行下面的指令可以完成安装<br>
-pip install powerline-status --user<br>
-如果没有，则先执行安装pip指令<br>
-sudo easy_install pip</p>
-</li>
-<li>
-<p>安装字体库<br>
-将字体库下载下来 	https://github.com/powerline/fonts<br>
-1）将工程下载下来后cd到install.sh文件所在目录<br>
-2）执行指令安装字体库<br>
-执行./install.sh指令安装所有Powerline字体<br>
-安装完成后提示所有字体均已下载到/Users/superdanny/Library/Fonts路径下<br>
-All Powerline fonts installed to /Users/superdanny/Library/Fonts</p>
-</li>
-<li>
-<p>设置iTerm2 的 Regular Font 和 Non-ASCII Font<br>
-Profiles -&gt; Default -&gt; Text -&gt; Regular Font<br>
-我这里设置的是12pt Meslo LG S DZ Regular for Powerline</p>
-</li>
-<li>
-<p>配色<br>
-1）安装配色方案<br>
-将配色方案下载下来		https://github.com/altercation/solarized</p>
-<pre><code> 进入刚刚下载的工程的solarized/iterm2-colors-solarized 下双击 Solarized Dark.itermcolors 和 Solarized Light.itermcolors 两个文件就可以把配置文件导入到 iTerm2 里
-</code></pre>
-<p>2）配置配色方案<br>
-通过load presets选择刚刚安装的配色主题即可<br>
-Profiles -&gt; Colors -&gt; Load Presets...</p>
-</li>
-<li>
-<p>使用agnoster主题<br>
-1）下载agnoster主题<br>
-下载主题  https://github.com/fcamblor/oh-my-zsh-agnoster-fcamblor<br>
-到下载的工程里面运行install文件,主题将安装到~/.oh-my-zsh/themes目录下<br>
-2）设置该主题<br>
-进入~/.zshrc打开.zshrc文件，然后将ZSH_THEME后面的字段改为agnoster。ZSH_THEME=&quot;agnoster&quot;（agnoster即为要设置的主题）</p>
-</li>
-<li>
-<p>增加指令高亮效果 zsh-syntax-highlighting<br>
-指令高亮效果作用是当用户输入正确命令时指令会绿色高亮，错误时命令红色高亮</p>
-<p>cd ~/.oh-my-zsh/custom/plugins/</p>
-<p>git clone https://github.com/zsh-users/zsh-syntax-highlighting.git</p>
-<p>vi ~/.zshrc</p>
-<p>打开.zshrc文件，找到plugins=(git)<br>
-plugins=(git zsh-syntax-highlighting)<br>
-然后在文件的最后一行添加：source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh</p>
-<p>执行命令使刚才的修改生效：<br>
-source ~/.zshrc</p>
-</li>
-<li>
-<p>可选择、命令补全<br>
-跟代码高亮的安装方式一样，这也是一个zsh的插件，叫做zsh-autosuggestion，用于命令建议和补全。<br>
-cd ~/.oh-my-zsh/custom/plugins/<br>
-git clone https://github.com/zsh-users/zsh-autosuggestions<br>
-vi ~/.zshrc</p>
-</li>
-</ol>
-<p>添加 plugins=(<br>
-git<br>
-zsh-autosuggestions<br>
-zsh-syntax-highlighting<br>
-)</p>
-<h2 id="获取zshrc所在目录">获取.zshrc所在目录</h2>
-<p>我这里是 /Users/macbook/.zshrc</p>
-<p>Mac OS X中默认不存在~/.zshrc，因此您需要创建它。 ~/转换为用户的主目录，.zshrc是ZSH配置文件本身。</p>
-<p>所以只需打开一个“终端”或“iTerm”窗口并像这样创建该文件;我正在使用nano作为文本编辑器，但随意使用您认为合适的文本编辑器：</p>
-<p>nano ~/.zshrc<br>
-然后将ZSH_THEME值设置为您想要使用的任何值，如下所示：</p>
-<p>ZSH_THEME=&quot;robbyrussell&quot;</p>
-<p>现在将文件保存在nano中，只需按 ctrl + X 。当它提示：</p>
-<p>保存修改后的缓冲区（回答“否”会破坏更改）？</p>
-<p>只需输入“Y”，然后你会得到一个看起来像这样的新提示;请注意路径/Users/jake/将匹配您当地用户的路径：</p>
-<p>要写的文件名：/Users/jake/.zshrc</p>
-<p>现在只需按 return ，文件将被保存，您现在将返回“终端”或“iTerm”中的命令行提示符。如果您现在退出“终端”或者“iTerm”然后打开一个新窗口，现在应该加载~/.zshrc设置。</p>
-<p>附上作者的iTerm2的背景图</p>
-<p><a href="https://s1.ax1x.com/2020/03/20/86X3J1.jpg">图片链接</a></p>
-<p><a href="https://jingyan.baidu.com/article/ca41422f7d5e801eae99edae.html">iTerm2如何设置背景图片</a></p>
-<p><a href="https://segmentfault.com/q/1010000002617777">iTerm2如何分屏之后背景图不变？</a></p>
-<figure data-type="image" tabindex="1"><img src="https://upload-images.jianshu.io/upload_images/19403677-f135459ee6dfd6c1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img" loading="lazy"></figure>
-]]></summary>
-        <content type="html"><![CDATA[<h5 id="安装-iterm2-oh-my-zsh">安装 iTerm2 &amp;&amp; Oh My Zsh</h5>
-<ol>
-<li>
-<p>下载iTerm2<br>
-https://iterm2.com/</p>
-</li>
-<li>
-<p>下载  oh-my-zsh<br>
-curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh</p>
-</li>
-<li>
-<p>安装Powerline<br>
-如果你的终端能够正常执行pip指令，那么直接执行下面的指令可以完成安装<br>
-pip install powerline-status --user<br>
-如果没有，则先执行安装pip指令<br>
-sudo easy_install pip</p>
-</li>
-<li>
-<p>安装字体库<br>
-将字体库下载下来 	https://github.com/powerline/fonts<br>
-1）将工程下载下来后cd到install.sh文件所在目录<br>
-2）执行指令安装字体库<br>
-执行./install.sh指令安装所有Powerline字体<br>
-安装完成后提示所有字体均已下载到/Users/superdanny/Library/Fonts路径下<br>
-All Powerline fonts installed to /Users/superdanny/Library/Fonts</p>
-</li>
-<li>
-<p>设置iTerm2 的 Regular Font 和 Non-ASCII Font<br>
-Profiles -&gt; Default -&gt; Text -&gt; Regular Font<br>
-我这里设置的是12pt Meslo LG S DZ Regular for Powerline</p>
-</li>
-<li>
-<p>配色<br>
-1）安装配色方案<br>
-将配色方案下载下来		https://github.com/altercation/solarized</p>
-<pre><code> 进入刚刚下载的工程的solarized/iterm2-colors-solarized 下双击 Solarized Dark.itermcolors 和 Solarized Light.itermcolors 两个文件就可以把配置文件导入到 iTerm2 里
-</code></pre>
-<p>2）配置配色方案<br>
-通过load presets选择刚刚安装的配色主题即可<br>
-Profiles -&gt; Colors -&gt; Load Presets...</p>
-</li>
-<li>
-<p>使用agnoster主题<br>
-1）下载agnoster主题<br>
-下载主题  https://github.com/fcamblor/oh-my-zsh-agnoster-fcamblor<br>
-到下载的工程里面运行install文件,主题将安装到~/.oh-my-zsh/themes目录下<br>
-2）设置该主题<br>
-进入~/.zshrc打开.zshrc文件，然后将ZSH_THEME后面的字段改为agnoster。ZSH_THEME=&quot;agnoster&quot;（agnoster即为要设置的主题）</p>
-</li>
-<li>
-<p>增加指令高亮效果 zsh-syntax-highlighting<br>
-指令高亮效果作用是当用户输入正确命令时指令会绿色高亮，错误时命令红色高亮</p>
-<p>cd ~/.oh-my-zsh/custom/plugins/</p>
-<p>git clone https://github.com/zsh-users/zsh-syntax-highlighting.git</p>
-<p>vi ~/.zshrc</p>
-<p>打开.zshrc文件，找到plugins=(git)<br>
-plugins=(git zsh-syntax-highlighting)<br>
-然后在文件的最后一行添加：source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh</p>
-<p>执行命令使刚才的修改生效：<br>
-source ~/.zshrc</p>
-</li>
-<li>
-<p>可选择、命令补全<br>
-跟代码高亮的安装方式一样，这也是一个zsh的插件，叫做zsh-autosuggestion，用于命令建议和补全。<br>
-cd ~/.oh-my-zsh/custom/plugins/<br>
-git clone https://github.com/zsh-users/zsh-autosuggestions<br>
-vi ~/.zshrc</p>
-</li>
-</ol>
-<p>添加 plugins=(<br>
-git<br>
-zsh-autosuggestions<br>
-zsh-syntax-highlighting<br>
-)</p>
-<h2 id="获取zshrc所在目录">获取.zshrc所在目录</h2>
-<p>我这里是 /Users/macbook/.zshrc</p>
-<p>Mac OS X中默认不存在~/.zshrc，因此您需要创建它。 ~/转换为用户的主目录，.zshrc是ZSH配置文件本身。</p>
-<p>所以只需打开一个“终端”或“iTerm”窗口并像这样创建该文件;我正在使用nano作为文本编辑器，但随意使用您认为合适的文本编辑器：</p>
-<p>nano ~/.zshrc<br>
-然后将ZSH_THEME值设置为您想要使用的任何值，如下所示：</p>
-<p>ZSH_THEME=&quot;robbyrussell&quot;</p>
-<p>现在将文件保存在nano中，只需按 ctrl + X 。当它提示：</p>
-<p>保存修改后的缓冲区（回答“否”会破坏更改）？</p>
-<p>只需输入“Y”，然后你会得到一个看起来像这样的新提示;请注意路径/Users/jake/将匹配您当地用户的路径：</p>
-<p>要写的文件名：/Users/jake/.zshrc</p>
-<p>现在只需按 return ，文件将被保存，您现在将返回“终端”或“iTerm”中的命令行提示符。如果您现在退出“终端”或者“iTerm”然后打开一个新窗口，现在应该加载~/.zshrc设置。</p>
-<p>附上作者的iTerm2的背景图</p>
-<p><a href="https://s1.ax1x.com/2020/03/20/86X3J1.jpg">图片链接</a></p>
-<p><a href="https://jingyan.baidu.com/article/ca41422f7d5e801eae99edae.html">iTerm2如何设置背景图片</a></p>
-<p><a href="https://segmentfault.com/q/1010000002617777">iTerm2如何分屏之后背景图不变？</a></p>
-<figure data-type="image" tabindex="1"><img src="https://upload-images.jianshu.io/upload_images/19403677-f135459ee6dfd6c1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img" loading="lazy"></figure>
-<!-- more -->
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Hello Gridea]]></title>
-        <id>https://hongchengfhc.github.io/post/hello-gridea/</id>
-        <link href="https://hongchengfhc.github.io/post/hello-gridea/">
-        </link>
-        <updated>2018-12-11T16:00:00.000Z</updated>
-        <summary type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
-✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
-✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
-<!-- more -->
-<p><a href="https://github.com/getgridea/gridea">Github</a><br>
-<a href="https://gridea.dev/">Gridea 主页</a><br>
-<a href="http://fehey.com/">示例网站</a></p>
-<h2 id="特性">特性👇</h2>
-<p>📝  你可以使用最酷的 <strong>Markdown</strong> 语法，进行快速创作</p>
-<p>🌉  你可以给文章配上精美的封面图和在文章任意位置插入图片</p>
-<p>🏷️  你可以对文章进行标签分组</p>
-<p>📋  你可以自定义菜单，甚至可以创建外部链接菜单</p>
-<p>💻  你可以在 <strong>Windows</strong>，<strong>MacOS</strong> 或 <strong>Linux</strong> 设备上使用此客户端</p>
-<p>🌎  你可以使用 <strong>𝖦𝗂𝗍𝗁𝗎𝖻 𝖯𝖺𝗀𝖾𝗌</strong> 或 <strong>Coding Pages</strong> 向世界展示，未来将支持更多平台</p>
-<p>💬  你可以进行简单的配置，接入 <a href="https://github.com/gitalk/gitalk">Gitalk</a> 或 <a href="https://github.com/SukkaW/DisqusJS">DisqusJS</a> 评论系统</p>
-<p>🇬🇧  你可以使用<strong>中文简体</strong>或<strong>英语</strong></p>
-<p>🌁  你可以任意使用应用内默认主题或任意第三方主题，强大的主题自定义能力</p>
-<p>🖥  你可以自定义源文件夹，利用 OneDrive、百度网盘、iCloud、Dropbox 等进行多设备同步</p>
-<p>🌱 当然 <strong>Gridea</strong> 还很年轻，有很多不足，但请相信，它会不停向前 🏃</p>
-<p>未来，它一定会成为你离不开的伙伴</p>
-<p>尽情发挥你的才华吧！</p>
-<p>😘 Enjoy~</p>
 ]]></content>
     </entry>
 </feed>

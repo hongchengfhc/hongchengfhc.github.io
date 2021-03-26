@@ -1,0 +1,541 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>进阶1-02-03-02 JavaScript性能检测及优化 | Gridea</title>
+<link rel="shortcut icon" href="https://hongchengfhc.github.io//favicon.ico?v=1616737758970">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://hongchengfhc.github.io//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="进阶1-02-03-02 JavaScript性能检测及优化 | Gridea - Atom Feed" href="https://hongchengfhc.github.io//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="1. Performance工具
+1. 为什么使用Performance
+
+GC的目的是为了实现内存空间的良性循环
+良性循环的基石是合理使用
+时刻关注才能确定是否合理
+Performance提供多种监控的方式
+
+通过Performance时..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://hongchengfhc.github.io/">
+  <img class="avatar" src="https://hongchengfhc.github.io//images/avatar.png?v=1616737758970" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              进阶1-02-03-02 JavaScript性能检测及优化
+            </h2>
+            <div class="post-info">
+              <span>
+                2021-03-26
+              </span>
+              <span>
+                7 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="1-performance工具">1. Performance工具</h1>
+<h3 id="1-为什么使用performance">1. 为什么使用Performance</h3>
+<ul>
+<li>GC的目的是为了实现内存空间的良性循环</li>
+<li>良性循环的基石是合理使用</li>
+<li>时刻关注才能确定是否合理</li>
+<li>Performance提供多种监控的方式</li>
+</ul>
+<h5 id="通过performance时刻监控内存">通过Performance时刻监控内存</h5>
+<h4 id="performance使用步骤">Performance使用步骤</h4>
+<ul>
+<li>打开浏览器输入目标网址</li>
+<li>进入开发人员工具面板，选择性能</li>
+<li>开启录制功能，访问具体界面</li>
+<li>执行用户行为，一段时间后停止录制</li>
+<li>分析界面中记录的内存信息</li>
+</ul>
+<hr>
+<h3 id="2-内存问题的体现">2. 内存问题的体现</h3>
+<h4 id="内存问题的外在表现">内存问题的外在表现</h4>
+<ul>
+<li>页面出现延迟加载或经常性暂停</li>
+<li>页面持续性出现糟糕的性能</li>
+<li>页面的性能随时间延长越来越差</li>
+</ul>
+<hr>
+<h3 id="3-监控内存的几种方式">3. 监控内存的几种方式</h3>
+<h4 id="界定内存问题的标准">界定内存问题的标准</h4>
+<ul>
+<li>内存泄露：内存使用持续升高</li>
+<li>内存膨胀：在多数设备上都存在性能问题</li>
+<li>频繁垃圾回收：通过内存变化图进行分析</li>
+</ul>
+<h4 id="监控内存的几种方式">监控内存的几种方式</h4>
+<ol>
+<li>浏览器任务管理器</li>
+<li>Timeline时序图记录</li>
+<li>堆快照查找分离DOM
+<ul>
+<li>什么是分离DOM
+<ul>
+<li>界面元素存活在DOM树上</li>
+<li>垃圾对象时的DOM节点</li>
+<li>分离状态的DOM节点</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>判断是否存在频繁的垃圾回收
+<ul>
+<li>为什么要确定频繁垃圾回收
+<ul>
+<li>GC工作时应用程序是静止的</li>
+<li>频繁且过长的GC会导致应用假死</li>
+<li>用户使用中感知应用卡顿</li>
+</ul>
+</li>
+<li>如何确定频繁的垃圾回收
+<ul>
+<li>Timeline中频繁的上升下降</li>
+<li>任务管理器中数据频繁的增加减小</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="4-performance总结">4. Performance总结</h3>
+<ul>
+<li>Performance使用流程</li>
+<li>内存问题的相关分析</li>
+<li>Performance时序图监控内存变化</li>
+<li>任务管理器监控内存变化</li>
+<li>堆快照查找分离DOM</li>
+</ul>
+<h1 id="2-优化">2. 优化</h1>
+<h2 id="1-代码优化">1. 代码优化</h2>
+<h3 id="如何精准测试-javascript性能">如何精准测试 JavaScript性能</h3>
+<ul>
+<li>本质上就是采集大量的执行样本进行数学统计和分析</li>
+<li>使用基于Benchmark.js的 https://jsperf.com/ 完成</li>
+</ul>
+<h4 id="jsperf使用流程">Jsperf使用流程</h4>
+<ul>
+<li>使用GitHub账号登录</li>
+<li>填写个人信息（非必须）</li>
+<li>填写详细的测试用例信息（title、slug）</li>
+<li>填写准备代码（DOM操作时经常使用</li>
+<li>填写必要有setup与teardown代码</li>
+<li>填写测试代码片段</li>
+</ul>
+<h2 id="2-全局变量">2. 全局变量</h2>
+<h3 id="21-慎用全局变量">2.1 慎用全局变量</h3>
+<h4 id="为什么要慎用">为什么要慎用</h4>
+<ul>
+<li>全局变量定义在全局执行上下文，是所有作用域链的顶端</li>
+<li>全局执行上下文一直存在于上下文执行栈，直到程序退出</li>
+<li>如果某个局部作用域出现了同名变量则会遮蔽或污染全局</li>
+</ul>
+<pre><code class="language-js">// 1. 片段1
+var i, str = ''
+for (i = 0; i &lt; 100000; i++) {
+    str += i
+}
+
+// 2. 片段2 效率更好
+for (let i = 0; i &lt; 1000; i++) {
+    let str = ''
+    str += i
+}
+</code></pre>
+<figure data-type="image" tabindex="1"><a href="https://imgtu.com/i/6oUbSP"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e0c3b338d9374197a13a71344c3b226f~tplv-k3u1fbpfcp-zoom-1.image" alt="6oUbSP.png" loading="lazy"></a></figure>
+<h3 id="22-缓存全局变量">2.2 缓存全局变量</h3>
+<p>将使用中无法避免的全局变量缓存到局部</p>
+<pre><code class="language-HTML">&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn1&quot;&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn2&quot;&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn3&quot;&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn4&quot;&gt;
+&lt;p&gt;111&lt;/p&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn5&quot;&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn6&quot;&gt;
+&lt;p&gt;222&lt;/p&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn7&quot;&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn8&quot;&gt;
+&lt;p&gt;333&lt;/p&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn9&quot;&gt;
+&lt;input type=&quot;button&quot; value=&quot;btn&quot; id=&quot;btn10&quot;&gt;
+</code></pre>
+<pre><code class="language-js">function getBtn() {
+    let oBtn1 = document.getElementById('btn1')
+    let oBtn3 = document.getElementById('btn3')
+    let oBtn5 = document.getElementById('btn5')
+    let oBtn7 = document.getElementById('btn7')
+    let oBtn9 = document.getElementById('btn9')
+}
+
+function getBtn2() {
+    let obj = document
+    let oBtn1 = obj.getElementById('btn1')
+    let oBtn3 = obj.getElementById('btn3')
+    let oBtn5 = obj.getElementById('btn5')
+    let oBtn7 = obj.getElementById('btn7')
+    let oBtn9 = obj.getElementById('btn9')
+}
+</code></pre>
+<figure data-type="image" tabindex="2"><a href="https://imgtu.com/i/6oUWLD"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/62083ddc59a84fc9abb492f8073fdcd2~tplv-k3u1fbpfcp-zoom-1.image" alt="6oUWLD.png" loading="lazy"></a></figure>
+<h2 id="3-通过原型新增方法">3. 通过原型新增方法</h2>
+<blockquote>
+<p>在原型对象上新增实例对象需要的方法</p>
+</blockquote>
+<pre><code class="language-js">var fn1 = function() {
+    this.foo = function() {
+        console.log(11111)
+    }
+}
+let f1 = new fn1()
+
+var fn2 = function() {}
+fn2.prototype.foo = function() {
+    console.log(11111)
+}
+let f2 = new fn2()
+</code></pre>
+<figure data-type="image" tabindex="3"><a href="https://imgtu.com/i/6odsv6"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6c35413e5af448aab3141557772da2d7~tplv-k3u1fbpfcp-zoom-1.image" alt="6odsv6.png" loading="lazy"></a></figure>
+<h2 id="4-避开闭包陷阱">4. 避开闭包陷阱</h2>
+<h4 id="闭包特点">闭包特点</h4>
+<ul>
+<li>外部具有指向内部的引用</li>
+<li>在“外”部作用域访问“内”部作用域的数据</li>
+</ul>
+<pre><code class="language-js">function foo() {
+    var name = 'lg'
+    function fn() {
+        console.log(name)
+    }
+    return fn
+}
+var a = foo()
+a()
+</code></pre>
+<h4 id="关于闭包">关于闭包</h4>
+<ul>
+<li>闭包是一种强大的语法</li>
+<li>闭包使用不当很容易出现内存泄露</li>
+<li>不要为了闭包而闭包</li>
+</ul>
+<pre><code class="language-js">function foo() {
+    var el = document.getElementById('btn')
+    el.onclick = function () {
+        console.log(el.id)
+    }
+    
+    el = null // 在这里加上，可以避免内存泄露，但这样在运行过程中会报错
+}
+foo()
+// 以上就出现了闭包陷阱
+</code></pre>
+<h2 id="5-避免属性访问方法使用">5. 避免属性访问方法使用</h2>
+<h3 id="51-javascript中的面向对象">5.1 JavaScript中的面向对象</h3>
+<ul>
+<li>JS不需属性的访问方法，所有属性都是外部可见的</li>
+<li>使用属性访问方法只会增加一层重定义，没有访问的控制力</li>
+</ul>
+<pre><code class="language-js">function Person() {
+    this.name = 'icoder'
+    this.age = 18
+    this.getAge = function() {
+        return this.age
+    }
+}
+const p1 = new Person()
+const a = p1.getAge()
+
+function Person() {
+    this.name = 'icoder'
+    this.age = 18
+}
+const p2 = new Person()
+const b = p2.age
+
+</code></pre>
+<figure data-type="image" tabindex="4"><a href="https://imgtu.com/i/6TcuT0"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3ddc8be5873448d7a4dbcdc46220401c~tplv-k3u1fbpfcp-zoom-1.image" alt="6TcuT0.png" loading="lazy"></a></figure>
+<h3 id="52-for循环优化">5.2 For循环优化</h3>
+<figure data-type="image" tabindex="5"><a href="https://imgtu.com/i/6Tcq7q"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9816c7efd12c4b9790acf476cf8fd46c~tplv-k3u1fbpfcp-zoom-1.image" alt="6Tcq7q.png" loading="lazy"></a></figure>
+<h4 id="521-采用最优循环方式">5.2.1 采用最优循环方式</h4>
+<pre><code class="language-js">var arrList = new Array(1, 2, 3, 4, 5)
+
+// 最快
+arrList.forEach(function(item) {
+    console.log(item)
+})
+
+// 其次
+for (var i = arrList.length; i; i--){
+    console.log(arrList[i])
+}
+
+// 最慢
+for (var i in arrList) {
+    console.log(arrList[i])
+}
+</code></pre>
+<h3 id="6-文档碎片优化节点添加">6. 文档碎片优化节点添加</h3>
+<h4 id="61-节点添加优化">6.1 节点添加优化</h4>
+<blockquote>
+<p>节点的添加操作必然会有回流和重绘</p>
+</blockquote>
+<ul>
+<li>回流：规模尺寸，布局，隐藏等改变</li>
+<li>重绘：只影响元素外观<br>
+https://www.jianshu.com/p/e081f9aa03fb</li>
+</ul>
+<figure data-type="image" tabindex="6"><a href="https://imgtu.com/i/6T2bF0"><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d10a0b70ff2a4bdb82bf7f600cd62219~tplv-k3u1fbpfcp-zoom-1.image" alt="6T2bF0.png" loading="lazy"></a></figure>
+<h4 id="62-克隆优化节点操作">6.2 克隆优化节点操作</h4>
+<pre><code class="language-html">&lt;p id=&quot;box1&quot;&gt;old&lt;/p&gt;
+</code></pre>
+<pre><code class="language-js">// 执行结果 29387
+function (var i = 0; i &lt; 3; i++) {
+    var op = document.createElement('p')
+    op.innerHTML = i
+    document.body.appendChild(op)
+}
+
+// 执行结果  31740
+var oldP = document.getElementById('box1')
+function (var i = 0; i &lt; 3; i++) {
+    var op = oldP.cloneNode(false)
+    op.innerHTML = i
+    document.body.appendChild(op)
+}
+
+
+</code></pre>
+<h4 id="63-直接量替换object操作">6.3 直接量替换<code>Object</code>操作</h4>
+<pre><code class="language-js">// 执行结果 703,598,776
+var a = [1, 2, 3]
+
+// 执行结果 714,136,415
+var arr = new Array(3)
+arr[0] = 1
+arr[1] = 2
+arr[2] = 3
+
+</code></pre>
+<h3 id="代码优化总结"><code>代码优化总结：</code></h3>
+<ol>
+<li>慎用全局变量</li>
+<li>缓存全局变量</li>
+<li>通过原型新增方法</li>
+<li>避开装饰陷阱</li>
+<li>避免属性访问方法使用</li>
+<li><code>for</code>循环优化</li>
+<li>文档碎片优化节点添加</li>
+</ol>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#1-performance%E5%B7%A5%E5%85%B7">1. Performance工具</a><br>
+*
+<ul>
+<li><a href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8performance">1. 为什么使用Performance</a><br>
+*
+<ul>
+<li><a href="#%E9%80%9A%E8%BF%87performance%E6%97%B6%E5%88%BB%E7%9B%91%E6%8E%A7%E5%86%85%E5%AD%98">通过Performance时刻监控内存</a></li>
+<li><a href="#performance%E4%BD%BF%E7%94%A8%E6%AD%A5%E9%AA%A4">Performance使用步骤</a></li>
+</ul>
+</li>
+<li><a href="#2-%E5%86%85%E5%AD%98%E9%97%AE%E9%A2%98%E7%9A%84%E4%BD%93%E7%8E%B0">2. 内存问题的体现</a>
+<ul>
+<li><a href="#%E5%86%85%E5%AD%98%E9%97%AE%E9%A2%98%E7%9A%84%E5%A4%96%E5%9C%A8%E8%A1%A8%E7%8E%B0">内存问题的外在表现</a></li>
+</ul>
+</li>
+<li><a href="#3-%E7%9B%91%E6%8E%A7%E5%86%85%E5%AD%98%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F">3. 监控内存的几种方式</a>
+<ul>
+<li><a href="#%E7%95%8C%E5%AE%9A%E5%86%85%E5%AD%98%E9%97%AE%E9%A2%98%E7%9A%84%E6%A0%87%E5%87%86">界定内存问题的标准</a></li>
+<li><a href="#%E7%9B%91%E6%8E%A7%E5%86%85%E5%AD%98%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F">监控内存的几种方式</a></li>
+</ul>
+</li>
+<li><a href="#4-performance%E6%80%BB%E7%BB%93">4. Performance总结</a></li>
+</ul>
+</li>
+<li><a href="#2-%E4%BC%98%E5%8C%96">2. 优化</a>
+<ul>
+<li><a href="#1-%E4%BB%A3%E7%A0%81%E4%BC%98%E5%8C%96">1. 代码优化</a>
+<ul>
+<li><a href="#%E5%A6%82%E4%BD%95%E7%B2%BE%E5%87%86%E6%B5%8B%E8%AF%95-javascript%E6%80%A7%E8%83%BD">如何精准测试 JavaScript性能</a>
+<ul>
+<li><a href="#jsperf%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8B">Jsperf使用流程</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#2-%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F">2. 全局变量</a>
+<ul>
+<li><a href="#21-%E6%85%8E%E7%94%A8%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F">2.1 慎用全局变量</a>
+<ul>
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%85%8E%E7%94%A8">为什么要慎用</a></li>
+</ul>
+</li>
+<li><a href="#22-%E7%BC%93%E5%AD%98%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F">2.2 缓存全局变量</a></li>
+</ul>
+</li>
+<li><a href="#3-%E9%80%9A%E8%BF%87%E5%8E%9F%E5%9E%8B%E6%96%B0%E5%A2%9E%E6%96%B9%E6%B3%95">3. 通过原型新增方法</a></li>
+<li><a href="#4-%E9%81%BF%E5%BC%80%E9%97%AD%E5%8C%85%E9%99%B7%E9%98%B1">4. 避开闭包陷阱</a><br>
+*
+<ul>
+<li><a href="#%E9%97%AD%E5%8C%85%E7%89%B9%E7%82%B9">闭包特点</a></li>
+<li><a href="#%E5%85%B3%E4%BA%8E%E9%97%AD%E5%8C%85">关于闭包</a></li>
+</ul>
+</li>
+<li><a href="#5-%E9%81%BF%E5%85%8D%E5%B1%9E%E6%80%A7%E8%AE%BF%E9%97%AE%E6%96%B9%E6%B3%95%E4%BD%BF%E7%94%A8">5. 避免属性访问方法使用</a>
+<ul>
+<li><a href="#51-javascript%E4%B8%AD%E7%9A%84%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1">5.1 JavaScript中的面向对象</a></li>
+<li><a href="#52-for%E5%BE%AA%E7%8E%AF%E4%BC%98%E5%8C%96">5.2 For循环优化</a>
+<ul>
+<li><a href="#521-%E9%87%87%E7%94%A8%E6%9C%80%E4%BC%98%E5%BE%AA%E7%8E%AF%E6%96%B9%E5%BC%8F">5.2.1 采用最优循环方式</a></li>
+</ul>
+</li>
+<li><a href="#6-%E6%96%87%E6%A1%A3%E7%A2%8E%E7%89%87%E4%BC%98%E5%8C%96%E8%8A%82%E7%82%B9%E6%B7%BB%E5%8A%A0">6. 文档碎片优化节点添加</a>
+<ul>
+<li><a href="#61-%E8%8A%82%E7%82%B9%E6%B7%BB%E5%8A%A0%E4%BC%98%E5%8C%96">6.1 节点添加优化</a></li>
+<li><a href="#62-%E5%85%8B%E9%9A%86%E4%BC%98%E5%8C%96%E8%8A%82%E7%82%B9%E6%93%8D%E4%BD%9C">6.2 克隆优化节点操作</a></li>
+<li><a href="#63-%E7%9B%B4%E6%8E%A5%E9%87%8F%E6%9B%BF%E6%8D%A2object%E6%93%8D%E4%BD%9C">6.3 直接量替换<code>Object</code>操作</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BB%A3%E7%A0%81%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93"><code>代码优化总结：</code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://hongchengfhc.github.io/jin-jie-1-02-02ts-jie-shao-ji-js-lei-xing-jian-cha/">
+              <h3 class="post-title">
+                进阶1-02-02TS介绍及JS类型检查
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://hongchengfhc.github.io//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
